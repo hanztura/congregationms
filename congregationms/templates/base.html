@@ -6,23 +6,47 @@
   {% block title %}
   <title>Home | Congregation Management System</title>
   {% endblock title %}
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link href='{% static "vendors/googlefonts.css" %}' rel="stylesheet">
+  <link href='{% static "vendors/materialdesignicons.min.css" %}' rel="stylesheet">
+  <link href='{% static "vendors/vuetify.min.css" %}' rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
-    {% block header %}
-      
-    {% endblock header %}
+  <div id="app">
+    <v-app>
+      {% block header %}
+        {% include "navigation_drawer.html" %}
 
-    {% block main %}
+        {% include "app_bar.html" %}
+      {% endblock header %}
       
-    {% endblock main %}
+      <v-content>
+        {% block main %}
+        {% endblock main %}
+      </v-content>
+
+      {% block footer %}
+        
+      {% endblock footer %}
+    </v-app>
 
 
-    {% block footer %}
-      
-    {% endblock footer %}
+
+  </div>
+
+  <script src='{% static "vendors/vue.js" %}'></script>
+  <script src='{% static "vendors/vuetify.js" %}'></script>
+  <script>
+    vueinstance = new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      vuetify: new Vuetify(),
+      data: () => ({
+        drawer: null,
+      })
+    });
+  </script>
+
+  {% block endscript %}{% endblock endscript %}
 </body>
 </html>
