@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 
 from system.models import Congregation as Cong
 
@@ -18,6 +19,9 @@ class Publisher(models.Model):
     def __str__(self):
         name = self.name
         return name
+
+    def get_absolute_url(self):
+        return reverse('publishers:detail', args=[str(self.pk)])
 
     @property
     def name(self):

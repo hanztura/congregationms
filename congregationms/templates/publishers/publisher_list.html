@@ -8,7 +8,7 @@
   <h1>Publishers List</h1>
   <ul>
     {% for publisher in object_list %}
-      <li>{{ publisher.name }}</li>
+      <li>{{ publisher.pk }} <a href='{% url "publishers:update" publisher.pk %}'>{{ publisher.name }}</a></li>
     {% endfor %}
   </ul>
 {% endblock main %}
