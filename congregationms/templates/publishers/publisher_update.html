@@ -1,52 +1,56 @@
-{% extends "base.html" %}
+{% extends "publishers/base.html" %}
 
 {% block title %}
   <title>Publisher Update</title>  
 {% endblock title %}
 
+{% block subbreadcrumbs %}
+  <li><a href='{% url "publishers:detail" publisher.pk %}'>{{ publisher.name|title }}</a></li>
+  <li class="is-active"><a href='#'>Update</a></li>  
+{% endblock subbreadcrumbs %}
+
 {% block main %}
-<v-container>
-  <h1>Publisher Update</h1>
-  <p>{{ publisher.name }}</p>  
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <v-text-field
-          name="last_name"
-          label="Last Name"
-          id="last_name"
-          value="{{ last_name }}"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-  </v-container>
-  <form method="post">
-    {% csrf_token %}
-    <p>
-      <label>Last Name</label>
-      <input type="text" name="last_name" value="{{ publisher.last_name}}">
-    </p>
-    <p>
-      <label>First Name</label>
-      <input type="text" name="first_name" value="{{ publisher.first_name}}">
-    </p>
-    <p>
-      <label>Middle Name</label>
-      <input type="text" name="middle_name" value="{{ publisher.middle_name}}">
-    </p>
-    <p>
-      <label>Date of Birth</label>
-      <input type="date" name="date_of_birth" value="{{ publisher.date_of_birth}}">
-    </p>
-    <p>
-      <label>Date of Baptism</label>
-      <input type="date" name="date_of_baptism" value="{{ publisher.date_of_baptism}}">
-    </p>
-    <p>
-      <label>Contact Numbers</label>
-      <input type="textarea" name="contact_numbers" value="{{ publisher.contact_numbers}}">
-    </p>
-    <input type="submit" value="Save">
-  </form>
-</v-container>
+    <h1>Publisher Update</h1>
+    <p class="is-size-3">{{ publisher.name|upper }}</p>  
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">Last Name</label>
+        <div class="control">
+          <input class="input" type="text" name="last_name" value="{{ publisher.last_name}}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">First Name</label>
+        <div class="control">
+          <input class="input" type="text" name="first_name" value="{{ publisher.first_name}}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Middle Name</label>
+        <div class="control">
+        <input class="input" type="text" name="middle_name" value="{{ publisher.middle_name}}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Date of Birth</label>
+        <div class="control">
+        <input class="input" type="date" name="date_of_birth" value="{{ publisher.date_of_birth|date:'Y-m-d' }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Date of Baptism</label>
+        <div class="control">
+        <input  class="input" type="date" name="date_of_baptism" value="{{ publisher.date_of_baptism|date:'Y-m-d' }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Contact Numbers</label>
+        <div class="control">
+        <textarea class="textarea" name="contact_numbers" value="{{ publisher.contact_numbers}}" placeholder="0907123456, 09189876543"></textarea>
+        </div>
+      </div>
+      <input class="button is-success" type="submit" value="Save">
+    </form>
 {% endblock main %}

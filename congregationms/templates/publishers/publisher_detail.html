@@ -1,5 +1,18 @@
-{% extends "base.html" %}
+{% extends "publishers/base.html" %}
+
+{% block title %}
+  <title>Publisher Detail</title>
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>Detail</a></li>  
+{% endblock subbreadcrumbs %}
 
 {% block main %}
-  <h1>{{ publisher.name }}</h1>
+  <h1>Publisher Detail</h1>
+  <p class="is-size-3">{{ publisher.name|upper }}</p>
+  <p>Date of Birth: {{ publisher.date_of_birth }}</p>
+  <p>Date of Baptism: {{ publisher.date_of_baptism }}</p>
+  <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
+  <a href='{% url "publishers:update" publisher.pk %}'><button class="button is-info">edit</button></a>
 {% endblock main %}
