@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+
+{% block breadcrumbs %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
+  {% block subbreadcrumbs %}{% endblock subbreadcrumbs %}
+{% endblock breadcrumbs %}

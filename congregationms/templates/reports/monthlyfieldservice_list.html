@@ -1,0 +1,111 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>Monthly Field Service - List</title>  
+{% endblock title %}
+
+{% block main %}
+  <h1>Monthly Field Service</h1>
+  <div class="field">
+    <label class="label">Month</label>
+    <div class="control">
+      <select name="_month" v-model="month">
+        <option v-for="m in months" :key="m.month" :value="m.month">[[ m.name ]]</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Year</label>
+    <div class="control">
+      <input type="number" name="_year" v-model="year">
+    </div>
+  </div>
+  <form>
+    <input type="hidden" name="month" :value="month">
+    <input type="hidden" name="year" :value="year">
+    <input type="submit" value="search">
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for report in object_list %}
+          <tr>
+            <td>{{ report.publisher|title }}</td>
+            <td>
+              <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">view</span></a>
+              <a><span class="button is-outlined">edit</span></a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}
+
+{% block vueinstance %}
+  <script>
+    vueinstance = new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        'date': null,
+        'month': '',
+        'year': '',
+        'months': [
+          {
+            month: 1,
+            name: 'January'
+          },
+          {
+            month: 2,
+            name: 'February'
+          },
+          {
+            month: 3,
+            name: 'March'
+          },
+          {
+            month: 4,
+            name: 'April'
+          },
+          {
+            month: 5,
+            name: 'May'
+          },
+          {
+            month: 6,
+            name: 'June'
+          },
+          {
+            month: 7,
+            name: 'July'
+          },
+          {
+            month: 8,
+            name: 'August'
+          },
+          {
+            month: 9,
+            name: 'September'
+          },
+          {
+            month: 10,
+            name: 'October'
+          },
+          {
+            month: 11,
+            name: 'November'
+          },
+          {
+            month: 12,
+            name: 'December'
+          }
+        ]
+      })
+    });
+  </script>
+{% endblock vueinstance %}

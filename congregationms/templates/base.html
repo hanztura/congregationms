@@ -44,14 +44,17 @@
   </div>
 
   <script src='{% static "vendors/vue.js" %}'></script>
-  <script>
-    vueinstance = new Vue({
-      el: '#app',
-      delimiters: ['[[', ']]'],
-      data: () => ({
-      })
-    });
-  </script>
+
+  {% block vueinstance %}
+    <script>
+      vueinstance = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: () => ({
+        })
+      });
+    </script>
+  {% endblock vueinstance %}
 
   {% block endscript %}{% endblock endscript %}
 </body>
