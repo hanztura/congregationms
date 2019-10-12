@@ -1,0 +1,37 @@
+{% extends "publishers/base.html" %}
+
+{% block title %}
+  <title>Publisher New</title>  
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>New</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+    <h1>Publisher New</h1>
+    <p class="is-size-3">Create a New Publisher Profile</p>  
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">Last Name</label>
+        <div class="control">
+          <input class="input" type="text" name="last_name" value="{{ publisher.last_name}}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">First Name</label>
+        <div class="control">
+          <input class="input" type="text" name="first_name" value="{{ publisher.first_name}}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Middle Name</label>
+        <div class="control">
+        <input class="input" type="text" name="middle_name" value="{{ publisher.middle_name}}">
+        </div>
+      </div>
+      <input class="button is-success" type="submit" value="Create">
+    </form>
+{% endblock main %}
