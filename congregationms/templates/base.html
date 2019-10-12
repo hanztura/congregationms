@@ -26,6 +26,14 @@
     {% endblock header %}
     
       <div class="container">
+        {% if messages %}
+          <ul>
+            {% for message in messages %}
+              <li class="is-{{ message.tags }}">{{message}}</li>
+            {% endfor %}
+          </ul>  
+        {% endif %}
+
         {% block main %}
         {% endblock main %}
       </div>
