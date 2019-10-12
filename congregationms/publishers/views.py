@@ -1,8 +1,8 @@
 #from django.shortcuts import render
 from django.contrib import messages
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import Publisher
 
@@ -40,3 +40,15 @@ class PublisherCreate(CreateView):
 
     def get_success_url(self, *args, **kwargs):
         return reverse('publishers:update', args=[str(self.object.pk)])
+
+
+class PublisherDelete(DeleteView):
+    model = Publisher
+    success_url = reverse_lazy('publishers:index')
+
+    def get_success_url(self):
+        messages.success(
+            self.request,
+            'Successfully deleted {}.'.format(str(self.object))
+        )
+        return super().get_success_url()
