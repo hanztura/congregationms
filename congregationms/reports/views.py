@@ -6,6 +6,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import MonthlyFieldService
+from publishers.models import Publisher
 
 
 now = datetime.now().date()
@@ -75,3 +76,31 @@ class MFSUpdate(UpdateView):
         'comments'
     ]
     context_object_name = 'report'
+
+
+class MFSHistoryList(ListView):
+    model = MonthlyFieldService
+    template_name = 'reports/mfs_publisher_history.html'
+    context_object_name = 'reports'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        publisher = self.kwargs['publisher']
+        publisher = Publisher.objects.get(pk=publisher)
+        context['publisher'] = publisher
+        return context
+
+    def get_queryset(self):
+        publisher = self.kwargs['publisher']
+        publisher = Publisher.objects.get(pk=publisher)
+
+        date_from = self.request.GET.get('from', now)
+        date_to = self.request.GET.get('to', now)
+
+        queryset = MonthlyFieldService.objects.filter(
+            publisher=publisher,
+            month_ending__gte=date_from
+        )
+        queryset = queryset.filter(month_ending__lte=date_to)
+        return queryset

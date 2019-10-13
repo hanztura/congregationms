@@ -11,7 +11,7 @@
 {% block main %}
   <h1>Monthly Field Service Report</h1>
   <p class="is-size-3">{{ report.publisher|title }}</p>
-  <p><span>View history</span></p>
+  <p><a href='{% url "reports:mfs-history" report.publisher.pk %}'>View history</a></p>
   <p><strong>{{ report.month_ending }}</strong></p>
   <p>Placements: {{ report.placements }}</p>
   <p>Video Showings: {{ report.video_showing }}</p>

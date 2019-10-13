@@ -1,0 +1,65 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>Monthly Field Service - Publisher History</title>  
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>History</a></li>
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+	<h1>Monthly Field Service - Publisher History</h1>
+	<p class="is-size-3">{{publisher.name|title}}</p>
+
+	<form>
+	    <div class="field">
+	      <label class="label">From</label>
+	      <div class="control">
+	      	<input type="date" name="from">
+	      </div>
+	    </div>
+	    <div class="field">
+	      <label class="label">To</label>
+	      <div class="control">
+	      	<input type="date" name="to">
+	      </div>
+	    </div>
+	    <div class="field">
+	      <div class="control">
+	      	<input type="submit" class="button is-outlined" value="Go">
+	      </div>
+	    </div>
+	</form>
+	<table class="table is-bordered">
+		<thead>
+			<tr>
+				<th>Month</th>
+				<th title="Placements">P</th>
+				<th title="Video Showings">VS</th>
+				<th>Hours</th>
+				<th title="Return Visits">RV</th>
+				<th title="Bible Studies">BS</th>
+				<th>Comments</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for report in  reports %}
+			<tr>
+				<td>{{report.month_ending|date:'M-Y'}}</td>
+				<td>{{report.placements}}</td>
+				<td>{{report.video_showing}}</td>
+				<td>{{report.hours}}</td>
+				<td>{{report.return_visits}}</td>
+				<td>{{report.bible_study}}</td>
+				<td>{{report.comments}}</td>
+			</tr>
+			{% endfor %}
+			{% if not reports %}
+			<tr>
+				<td colspan=7>No data available.</td>
+			</tr>	
+			{% endif %}
+		</tbody>
+	</table>
+{% endblock main %}
