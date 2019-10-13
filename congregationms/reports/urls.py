@@ -5,7 +5,7 @@ from .views import MFSCreate, MFSDetail, MFSList, MFSUpdate
 app_name = 'reports'
 urlpatterns = [
     path('monthly-field-service/', MFSList.as_view(), name='mfs-index'),
-    path('monthly-field-service/<str:pk>/', MFSDetail.as_view(), name='mfs-detail'),
     path('monthly-field-service/new/', MFSCreate.as_view(), name='mfs-create'),
+    path('monthly-field-service/<str:pk>/', MFSDetail.as_view(), name='mfs-detail'),
     path('monthly-field-service/update/<str:pk>/', MFSUpdate.as_view(), name='mfs-update')
 ]

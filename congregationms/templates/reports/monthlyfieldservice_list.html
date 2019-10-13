@@ -23,10 +23,15 @@
   <form>
     <input type="hidden" name="month" :value="month">
     <input type="hidden" name="year" :value="year">
-    <input type="submit" value="search">
+    <input class="button is-info is-outlined" type="submit" value="search">
   </form>
   <table>
     <thead>
+      <tr>
+        <th colspan="2">
+          <a href='{% url "reports:mfs-create" %}'><button class="button is-success">New</button></a>
+        </th>
+      </tr>
       <tr>
         <th>Name</th>
         <th>Actions</th>
@@ -38,7 +43,7 @@
             <td>{{ report.publisher|title }}</td>
             <td>
               <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">view</span></a>
-              <a><span class="button is-outlined">edit</span></a>
+              <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">edit</span></a>
             </td>
           </tr>
       {% endfor %}

@@ -5,9 +5,15 @@
 {% endblock title %}
 
 {% block subbreadcrumbs %}
-  <li><a href='#'>{{ report.publisher|upper }}</a></li>  
-  <li><a href='#'>{{ report.month_ending|date:'M-Y' }}</a></li>    
-  <li class="is-active"><a href='#'>Edit</a></li>  
+  {% if report %}
+    <li><a href='#'>{{ report.publisher|upper }}</a></li>  
+    <li><a href='#'>{{ report.month_ending|date:'M-Y' }}</a></li>
+    <li class="is-active"><a href='#'>Edit</a></li>
+  {% endif %}
+
+  {% if not report %}
+    <li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
 {% endblock subbreadcrumbs %}
 
 {% block main %}
@@ -25,7 +31,7 @@
     <div class="field">
       <label class="label">{{form.month_ending.label}}</label>
       <div class="control">
-        <input type="date" name="month_ending" value="{{form.month_ending.value}}">
+        <input type="date" name="month_ending" value="{{form.month_ending.value|date:'Y-m-d'}}">
       </div>
     </div>
 
@@ -35,6 +41,48 @@
         <input type="number" name="placements" value="{{form.placements.value}}">
       </div>
     </div>
-    <input class="button is-success" type="submit" value="Create">
+
+    <div class="field">
+      <label class="label">{{form.video_showing.label}}</label>
+      <div class="control">
+        <input type="number" name="video_showing" value="{{form.video_showing.value}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.hours.label}}</label>
+      <div class="control">
+        <input type="number" name="hours" value="{{form.hours.value}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.return_visits.label}}</label>
+      <div class="control">
+        <input type="number" name="return_visits" value="{{form.return_visits.value}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.bible_study.label}}</label>
+      <div class="control">
+        <input type="number" name="bible_study" value="{{form.bible_study.value}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.comments.label}}</label>
+      <div class="control">
+        {{form.comments}}
+      </div>
+    </div>
+
+    {% if report %}
+      <input class="button is-success" type="submit" value="Save">
+    {% endif %}
+
+    {% if not report %}
+      <input class="button is-success" type="submit" value="Create">
+    {% endif %}
   </form>  
 {% endblock main %}
