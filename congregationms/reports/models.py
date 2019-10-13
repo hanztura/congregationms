@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from publishers.models import Publisher
 
@@ -17,3 +18,6 @@ class MonthlyFieldService(models.Model):
     def __str__(self):
       name = str(self.publisher)
       return '{} for month ending {}'.format(name, self.month_ending)
+
+    def get_absolute_url(self):
+        return reverse('reports:mfs-detail', args=[str(self.pk)])
