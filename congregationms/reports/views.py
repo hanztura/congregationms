@@ -1,8 +1,9 @@
 from datetime import datetime
 
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import MonthlyFieldService
 
@@ -23,6 +24,16 @@ class MFSList(ListView):
             month_ending__year=year,
             month_ending__month=month
         )
+
+
+class MFSDelete(DeleteView):
+    model = MonthlyFieldService
+    success_url = reverse_lazy('reports:mfs-index')
+
+    def get_success_url(self):
+        message = "Successfully deleted."
+        messages.success(self.request, message)
+        return super().get_success_url()
 
 
 class MFSDetail(DetailView):

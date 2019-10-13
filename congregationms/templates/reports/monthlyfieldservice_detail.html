@@ -20,4 +20,8 @@
   <p>Bible Studies: {{ report.bible_study }}</p>
   <p>Comment: {{ report.comments }}</p>
   <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-info">edit</button></a>
+  <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
+    {% csrf_token %}
+    <input class="button is-warning" type="submit" form="form--{{ report.pk }}" value="del">
+  </form>
 {% endblock main %}
