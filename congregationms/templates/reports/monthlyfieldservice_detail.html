@@ -12,16 +12,55 @@
   <h1>Monthly Field Service Report</h1>
   <p class="is-size-3">{{ report.publisher|title }}</p>
   <p><a href='{% url "reports:mfs-history" report.publisher.pk %}'>View history</a></p>
-  <p><strong>{{ report.month_ending }}</strong></p>
-  <p>Placements: {{ report.placements }}</p>
-  <p>Video Showings: {{ report.video_showing }}</p>
-  <p>Hours: {{ report.hours }}</p>
-  <p>Return Visits: {{ report.return_visits }}</p>
-  <p>Bible Studies: {{ report.bible_study }}</p>
-  <p>Comment: {{ report.comments }}</p>
-  <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-info">edit</button></a>
-  <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
-    {% csrf_token %}
-    <input class="button is-warning" type="submit" form="form--{{ report.pk }}" value="del">
-  </form>
+  <table class="table">
+    <tbody>
+      <tr>
+        <th>Month</th>
+        <td><strong>{{ report.month_ending|date:'M-Y' }}</strong></td>
+      </tr>
+
+      <tr>
+        <th>Placements</th>
+        <td>{{ report.placements }}</td>
+      </tr>
+
+      <tr>
+        <th>Video Showings</th>
+        <td>{{ report.video_showing }}</td>
+      </tr>
+      
+      <tr>
+        <th>Hours</th>
+        <td>{{ report.hours }}</td>
+      </tr>
+      
+      <tr>
+        <th>Return Visits</th>
+        <td>{{ report.return_visits }}</td>
+      </tr>
+      
+      <tr>
+        <th>Bible Studies</th>
+        <td>{{ report.bible_study }}</td>
+      </tr>
+      
+      <tr>
+        <th>Comments</th>
+        <td>{{ report.comments }}</td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  <div class="field is-grouped">
+    <div class="control">
+      <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-info">edit</button></a>
+    </div>
+    <div class="control">
+      <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
+        {% csrf_token %}
+        <input class="button is-warning" type="submit" form="form--{{ report.pk }}" value="del">
+      </form>
+    </div>
+  </div>
 {% endblock main %}
