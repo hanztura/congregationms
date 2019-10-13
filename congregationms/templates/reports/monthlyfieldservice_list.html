@@ -6,32 +6,44 @@
 
 {% block main %}
   <h1>Monthly Field Service</h1>
+
   <div class="field">
-    <label class="label">Month</label>
     <div class="control">
-      <select name="_month" v-model="month">
-        <option v-for="m in months" :key="m.month" :value="m.month">[[ m.name ]]</option>
-      </select>
+      <a href='{% url "reports:mfs-create" %}'><button class="button is-success" title="Create new record">New</button></a>
     </div>
   </div>
-  <div class="field">
-    <label class="label">Year</label>
-    <div class="control">
-      <input type="number" name="_year" v-model="year">
+
+  <div class="field is-horizontal">
+    <div class="field-label is-normal">
+      <label class="label">For</label>
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="_month" v-model="month" placeholder="month">
+              <option value="" disabled>Month</option>
+              <option v-for="m in months" :key="m.month" :value="m.month">[[ m.name ]]</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <p class="control">
+          <input class="input" type="number" name="_year" v-model="year" placeholder="Year">
+        </p>
+        <p class="control">
+          <form>
+            <input type="hidden" name="month" :value="month">
+            <input type="hidden" name="year" :value="year">
+            <input class="button is-info is-outlined" type="submit" value="search">
+          </form>
+        </p>
+      </div>
     </div>
   </div>
-  <form>
-    <input type="hidden" name="month" :value="month">
-    <input type="hidden" name="year" :value="year">
-    <input class="button is-info is-outlined" type="submit" value="search">
-  </form>
-  <table>
+  <table class="table is-fullwidth">
     <thead>
-      <tr>
-        <th colspan="2">
-          <a href='{% url "reports:mfs-create" %}'><button class="button is-success">New</button></a>
-        </th>
-      </tr>
       <tr>
         <th>Name</th>
         <th>Actions</th>
@@ -58,8 +70,8 @@
       delimiters: ['[[', ']]'],
       data: () => ({
         'date': null,
-        'month': '',
-        'year': '',
+        'month': {{ month }},
+        'year': {{ year }},
         'months': [
           {
             month: 1,

@@ -26,6 +26,14 @@ class MFSList(ListView):
             month_ending__month=month
         )
 
+    def get_context_data(self, **kwargs):
+        month = self.request.GET.get('month', now.month)
+        year = self.request.GET.get('year', now.year)
+        context = super().get_context_data(**kwargs)
+        context['month'] = month
+        context['year'] = year
+        return context
+
 
 class MFSDelete(DeleteView):
     model = MonthlyFieldService
