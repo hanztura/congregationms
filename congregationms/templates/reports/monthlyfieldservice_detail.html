@@ -8,6 +8,16 @@
   <li class="is-active"><a href='#'>Detail</a></li>  
 {% endblock subbreadcrumbs %}
 
-<main>
-    
-</main>
+{% block main %}
+  <h1>Monthly Field Service Report</h1>
+  <p class="is-size-3">{{ report.publisher|title }}</p>
+  <p><span>View history</span></p>
+  <p><strong>{{ report.month_ending }}</strong></p>
+  <p>Placements: {{ report.placements }}</p>
+  <p>Video Showings: {{ report.video_showing }}</p>
+  <p>Hours: {{ report.hours }}</p>
+  <p>Return Visits: {{ report.return_visits }}</p>
+  <p>Bible Studies: {{ report.bible_study }}</p>
+  <p>Comment: {{ report.comments }}</p>
+  <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-info">edit</button></a>
+{% endblock main %}

@@ -1,0 +1,40 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>Monthly Field Service Edit</title>
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li><a href='#'>{{ report.publisher|upper }}</a></li>  
+  <li><a href='#'>{{ report.month_ending|date:'M-Y' }}</a></li>    
+  <li class="is-active"><a href='#'>Edit</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  <h1>Create/Edit Monthly Field Service</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="field">
+      <label class="label">{{form.publisher.label}}</label>
+      <div class="control">
+        {{form.publisher}}
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.month_ending.label}}</label>
+      <div class="control">
+        <input type="date" name="month_ending" value="{{form.month_ending.value}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">{{form.placements.label}}</label>
+      <div class="control">
+        <input type="number" name="placements" value="{{form.placements.value}}">
+      </div>
+    </div>
+    <input class="button is-success" type="submit" value="Create">
+  </form>  
+{% endblock main %}
