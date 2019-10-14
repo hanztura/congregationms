@@ -1,12 +1,14 @@
+import uuid
 from datetime import datetime
 
 from django.contrib import messages
+from django.http import FileResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import MonthlyFieldService
-from .utils import compute_month_year
+from .utils import compute_month_year, generate_mfs
 from publishers.models import Publisher, Group
 
 
@@ -145,10 +147,6 @@ class MFSHistoryList(ListView):
                 month_ending__month__gte=from_month,
                 month_ending__year__gte=from_year
             )
-            queryset = queryset.filter(
-                month_ending__month__lte=to_month,
-                month_ending__year__lte=to_year
-            )
         else:
             group = self.kwargs['group']
             group = Group.objects.get(pk=group)
@@ -157,10 +155,53 @@ class MFSHistoryList(ListView):
                 month_ending__month__gte=from_month,
                 month_ending__year__gte=from_year
             )
-            queryset = queryset.filter(
-                month_ending__month__lte=to_month,
-                month_ending__year__lte=to_year
-            )
 
-            queryset = [q for q in queryset if q.publisher.group == group]
+        queryset = queryset.filter(
+            month_ending__month__lte=to_month,
+            month_ending__year__lte=to_year
+        )
+        queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
+
+        queryset = [q for q in queryset if q.publisher.group == group]
         return queryset
+
+def sample_mfs(request, pk):
+    date_from = request.GET.get('from', str(now))
+    date_to = request.GET.get('to', str(now))
+
+    date_from = date_from.split('-')
+    date_to = date_to.split('-')
+
+    from_month, from_year = date_from[1], date_to[0]
+    to_month, to_year = date_to[1], date_to[0]
+
+    queryset = MonthlyFieldService.objects.filter(
+        month_ending__month__gte=from_month,
+        month_ending__year__gte=from_year
+    )
+    queryset = queryset.filter(
+        month_ending__month__lte=to_month,
+        month_ending__year__lte=to_year
+    )
+
+    _from = '{}-{}'.format(from_month, from_year)
+    _to = '{}-{}'.format(to_month, to_year)
+
+    group = Group.objects.get(pk=pk)
+    queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
+    queryset = [q for q in queryset if q.publisher.group == group]
+
+    congregation = str(group.congregation)
+    group = group.name
+    month = '{} to {}'.format(_from, _to)
+
+    data = {
+        'queryset': queryset,
+        'group': group,
+        'congregation': congregation,
+        'month': month
+    }
+    s = '/home/hanz/projects/congregationms/media/{}.docx'.format(str(uuid.uuid1()))
+    doc = generate_mfs(data)
+    doc.save(s)
+    return FileResponse(open(s, 'rb'), as_attachment=True, filename='download.docx')

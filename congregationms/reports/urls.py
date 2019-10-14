@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
 	MFSCreate, MFSDelete, MFSDetail, MFSList, MFSUpdate,
-	MFSHistoryList
+	MFSHistoryList, sample_mfs
 )
 
 app_name = 'reports'
@@ -13,5 +13,7 @@ urlpatterns = [
     path('monthly-field-service/delete/<str:pk>/', MFSDelete.as_view(), name='mfs-delete'),
     path('monthly-field-service/new/', MFSCreate.as_view(), name='mfs-create'),
     path('monthly-field-service/<str:pk>/', MFSDetail.as_view(), name='mfs-detail'),
-    path('monthly-field-service/update/<str:pk>/', MFSUpdate.as_view(), name='mfs-update')
+    path('monthly-field-service/update/<str:pk>/', MFSUpdate.as_view(), name='mfs-update'),
+
+    path('mfs/download/group/<str:pk>', sample_mfs, name='mfs-download')
 ]

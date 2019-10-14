@@ -42,14 +42,14 @@
 		      <div class="field">
 	        <label class="label">From</label>
 			      <div class="control">
-			      	<input class="input" type="month" name="from" value="{{from}}">
+			      	<input class="input" type="month" name="from" v-model="from">
 			      </div>
 		      </div>
 	      	
 		    <div class="field">
 	        <label class="label">To</label>
 		      <div class="control">
-		      	<input class="input" type="month" name="to" value="{{to}}">
+		      	<input class="input" type="month" name="to" v-model="to">
 		      </div>
 		    </div>
 
@@ -64,8 +64,8 @@
 	<table class="table is-bordered is-hoverable is-fullwidth ">
 		<thead>
 			<tr>
-				{% if group %}<th>Publisher</th>{% endif %}
 				<th class="has-text-centered">Month</th>
+				{% if group %}<th>Publisher</th>{% endif %}
 				<th class="has-text-centered" title="Placements">P</th>
 				<th class="has-text-centered" title="Video Showings">VS</th>
 				<th class="has-text-centered">Hours</th>
@@ -77,8 +77,8 @@
 		<tbody>
 			{% for report in  reports %}
 			<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
-				{% if group %}<td>{{report.publisher|title}}</td>{% endif %}
 				<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
+				{% if group %}<td>{{report.publisher|title}}</td>{% endif %}
 				<td class="has-text-centered">{{report.placements}}</td>
 				<td class="has-text-centered">{{report.video_showing}}</td>
 				<td class="has-text-centered">{{report.hours}}</td>
@@ -94,6 +94,11 @@
 			{% endif %}
 		</tbody>
 	</table>
+
+	{% if group %}
+		<a :href="'{% url 'reports:mfs-download' group.pk %}?from=' + from + '&to=' + to"><button class="button is-outlined is-pulled-right">Export as Document</button></a>
+		
+	{% endif %}
 {% endblock main %}
 
 {% block vueinstance %}
@@ -102,7 +107,8 @@
       el: '#app',
       delimiters: ['[[', ']]'],
       data: () => ({
-        
+        from: '{{from}}',
+        to: '{{to}}'
       }),
       methods: {
       	goTo: function (url) {
