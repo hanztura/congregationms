@@ -42,6 +42,9 @@ class Group(models.Model):
     def __str__(self):
         return '{} at {}'.format(self.name, self.congregation)
 
+    def get_absolute_url(self):
+        return reverse('publishers:group-detail', args=[str(self.pk)])
+
 
 class Member(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)

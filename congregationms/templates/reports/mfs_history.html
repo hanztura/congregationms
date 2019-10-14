@@ -14,7 +14,7 @@
 		<li><a href="#">{{publisher.name|title}}</a></li>
 	{% endif %}
 	{% if group %}
-		<li><a href="#">Group</a></li>
+		<li><a href="{% url 'publishers:group-detail' group.pk %}">Group</a></li>
 		<li><a href="#">{{group|title}}</a></li>
 	{% endif %}
 

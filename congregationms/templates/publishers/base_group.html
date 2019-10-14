@@ -1,0 +1,6 @@
+{% extends "publishers/base.html" %}
+
+{% block subbreadcrumbs %}
+	<li><a href="{% url 'publishers:group-index' %}">Groups</a></li>
+	{% block groupbreadcrumbs %}{% endblock groupbreadcrumbs %}
+{% endblock subbreadcrumbs %}

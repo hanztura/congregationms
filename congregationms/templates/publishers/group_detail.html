@@ -1,0 +1,31 @@
+{% extends "publishers/base_group.html" %}
+
+{% block title %}
+  <title>Group Detail</title>  
+{% endblock title %}
+
+{% block groupbreadcrumbs %}
+	<li><a href="#">{{group|title}}</a></li>	
+	<li class="is-active">Detail</li>	
+{% endblock groupbreadcrumbs %}
+
+{% block main %}
+  <h1>Group Detail</h1>
+
+  <div class="field is-grouped is-pulled-right">
+    <div class="control">
+      <form id="form--{{ group.pk }}" action='{% url "publishers:group-delete" group.pk %}' method="POST">
+        {% csrf_token %}
+        <input class="button is-outlined" title="Delete" type="submit" form="form--{{ group.pk }}" value="del">
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "publishers:group-update" group.pk %}'><button class="button is-outlined">edit</button></a>
+    </div>
+  </div>
+  
+  <p class="is-size-3">{{ group|upper }}</p>
+  <p><a href='{% url "reports:mfs-history-group" group.pk %}'>View MFS history</a></p>
+  <p>Congregation: {{ group.congregation }}</p>
+{% endblock main %}

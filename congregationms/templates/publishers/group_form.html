@@ -1,0 +1,48 @@
+{% extends "publishers/base_group.html" %}
+
+{% block title %}
+  <title>Group Edit</title>  
+{% endblock title %}
+
+{% block groupbreadcrumbs %}
+  {% if  group %}
+    <li><a href='{% url "publishers:group-detail" group.pk %}'>{{ group|title }}</a></li>
+  	<li class="is-active"><a href='#'>Edit</a></li>  
+  {% else %}
+  	<li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
+{% endblock groupbreadcrumbs %}
+
+{% block main %}
+  {% if  group %}
+    <h1>Group Edit</h1>
+    <p class="is-size-3">Edit a New Group</p>
+  {% else %}
+    <h1>Group New</h1>
+    <p class="is-size-3">Create a New Group</p>  
+  {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+          <input class="input" type="text" name="name" value="{{ group.name}}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Congregation</label>
+        <div class="control">
+        	<div class="select is-fullwidth">
+        		{{form.congregation}}
+        	</div>
+        </div>
+      </div>
+      {% if group %}
+        <input class="button is-success is-fullwidth" type="submit" value="Save">
+      {% else %}
+        <input class="button is-success is-fullwidth" type="submit" value="Create">
+      {% endif %}
+    </form>
+{% endblock main %}
