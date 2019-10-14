@@ -10,8 +10,24 @@
 
 {% block main %}
   <h1>Monthly Field Service Report</h1>
-  <p class="is-size-3">{{ report.publisher|title }}</p>
+  
+  <div class="field is-grouped is-pulled-right">
+
+    <div class="control">
+      <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
+        {% csrf_token %}
+        <input class="button is-outlined" type="submit" form="form--{{ report.pk }}" title="Delete" value="del">
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-outlined">edit</button></a>
+    </div>
+  </div>
+  
+  <p><span class="is-size-3">{{ report.publisher|title }}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" with publisher=report.publisher %}</p>
   <p><a href='{% url "reports:mfs-history" report.publisher.pk %}'>View history</a></p>
+
   <table class="table">
     <tbody>
       <tr>
@@ -51,16 +67,4 @@
       
     </tbody>
   </table>
-
-  <div class="field is-grouped">
-    <div class="control">
-      <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-info">edit</button></a>
-    </div>
-    <div class="control">
-      <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
-        {% csrf_token %}
-        <input class="button is-warning" type="submit" form="form--{{ report.pk }}" value="del">
-      </form>
-    </div>
-  </div>
 {% endblock main %}

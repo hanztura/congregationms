@@ -1,17 +1,17 @@
 {% extends "reports/base.html" %}
 
 {% block title %}
-  <title>Monthly Field Service - Publisher History</title>  
+  <title>Monthly Field Service - Group History</title>  
 {% endblock title %}
 
 {% block subbreadcrumbs %}
-	<li><a href="#">{{publisher.name|title}}</a></li>
+	<li><a href="#">{{group|title}}</a></li>
   <li class="is-active"><a href='#'>History</a></li>
 {% endblock subbreadcrumbs %}
 
 {% block main %}
-	<h1>Monthly Field Service - Publisher History</h1>
-	<p><span class="is-size-3">{{publisher.name|title}}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" %}</p>
+	<h1>Monthly Field Service - Group History</h1>
+	<p><span class="is-size-3">{{group|title}}</span></p>
 
 	<form>
 	    <div class="field is-horizontal">
@@ -41,6 +41,7 @@
 	<table class="table is-bordered is-hoverable is-fullwidth ">
 		<thead>
 			<tr>
+				<th class="has-text-centered">Publisher</th>
 				<th class="has-text-centered">Month</th>
 				<th class="has-text-centered" title="Placements">P</th>
 				<th class="has-text-centered" title="Video Showings">VS</th>
@@ -53,6 +54,7 @@
 		<tbody>
 			{% for report in  reports %}
 			<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
+				<td>{{report.publisher|title}}</td>
 				<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
 				<td class="has-text-centered">{{report.placements}}</td>
 				<td class="has-text-centered">{{report.video_showing}}</td>
@@ -70,20 +72,3 @@
 		</tbody>
 	</table>
 {% endblock main %}
-
-{% block vueinstance %}
-  <script>
-    vueinstance = new Vue({
-      el: '#app',
-      delimiters: ['[[', ']]'],
-      data: () => ({
-        
-      }),
-      methods: {
-      	goTo: function (url) {
-      		window.location.href = url;
-      	}
-      }
-    });
-  </script>
-{% endblock vueinstance %}

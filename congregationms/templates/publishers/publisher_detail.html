@@ -10,13 +10,22 @@
 
 {% block main %}
   <h1>Publisher Detail</h1>
+
+  <div class="field is-grouped is-pulled-right">
+    <div class="control">
+      <form id="form--{{ publisher.pk }}" action='{% url "publishers:delete" publisher.pk %}' method="POST">
+        {% csrf_token %}
+        <input class="button is-outlined" title="Delete" type="submit" form="form--{{ publisher.pk }}" value="del">
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "publishers:update" publisher.pk %}'><button class="button is-outlined">edit</button></a>
+    </div>
+  </div>
+  
   <p class="is-size-3">{{ publisher.name|upper }}</p>
   <p>Date of Birth: {{ publisher.date_of_birth }}</p>
   <p>Date of Baptism: {{ publisher.date_of_baptism }}</p>
   <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
-  <a href='{% url "publishers:update" publisher.pk %}'><button class="button is-info">edit</button></a>
-  <form id="form--{{ publisher.pk }}" action='{% url "publishers:delete" publisher.pk %}' method="POST">
-    {% csrf_token %}
-    <input class="button is-warning" type="submit" form="form--{{ publisher.pk }}" value="del">
-  </form>
 {% endblock main %}
