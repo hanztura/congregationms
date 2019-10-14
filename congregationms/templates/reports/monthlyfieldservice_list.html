@@ -7,41 +7,31 @@
 {% block main %}
   <h1>Monthly Field Service</h1>
 
-  <div class="field">
+  <div class="field is-pulled-right">
     <div class="control">
       <a href='{% url "reports:mfs-create" %}'><button class="button is-success" title="Create new record">New</button></a>
     </div>
   </div>
 
-  <div class="field is-horizontal">
-    <div class="field-label is-normal">
-      <label class="label">For</label>
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select name="_month" v-model="month" placeholder="month">
-              <option value="" disabled>Month</option>
-              <option v-for="m in months" :key="m.month" :value="m.month">[[ m.name ]]</option>
-            </select>
+  <form>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Month/Year:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+              <input class="input" type="month" name="monthyear" value="{{monthyear}}">
           </div>
         </div>
-      </div>
-      <div class="field is-grouped">
-        <p class="control">
-          <input class="input" type="number" name="_year" v-model="year" placeholder="Year">
-        </p>
-        <p class="control">
-          <form>
-            <input type="hidden" name="month" :value="month">
-            <input type="hidden" name="year" :value="year">
-            <input class="button is-info is-outlined" type="submit" value="search">
-          </form>
-        </p>
+        <div class="field is-grouped">
+          <p class="control">
+              <input class="button is-info is-outlined" type="submit" value="search">
+          </p>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
   <table class="table is-fullwidth">
     <thead>
       <tr>
@@ -69,59 +59,7 @@
       el: '#app',
       delimiters: ['[[', ']]'],
       data: () => ({
-        'date': null,
-        'month': {{ month }},
-        'year': {{ year }},
-        'months': [
-          {
-            month: 1,
-            name: 'January'
-          },
-          {
-            month: 2,
-            name: 'February'
-          },
-          {
-            month: 3,
-            name: 'March'
-          },
-          {
-            month: 4,
-            name: 'April'
-          },
-          {
-            month: 5,
-            name: 'May'
-          },
-          {
-            month: 6,
-            name: 'June'
-          },
-          {
-            month: 7,
-            name: 'July'
-          },
-          {
-            month: 8,
-            name: 'August'
-          },
-          {
-            month: 9,
-            name: 'September'
-          },
-          {
-            month: 10,
-            name: 'October'
-          },
-          {
-            month: 11,
-            name: 'November'
-          },
-          {
-            month: 12,
-            name: 'December'
-          }
-        ]
+        
       })
     });
   </script>

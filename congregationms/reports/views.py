@@ -6,6 +6,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import MonthlyFieldService
+from .utils import compute_month_year
 from publishers.models import Publisher
 
 
@@ -18,20 +19,23 @@ class MFSList(ListView):
     """
     model = MonthlyFieldService
 
+
     def get_queryset(self):
-        month = self.request.GET.get('month', now.month)
-        year = self.request.GET.get('year', now.year)
+        default_month_year = compute_month_year(now)
+        monthyear = self.request.GET.get('monthyear', default_month_year)
+        monthyear = monthyear.split('-')
+        year = monthyear[0]
+        month = monthyear[1]
         return MonthlyFieldService.objects.filter(
             month_ending__year=year,
             month_ending__month=month
         )
 
     def get_context_data(self, **kwargs):
-        month = self.request.GET.get('month', now.month)
-        year = self.request.GET.get('year', now.year)
+        default_month_year = compute_month_year(now)
+        monthyear = self.request.GET.get('monthyear', default_month_year)
         context = super().get_context_data(**kwargs)
-        context['month'] = month
-        context['year'] = year
+        context['monthyear'] = monthyear
         return context
 
 
