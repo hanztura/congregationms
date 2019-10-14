@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import MonthlyFieldService
 from .utils import compute_month_year
-from publishers.models import Publisher
+from publishers.models import Publisher, Group
 
 
 now = datetime.now().date()
@@ -92,15 +92,22 @@ class MFSUpdate(UpdateView):
 
 class MFSHistoryList(ListView):
     model = MonthlyFieldService
-    template_name = 'reports/mfs_publisher_history.html'
+    template_name = 'reports/mfs_history.html'
     context_object_name = 'reports'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        publisher = self.kwargs['publisher']
-        publisher = Publisher.objects.get(pk=publisher)
-        context['publisher'] = publisher
+        view_type = self.kwargs['view_type']  # publisher or group
+
+        if view_type == 'publisher':
+            publisher = self.kwargs['publisher']
+            publisher = Publisher.objects.get(pk=publisher)
+            context['publisher'] = publisher
+        else:
+            group = self.kwargs['group']
+            group = Group.objects.get(pk=group)
+            context['group'] = group
 
         # date from and date to
         date_from = self.request.GET.get('from', str(now))
@@ -117,8 +124,7 @@ class MFSHistoryList(ListView):
         return context
 
     def get_queryset(self):
-        publisher = self.kwargs['publisher']
-        publisher = Publisher.objects.get(pk=publisher)
+        view_type = self.kwargs['view_type']  # publisher or group
 
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
@@ -129,13 +135,32 @@ class MFSHistoryList(ListView):
         from_month, from_year = date_from[1], date_to[0]
         to_month, to_year = date_to[1], date_to[0]
 
-        queryset = MonthlyFieldService.objects.filter(
-            publisher=publisher,
-            month_ending__month__gte=from_month,
-            month_ending__year__gte=from_year
-        )
-        queryset = queryset.filter(
-            month_ending__month__lte=to_month,
-            month_ending__year__lte=to_year
-        )
+
+        if view_type == 'publisher':
+            publisher = self.kwargs['publisher']
+            publisher = Publisher.objects.get(pk=publisher)
+
+            queryset = MonthlyFieldService.objects.filter(
+                publisher=publisher,
+                month_ending__month__gte=from_month,
+                month_ending__year__gte=from_year
+            )
+            queryset = queryset.filter(
+                month_ending__month__lte=to_month,
+                month_ending__year__lte=to_year
+            )
+        else:
+            group = self.kwargs['group']
+            group = Group.objects.get(pk=group)
+
+            queryset = MonthlyFieldService.objects.filter(
+                month_ending__month__gte=from_month,
+                month_ending__year__gte=from_year
+            )
+            queryset = queryset.filter(
+                month_ending__month__lte=to_month,
+                month_ending__year__lte=to_year
+            )
+
+            queryset = [q for q in queryset if q.publisher.group == group]
         return queryset

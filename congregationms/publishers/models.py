@@ -28,6 +28,11 @@ class Publisher(models.Model):
         name = '{}, {}'.format(self.last_name, self.first_name)
         return name
 
+    @property
+    def group(self):
+        group = self.group_members.filter(is_active=True).first().group
+        return group
+    
 
 class Group(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -40,7 +45,7 @@ class Group(models.Model):
 
 class Member(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='group_members')
     is_active = models.BooleanField(default=False)
     date_from = models.DateField(blank=True, null=True, verbose_name='from')
     date_to = models.DateField(blank=True, null=True, verbose_name='to')
