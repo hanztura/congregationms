@@ -6,8 +6,8 @@
 
 {% block subbreadcrumbs %}
   {% if report %}
-    <li><a href='#'>{{ report.publisher|upper }}</a></li>  
-    <li><a href='#'>{{ report.month_ending|date:'M-Y' }}</a></li>
+    <li><a href='{% url "reports:mfs-history" report.publisher.pk %}' title="View publisher history.">{{ report.publisher|title }}</a></li>  
+    <li><a href='{% url "reports:mfs-detail" report.pk %}' title="View MFS Detail.">{{ report.month_ending|date:'M-Y' }}</a></li>
     <li class="is-active"><a href='#'>Edit</a></li>
   {% endif %}
 
@@ -24,65 +24,67 @@
     <div class="field">
       <label class="label">{{form.publisher.label}}</label>
       <div class="control">
-        {{form.publisher}}
+        <div class="select is-fullwidth">
+          {{form.publisher}}
+        </div>
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.month_ending.label}}</label>
       <div class="control">
-        <input type="date" name="month_ending" value="{{form.month_ending.value|date:'Y-m-d'}}">
+        <input class="input" type="date" name="month_ending" value="{{form.month_ending.value|date:'Y-m-d'}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.placements.label}}</label>
       <div class="control">
-        <input type="number" name="placements" value="{{form.placements.value}}">
+        <input class="input" type="number" name="placements" value="{{form.placements.value}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.video_showing.label}}</label>
       <div class="control">
-        <input type="number" name="video_showing" value="{{form.video_showing.value}}">
+        <input class="input" type="number" name="video_showing" value="{{form.video_showing.value}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.hours.label}}</label>
       <div class="control">
-        <input type="number" name="hours" value="{{form.hours.value}}">
+        <input class="input" type="number" name="hours" value="{{form.hours.value}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.return_visits.label}}</label>
       <div class="control">
-        <input type="number" name="return_visits" value="{{form.return_visits.value}}">
+        <input class="input" type="number" name="return_visits" value="{{form.return_visits.value}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.bible_study.label}}</label>
       <div class="control">
-        <input type="number" name="bible_study" value="{{form.bible_study.value}}">
+        <input class="input" type="number" name="bible_study" value="{{form.bible_study.value}}">
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.comments.label}}</label>
       <div class="control">
-        {{form.comments}}
+        <textarea class="textarea" name="comments" value="{{form.comments.value}}"></textarea>
       </div>
     </div>
 
     {% if report %}
-      <input class="button is-success" type="submit" value="Save">
+      <input class="button is-success is-fullwidth" type="submit" value="Save">
     {% endif %}
 
     {% if not report %}
-      <input class="button is-success" type="submit" value="Create">
+      <input class="button is-success is-fullwidth" type="submit" value="Create">
     {% endif %}
   </form>  
 {% endblock main %}

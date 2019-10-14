@@ -10,7 +10,7 @@
 
 {% block main %}
   <h1>Monthly Field Service Report</h1>
-  <p class="is-size-3">{{ report.publisher|title }}</p>
+  <p><span class="is-size-3">{{ report.publisher|title }}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" with publisher=report.publisher %}</p>
   <p><a href='{% url "reports:mfs-history" report.publisher.pk %}'>View history</a></p>
   <table class="table">
     <tbody>
