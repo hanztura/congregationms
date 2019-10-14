@@ -101,18 +101,41 @@ class MFSHistoryList(ListView):
         publisher = self.kwargs['publisher']
         publisher = Publisher.objects.get(pk=publisher)
         context['publisher'] = publisher
+
+        # date from and date to
+        date_from = self.request.GET.get('from', str(now))
+        date_to = self.request.GET.get('to', str(now))
+
+        date_from = date_from.split('-')
+        date_to = date_to.split('-')
+
+        date_from = '{}-{}'.format(date_from[0], date_from[1])
+        date_to = '{}-{}'.format(date_to[0], date_to[1])
+
+        context['from'] = date_from
+        context['to'] = date_to
         return context
 
     def get_queryset(self):
         publisher = self.kwargs['publisher']
         publisher = Publisher.objects.get(pk=publisher)
 
-        date_from = self.request.GET.get('from', now)
-        date_to = self.request.GET.get('to', now)
+        date_from = self.request.GET.get('from', str(now))
+        date_to = self.request.GET.get('to', str(now))
+
+        date_from = date_from.split('-')
+        date_to = date_to.split('-')
+
+        from_month, from_year = date_from[1], date_to[0]
+        to_month, to_year = date_to[1], date_to[0]
 
         queryset = MonthlyFieldService.objects.filter(
             publisher=publisher,
-            month_ending__gte=date_from
+            month_ending__month__gte=from_month,
+            month_ending__year__gte=from_year
         )
-        queryset = queryset.filter(month_ending__lte=date_to)
+        queryset = queryset.filter(
+            month_ending__month__lte=to_month,
+            month_ending__year__lte=to_year
+        )
         return queryset

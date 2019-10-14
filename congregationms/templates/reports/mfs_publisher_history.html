@@ -5,53 +5,60 @@
 {% endblock title %}
 
 {% block subbreadcrumbs %}
+	<li><a href="#">{{publisher.name|title}}</a></li>
   <li class="is-active"><a href='#'>History</a></li>
 {% endblock subbreadcrumbs %}
 
 {% block main %}
 	<h1>Monthly Field Service - Publisher History</h1>
-	<p class="is-size-3">{{publisher.name|title}}</p>
+	<p><span class="is-size-3">{{publisher.name|title}}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" %}</p>
 
 	<form>
-	    <div class="field">
-	      <label class="label">From</label>
-	      <div class="control">
-	      	<input type="date" name="from">
-	      </div>
-	    </div>
-	    <div class="field">
-	      <label class="label">To</label>
-	      <div class="control">
-	      	<input type="date" name="to">
-	      </div>
-	    </div>
-	    <div class="field">
-	      <div class="control">
-	      	<input type="submit" class="button is-outlined" value="Go">
+	    <div class="field is-horizontal">
+	      <div class="field-body">
+		      <div class="field">
+	        <label class="label">From</label>
+			      <div class="control">
+			      	<input class="input" type="month" name="from" value="{{from}}">
+			      </div>
+		      </div>
+	      	
+		    <div class="field">
+	        <label class="label">To</label>
+		      <div class="control">
+		      	<input class="input" type="month" name="to" value="{{to}}">
+		      </div>
+		    </div>
+
+		    <div class="field">
+		      <div class="control">
+		      	<input type="submit" class="button is-outlined is-info" value="Search">
+		      </div>
+		    </div>
 	      </div>
 	    </div>
 	</form>
-	<table class="table is-bordered">
+	<table class="table is-bordered is-hoverable is-fullwidth ">
 		<thead>
 			<tr>
-				<th>Month</th>
-				<th title="Placements">P</th>
-				<th title="Video Showings">VS</th>
-				<th>Hours</th>
-				<th title="Return Visits">RV</th>
-				<th title="Bible Studies">BS</th>
-				<th>Comments</th>
+				<th class="has-text-centered">Month</th>
+				<th class="has-text-centered" title="Placements">P</th>
+				<th class="has-text-centered" title="Video Showings">VS</th>
+				<th class="has-text-centered">Hours</th>
+				<th class="has-text-centered" title="Return Visits">RV</th>
+				<th class="has-text-centered" title="Bible Studies">BS</th>
+				<th class="has-text-centered">Comments</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for report in  reports %}
-			<tr>
-				<td>{{report.month_ending|date:'M-Y'}}</td>
-				<td>{{report.placements}}</td>
-				<td>{{report.video_showing}}</td>
-				<td>{{report.hours}}</td>
-				<td>{{report.return_visits}}</td>
-				<td>{{report.bible_study}}</td>
+			<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
+				<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
+				<td class="has-text-centered">{{report.placements}}</td>
+				<td class="has-text-centered">{{report.video_showing}}</td>
+				<td class="has-text-centered">{{report.hours}}</td>
+				<td class="has-text-centered">{{report.return_visits}}</td>
+				<td class="has-text-centered">{{report.bible_study}}</td>
 				<td>{{report.comments}}</td>
 			</tr>
 			{% endfor %}
@@ -63,3 +70,20 @@
 		</tbody>
 	</table>
 {% endblock main %}
+
+{% block vueinstance %}
+  <script>
+    vueinstance = new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        
+      }),
+      methods: {
+      	goTo: function (url) {
+      		window.location.href = url;
+      	}
+      }
+    });
+  </script>
+{% endblock vueinstance %}
