@@ -1,7 +1,11 @@
 {% extends "publishers/base_group.html" %}
 
 {% block title %}
-  <title>Group Edit</title>  
+  {% if group %}
+    <title>Group Edit | {{group|title}}</title>  
+  {% else %}
+    <title>Group New</title>  
+  {% endif %}
 {% endblock title %}
 
 {% block groupbreadcrumbs %}

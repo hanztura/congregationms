@@ -1,7 +1,7 @@
 {% extends "reports/base.html" %}
 
 {% block title %}
-  <title>Monthly Field Service Detail</title>
+  <title>Monthly Field Service Detail | {{report.publisher|title}} for {{report.month_ending|date:'M-Y'}}</title>
 {% endblock title %}
 
 {% block subbreadcrumbs %}
