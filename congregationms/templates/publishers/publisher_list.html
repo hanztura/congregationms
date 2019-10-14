@@ -6,13 +6,9 @@
 
 {% block main %}
   <h1>Publishers List</h1>
+  <a href='{% url "publishers:create" %}'><button class="button is-success is-pulled-right">New</button></a>
   <table class="table is-fullwidth">
     <thead>
-      <tr>
-        <th colspan="2">
-          <a href='{% url "publishers:create" %}'><button class="button is-success is-pulled-right">New</button></a>
-        </th>
-      </tr>
       <tr>
         <th>Name</th>
         <th>Actions</th>
