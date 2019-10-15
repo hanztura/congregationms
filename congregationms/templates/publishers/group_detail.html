@@ -13,12 +13,6 @@
   <h1>Group Detail</h1>
 
   <div class="field is-grouped is-pulled-right">
-    <div class="control">
-      <form id="form--{{ group.pk }}" action='{% url "publishers:group-delete" group.pk %}' method="POST">
-        {% csrf_token %}
-        <input class="button is-outlined" title="Delete" type="submit" form="form--{{ group.pk }}" value="del">
-      </form>
-    </div>
 
     <div class="control">
       <a href='{% url "publishers:group-update" group.pk %}'><button class="button is-outlined">edit</button></a>
