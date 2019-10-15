@@ -156,13 +156,16 @@ class MFSHistoryList(ListView):
                 month_ending__year__gte=from_year
             )
 
+
         queryset = queryset.filter(
             month_ending__month__lte=to_month,
             month_ending__year__lte=to_year
         )
         queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
 
-        queryset = [q for q in queryset if q.publisher.group == group]
+        if view_type == 'group':
+            queryset = [q for q in queryset if q.publisher.group == group]
+
         return queryset
 
 def sample_mfs(request, pk):

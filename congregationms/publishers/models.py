@@ -30,7 +30,10 @@ class Publisher(models.Model):
 
     @property
     def group(self):
-        group = self.group_members.filter(is_active=True).first().group
+        group = self.group_members.filter(is_active=True).first()
+
+        if group:
+            group = group.group
         return group
     
 
