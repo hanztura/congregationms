@@ -28,4 +28,9 @@
   <p class="is-size-3">{{ group|upper }}</p>
   <p><a href='{% url "reports:mfs-history-group" group.pk %}'>View MFS history</a></p>
   <p>Congregation: {{ group.congregation }}</p>
+
+  <section>
+    <h2 class="is-size-5">Members:</h2>
+    {% include "publishers/snippets/publisher_table_list.html" with object_list=group.members %}
+  </section>
 {% endblock main %}
