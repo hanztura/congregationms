@@ -48,9 +48,17 @@ class Group(models.Model):
     def get_absolute_url(self):
         return reverse('publishers:group-detail', args=[str(self.pk)])
 
+    @property
+    def members(self):
+        members = self.group_members.all()
+        members = [member.publisher for member in members]
+
+        return members
+    
+
 
 class Member(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_members')
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='group_members')
     is_active = models.BooleanField(default=False)
     date_from = models.DateField(blank=True, null=True, verbose_name='from')

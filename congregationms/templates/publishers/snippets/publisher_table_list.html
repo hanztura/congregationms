@@ -1,0 +1,27 @@
+<table class="table is-fullwidth">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Group</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for publisher in object_list %}
+      <tr>
+        <td>{{ publisher.name|title }}</td>
+        <td>{{ publisher.group.name }}</td>
+        <td>
+          <a href='{% url "publishers:detail" publisher.pk %}'><span class="button is-outlined">view</span></a>
+          <a href='{% url "publishers:update" publisher.pk %}'><span class="button is-outlined">edit</span></a></td>
+        </td>
+      </tr>
+    {% endfor %}
+
+    {% if not object_list %}
+      <tr>
+        <td colspan="3" class="has-text-centered">No members. Please add.</td>
+      </tr>  
+    {% endif %}
+  </tbody>
+</table>
