@@ -1,4 +1,9 @@
 {% extends "reports/base.html" %}
+{% load static %}
+
+{% block headblock %}
+  <link rel="stylesheet" href='{% static "vendors/animate.css" %}'>
+{% endblock headblock %}
 
 {% block title %}
   {% if report %}
@@ -23,7 +28,7 @@
 {% block main %}
   <h1>Create/Edit Monthly Field Service</h1>
 
-  <form method="POST">
+  <form method="POST" id="new-edit-form">
     {% csrf_token %}
     <div class="field">
       <label class="label">{{form.publisher.label}}</label>
@@ -37,43 +42,55 @@
     <div class="field">
       <label class="label">{{form.month_ending.label}}</label>
       <div class="control">
-        <input class="input" type="date" name="month_ending" value="{{form.month_ending.value|date:'Y-m-d'}}">
+        <input class="input" type="date" name="month_ending" value="{{form.month_ending.value|date:'Y-m-d'}}" required>
       </div>
     </div>
 
     <div class="field">
       <label class="label">{{form.placements.label}}</label>
       <div class="control">
-        <input class="input" type="number" name="placements" value="{{form.placements.value}}">
+        <input :class="{'is-danger animated shake': $v.placements.$error, 'input': true}" type="number" name="placements" v-model.lazy="$v.placements.$model" required>
       </div>
+      <div v-if="!$v.placements.required">[[errorMessage.required]]</div>      
+      <div v-if="!$v.placements.minValue">[[errorMessage.minValue]]</div>
     </div>
 
     <div class="field">
       <label class="label">{{form.video_showing.label}}</label>
       <div class="control">
-        <input class="input" type="number" name="video_showing" value="{{form.video_showing.value}}">
+        <input :class="{'is-danger animated shake': $v.videoShowing.$error, 'input': true}" type="number" name="video_showing" v-model.lazy="$v.videoShowing.$model" required>
       </div>
+      <div v-if="!$v.videoShowing.required">[[errorMessage.required]]</div>      
+      <div v-if="!$v.videoShowing.minValue">[[errorMessage.minValue]]</div>
     </div>
 
     <div class="field">
       <label class="label">{{form.hours.label}}</label>
       <div class="control">
-        <input class="input" type="number" name="hours" value="{{form.hours.value}}">
+        <input :class="{'is-danger animated shake': $v.hours.$error, 'input': true}" type="number" name="hours" v-model.lazy="$v.hours.$model">
       </div>
+      <div v-if="!$v.hours.required">[[errorMessage.required]]</div>      
+      <div v-if="!$v.hours.minValue">[[errorMessage.minValue]]</div>
     </div>
 
     <div class="field">
       <label class="label">{{form.return_visits.label}}</label>
       <div class="control">
-        <input class="input" type="number" name="return_visits" value="{{form.return_visits.value}}">
+        <input :class="{'is-danger animated shake': $v.returnVisits.$error, 'input': true}" type="number" name="return_visits"  v-model.lazy="$v.returnVisits.$model" required>
       </div>
+      <div v-if="!$v.returnVisits.required">[[errorMessage.required]]</div>
+      <div v-if="!$v.returnVisits.minValue">[[errorMessage.minValue]]</div>   
+      <div v-if="!$v.returnVisits.validRV">Should be greater than or equal to [[bibleStudy]](Bible Study).</div>
     </div>
 
     <div class="field">
       <label class="label">{{form.bible_study.label}}</label>
       <div class="control">
-        <input class="input" type="number" name="bible_study" value="{{form.bible_study.value}}">
+        <input :class="{'is-danger animated shake': $v.bibleStudy.$error, 'input': true}" type="number" name="bible_study"  v-model.lazy="$v.bibleStudy.$model" required>
       </div>
+      <div v-if="!$v.bibleStudy.required">[[errorMessage.required]]</div>
+      <div v-if="!$v.bibleStudy.minValue">[[errorMessage.minValue]]</div>
+      <div v-if="!$v.bibleStudy.validBS">Should be less than or equal to [[returnVisits]](Return Visits).</div>
     </div>
 
     <div class="field">
@@ -88,7 +105,98 @@
     {% endif %}
 
     {% if not report %}
-      <input class="button is-success is-fullwidth" type="submit" value="Create">
+      <button :disabled="disableSubmit" class="button is-success is-fullwidth" type="button" @click="submitForm">Create</button>
     {% endif %}
   </form>  
 {% endblock main %}
+
+{% block vueinstance %}
+  <script src='{% static "vendors/vuelidate/vuelidate.min.js" %}'></script>
+  <script src='{% static "vendors/vuelidate/validators.min.js" %}'></script>
+  <script>
+    Vue.use(window.vuelidate.default)
+    var validationMixin = window.vuelidate.validationMixin
+
+    var required = window.validators.required
+    var minValue = window.validators.minValue
+
+    vueinstance = new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        placements: {{form.placements.value}},
+        videoShowing: {{form.video_showing.value}},
+        hours: {{form.hours.value}},
+        returnVisits: {{form.return_visits.value}},
+        bibleStudy: {{form.bible_study.value}},
+
+        errorMessage: {
+          required: 'Field is required.',
+          minValue: 'Must be at least 0 or higher.',
+        },
+        submitStatus: '',
+        disableSubmit: false
+      }),
+      validations: {
+        placements: {
+          required,
+          minValue: minValue(0),
+        },
+        videoShowing: {
+          required,
+          minValue: minValue(0),
+        },
+        hours: {
+          required,
+          minValue: minValue(0),
+        },
+        returnVisits: {
+          required,
+          minValue: minValue(0),
+          validRV(value){
+            if (value >= this.bibleStudy){
+              return true;
+            } else {
+              return false;
+            }
+          },
+        },
+        bibleStudy: {
+          required,
+          minValue: minValue(0),
+          validBS(value){
+            if (value <= this.returnVisits){
+              return true;
+            } else {
+              return false;
+            }
+          }
+        },
+      },
+      methods: {
+        submitForm: function (){
+          this.disableSubmit = true;
+
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            this.submitStatus = 'ERROR';
+            this.disableSubmit = false;
+          } else {
+            let formId = 'new-edit-form';
+            let form = window.document.getElementById(formId);
+
+            if (form.checkValidity()){
+              this.submitStatus = 'PENDING';
+              form.submit();
+              this.submitStatus = 'OK'
+            } else {
+              this.submitStatus = 'ERROR';
+              form.reportValidity();
+              this.disableSubmit = false;
+            }
+          }
+        }
+      }
+    });
+  </script>
+{% endblock vueinstance %}
