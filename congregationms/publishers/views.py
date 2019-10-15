@@ -16,7 +16,6 @@ class PublisherUpdate(UpdateView):
     model = Publisher
     fields = ['last_name', 'first_name', 'middle_name',
               'date_of_birth', 'date_of_baptism', 'contact_numbers']
-    template_name = 'publishers/publisher_update.html'
     context_object_name = 'publisher'
 
 
