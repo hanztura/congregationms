@@ -14,7 +14,7 @@
 		<li><a href="#">{{publisher.name|title}}</a></li>
 	{% endif %}
 	{% if group %}
-		<li><a href="{% url 'publishers:group-detail' group.pk %}">Group</a></li>
+		<li><a href="#">By group</a></li>
 		<li><a href="#">{{group|title}}</a></li>
 	{% endif %}
 
@@ -33,7 +33,7 @@
 		<p><span class="is-size-3">{{publisher.name|title}}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" %}</p>
 	{% endif %}
 	{% if group %}
-		<p><span class="is-size-3">{{group|title}}</span></p>
+		<p><a href="{% url 'publishers:group-detail' group.pk %}" title="View Group detail."><span class="is-size-3">{{group|title}}</span></a></p>
 	{% endif %}
 
 	<form>
