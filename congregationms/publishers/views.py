@@ -1,9 +1,11 @@
 #from django.shortcuts import render
 from django.contrib import messages
+from django.db import transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .forms import GroupMemberForm, GroupMemberFormSet
 from .models import Group, Publisher
 
 
@@ -69,6 +71,32 @@ class GroupUpdate(UpdateView):
     ]
     context_object_name = 'group'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['members'] = GroupMemberFormSet(self.request.POST, instance=self.object)
+        else:
+            data['members'] = GroupMemberFormSet(instance=self.object)
+
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        members = context['members']
+
+        print(members.errors)
+        with transaction.atomic():
+            self.object = form.save()
+            if members.is_valid():
+                members.instance = self.object
+                members.save()
+
+        messages.success(
+            self.request,
+            'Successfully edited Group {}.'.format(str(self.object))
+        )
+        return super().form_valid(form)
+
 
 class GroupDelete(DeleteView):
     model = Group
@@ -86,7 +114,25 @@ class GroupCreate(CreateView):
     model = Group
     fields = ['name', 'congregation']
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['members'] = GroupMemberFormSet(self.request.POST)
+        else:
+            data['members'] = GroupMemberFormSet()
+
+        return data
+
     def form_valid(self, form):
+        context = self.get_context_data()
+        members = context['members']
+
+        with transaction.atomic():
+            self.object = form.save()
+            if members.is_valid():
+                members.instance = self.object
+                members.save()
+
         messages.success(
             self.request,
             'Successfully created new Group {}.'.format(str(self.object))

@@ -20,7 +20,7 @@
 {% block main %}
   {% if  group %}
     <h1>Group Edit</h1>
-    <p class="is-size-3">Edit a New Group</p>
+    <p class="is-size-3">Edit Group</p>
   {% else %}
     <h1>Group New</h1>
     <p class="is-size-3">Create a New Group</p>  
@@ -43,6 +43,58 @@
         	</div>
         </div>
       </div>
+
+      {# group members #}
+      <section>
+        <h2>Members</h2>
+        {{ members.management_form }}
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th class="has-text-centered">Publisher</th>
+              <th class="has-text-centered">Active</th>
+              <th class="has-text-centered">From</th>
+              <th class="has-text-centered">To</th>
+              <th class="has-text-centered">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for form in members %}
+              <tr>
+                <td>
+                  <div class="select is-fullwidth">
+                    {{form.publisher}}
+                  </div>
+                </td>
+
+                <td class="has-text-centered">
+                  <label class="checkbox" for="{{form.is_active.id_for_label}}">
+                    <input type="checkbox" name="{{form.is_active.html_name}}" id="{{form.is_active.id_for_label}}" {% if form.is_active.value %}checked="{{form.is_active.value}}"{% endif %}>
+                  </label>
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_from.html_name}}" id="{{form.date_from.id_for_label}}" value="{{form.date_from.value}}">
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_to.html_name}}" id="{{form.date_to.id_for_label}}" value="{{form.date_to.value}}">
+                  {{form.id}}
+                  {{form.group}}
+                </td>
+                <td>
+                  {% if members.can_delete %}
+                    {{form.DELETE}} 
+                  {% else %}
+                    <input type="checkbox" disabled>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
       {% if group %}
         <input class="button is-success is-fullwidth" type="submit" value="Save">
       {% else %}
