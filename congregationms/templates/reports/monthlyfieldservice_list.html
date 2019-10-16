@@ -36,6 +36,7 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Group</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -43,6 +44,7 @@
       {% for report in object_list %}
           <tr>
             <td>{{ report.publisher|title }}</td>
+            <td>{{ report.group.name }}</td>
             <td>
               <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">view</span></a>
               <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">edit</span></a>

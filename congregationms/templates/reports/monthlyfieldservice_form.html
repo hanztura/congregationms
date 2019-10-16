@@ -76,7 +76,7 @@
     <div class="field">
       <label class="label">{{form.return_visits.label}}</label>
       <div class="control">
-        <input :class="{'is-danger animated shake': $v.returnVisits.$error, 'input': true}" type="number" name="return_visits"  v-model.lazy="$v.returnVisits.$model" required>
+        <input :class="{'is-danger animated shake': $v.returnVisits.$error, 'input': true}" type="number" name="return_visits"  v-model.number.lazy="$v.returnVisits.$model" required>
       </div>
       <div v-if="!$v.returnVisits.required">[[errorMessage.required]]</div>
       <div v-if="!$v.returnVisits.minValue">[[errorMessage.minValue]]</div>   
@@ -86,7 +86,7 @@
     <div class="field">
       <label class="label">{{form.bible_study.label}}</label>
       <div class="control">
-        <input :class="{'is-danger animated shake': $v.bibleStudy.$error, 'input': true}" type="number" name="bible_study"  v-model.lazy="$v.bibleStudy.$model" required>
+        <input :class="{'is-danger animated shake': $v.bibleStudy.$error, 'input': true}" type="number" name="bible_study"  v-model.number.lazy="$v.bibleStudy.$model" required>
       </div>
       <div v-if="!$v.bibleStudy.required">[[errorMessage.required]]</div>
       <div v-if="!$v.bibleStudy.minValue">[[errorMessage.minValue]]</div>
