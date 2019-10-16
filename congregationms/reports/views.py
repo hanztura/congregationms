@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .forms import MFSForm
 from .models import MonthlyFieldService
 from .utils import compute_month_year, generate_mfs
 from publishers.models import Publisher, Group
@@ -58,16 +59,17 @@ class MFSDetail(DetailView):
 
 class MFSCreate(CreateView):
     model = MonthlyFieldService
-    fields = [
-        'publisher',
-        'month_ending',
-        'placements',
-        'video_showing',
-        'hours',
-        'return_visits',
-        'bible_study',
-        'comments'
-    ]
+    # fields = [
+    #     'publisher',
+    #     'month_ending',
+    #     'placements',
+    #     'video_showing',
+    #     'hours',
+    #     'return_visits',
+    #     'bible_study',
+    #     'comments'
+    # ]
+    form_class = MFSForm
 
     def form_valid(self, form):
         messages.success(
@@ -152,6 +154,7 @@ class MFSHistoryList(ListView):
             group = Group.objects.get(pk=group)
 
             queryset = MonthlyFieldService.objects.filter(
+                group=group,
                 month_ending__month__gte=from_month,
                 month_ending__year__gte=from_year
             )
@@ -162,9 +165,6 @@ class MFSHistoryList(ListView):
             month_ending__year__lte=to_year
         )
         queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
-
-        if view_type == 'group':
-            queryset = [q for q in queryset if q.publisher.group == group]
 
         return queryset
 

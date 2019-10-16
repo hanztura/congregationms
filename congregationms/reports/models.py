@@ -1,12 +1,13 @@
 from django.db import models
 from django.urls import reverse
 
-from publishers.models import Publisher
+from publishers.models import Group, Publisher
 
 
 # Create your models here.
 class MonthlyFieldService(models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.PROTECT, blank=True, null=True)
     month_ending = models.DateField()
     placements = models.PositiveSmallIntegerField(default=0)
     video_showing = models.PositiveSmallIntegerField(default=0)
