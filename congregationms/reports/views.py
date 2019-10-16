@@ -2,6 +2,8 @@ import uuid
 from datetime import datetime
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
@@ -16,7 +18,7 @@ from publishers.models import Publisher, Group
 now = datetime.now().date()
 
 
-class MFSList(ListView):
+class MFSList(LoginRequiredMixin, ListView):
     """
     MFS stands for Month Field Service.
     """
@@ -42,7 +44,7 @@ class MFSList(ListView):
         return context
 
 
-class MFSDelete(DeleteView):
+class MFSDelete(LoginRequiredMixin, DeleteView):
     model = MonthlyFieldService
     success_url = reverse_lazy('reports:mfs-index')
 
@@ -52,12 +54,12 @@ class MFSDelete(DeleteView):
         return super().get_success_url()
 
 
-class MFSDetail(DetailView):
+class MFSDetail(LoginRequiredMixin, DetailView):
     model = MonthlyFieldService
     context_object_name = 'report'
 
 
-class MFSCreate(CreateView):
+class MFSCreate(LoginRequiredMixin, CreateView):
     model = MonthlyFieldService
     # fields = [
     #     'publisher',
@@ -79,7 +81,7 @@ class MFSCreate(CreateView):
         return super().form_valid(form)
 
 
-class MFSUpdate(UpdateView):
+class MFSUpdate(LoginRequiredMixin, UpdateView):
     model = MonthlyFieldService
     fields = [
         'publisher',
@@ -94,7 +96,7 @@ class MFSUpdate(UpdateView):
     context_object_name = 'report'
 
 
-class MFSHistoryList(ListView):
+class MFSHistoryList(LoginRequiredMixin, ListView):
     model = MonthlyFieldService
     template_name = 'reports/mfs_history.html'
     context_object_name = 'reports'
@@ -168,6 +170,8 @@ class MFSHistoryList(ListView):
 
         return queryset
 
+
+@login_required
 def sample_mfs(request, pk):
     date_from = request.GET.get('from', str(now))
     date_to = request.GET.get('to', str(now))

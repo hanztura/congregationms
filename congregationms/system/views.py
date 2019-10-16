@@ -19,10 +19,11 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             user_login(request, user)
+            next_url = request.GET.get('next', reverse('home'))
 
             message = 'Successfully logged in. Thank you! You can start working now.'
             messages.success(request, message)
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(next_url)
         else:
             return render(request, 'system/login.html', context={
                 'username': username,

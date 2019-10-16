@@ -1,5 +1,6 @@
 #from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
@@ -10,23 +11,23 @@ from .models import Group, Publisher
 
 
 # Create your views here.
-class PublisherList(ListView):
+class PublisherList(LoginRequiredMixin, ListView):
     model = Publisher
 
 
-class PublisherUpdate(UpdateView):
+class PublisherUpdate(LoginRequiredMixin, UpdateView):
     model = Publisher
     fields = ['last_name', 'first_name', 'middle_name',
               'date_of_birth', 'date_of_baptism', 'contact_numbers']
     context_object_name = 'publisher'
 
 
-class PublisherDetail(DetailView):
+class PublisherDetail(LoginRequiredMixin, DetailView):
     model = Publisher
     context_object_name = 'publisher'
 
 
-class PublisherCreate(CreateView):
+class PublisherCreate(LoginRequiredMixin, CreateView):
     model = Publisher
     fields = [
         'last_name', 'first_name', 'middle_name'
@@ -43,7 +44,7 @@ class PublisherCreate(CreateView):
         return reverse('publishers:update', args=[str(self.object.pk)])
 
 
-class PublisherDelete(DeleteView):
+class PublisherDelete(LoginRequiredMixin, DeleteView):
     model = Publisher
     success_url = reverse_lazy('publishers:index')
 
@@ -55,16 +56,16 @@ class PublisherDelete(DeleteView):
         return super().get_success_url()
 
 
-class GroupList(ListView):
+class GroupList(LoginRequiredMixin, ListView):
     model = Group
 
 
-class GroupDetail(DetailView):
+class GroupDetail(LoginRequiredMixin, DetailView):
     model = Group
     context_object_name = 'group'
 
 
-class GroupUpdate(UpdateView):
+class GroupUpdate(LoginRequiredMixin, UpdateView):
     model = Group
     fields = [
         'name', 'congregation'
@@ -98,7 +99,7 @@ class GroupUpdate(UpdateView):
         return super().form_valid(form)
 
 
-class GroupDelete(DeleteView):
+class GroupDelete(LoginRequiredMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('publishers:group-index')
 
@@ -110,7 +111,7 @@ class GroupDelete(DeleteView):
         return super().get_success_url()
 
 
-class GroupCreate(CreateView):
+class GroupCreate(LoginRequiredMixin, CreateView):
     model = Group
     fields = ['name', 'congregation']
 
