@@ -12,7 +12,7 @@
   <script defer src='{% static "vendors/fontawesome.js" %}'></script>
 </head>
 <body>
-  <div id="app">
+  <div>
     {% block header %}
       {% include "navbar.html" %}
       
@@ -26,7 +26,7 @@
       </div>
     {% endblock header %}
     
-      <div class="container">
+      <div class="container" id="app">
         {% if messages %}
           <ul>
             {% for message in messages %}
@@ -56,6 +56,21 @@
       });
     </script>
   {% endblock vueinstance %}
+
+  <script>
+    navbarVue = new Vue({
+      el: '#navbar',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        active: false
+      }),
+      methods: {
+        toggleNavbarMenu: function () {
+          this.active = !this.active
+        }
+      }
+    });
+  </script>
 
   {% block endscript %}{% endblock endscript %}
 </body>
