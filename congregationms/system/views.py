@@ -6,7 +6,10 @@ from django.urls import reverse
 
 # Create your views here.
 def home(request):
-    return render(request, 'system/home.html')
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('system:dashboard'))
+    else:
+        return render(request, 'system/home.html')
 
 def login(request):
     if request.user.is_authenticated:
@@ -38,3 +41,6 @@ def logout(request):
     message = 'Successfully logged out. Thank you!'
     messages.success(request, message)
     return HttpResponseRedirect(reverse('home'))
+
+def dashboard(request):
+    return render(request, 'system/dashboard.html')
