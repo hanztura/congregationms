@@ -32,24 +32,30 @@
         <label class="label">Last Name</label>
         <div class="control">
           <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
+        {{form.last_name.errors}}
         </div>
       </div>
       <div class="field">
         <label class="label">First Name</label>
         <div class="control">
           <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
+        {{form.first_name.errors}}
         </div>
       </div>
-      <div class="field">
-        <label class="label">Middle Name</label>
-        <div class="control">
-        <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value }}">
+      {% if publisher %}  
+        <div class="field">
+          <label class="label">Middle Name</label>
+          <div class="control">
+          <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}">
+          {{form.middle_name.errors}}
+          </div>
         </div>
-      </div>
+      {% endif %}
       <div class="field">
         <label class="label">Slug</label>
         <div class="control">
         <input class="input" type="text" name="slug" value="{{ form.slug.value|default:'' }}"required>
+        {{form.slug.errors}}
         </div>
       </div>
 

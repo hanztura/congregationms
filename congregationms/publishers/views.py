@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .forms import GroupMemberForm, GroupMemberFormSet
+from .forms import GroupMemberForm, GroupMemberFormSet, PublisherModelForm
 from .models import Group, Publisher
 
 
@@ -29,9 +29,7 @@ class PublisherDetail(LoginRequiredMixin, DetailView):
 
 class PublisherCreate(LoginRequiredMixin, CreateView):
     model = Publisher
-    fields = [
-        'last_name', 'first_name', 'middle_name', 'slug'
-    ]
+    form_class = PublisherModelForm
 
     def form_valid(self, form):
         messages.success(
