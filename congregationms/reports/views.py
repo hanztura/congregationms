@@ -61,16 +61,6 @@ class MFSDetail(LoginRequiredMixin, DetailView):
 
 class MFSCreate(LoginRequiredMixin, CreateView):
     model = MonthlyFieldService
-    # fields = [
-    #     'publisher',
-    #     'month_ending',
-    #     'placements',
-    #     'video_showing',
-    #     'hours',
-    #     'return_visits',
-    #     'bible_study',
-    #     'comments'
-    # ]
     form_class = MFSForm
 
     def form_valid(self, form):
@@ -83,16 +73,7 @@ class MFSCreate(LoginRequiredMixin, CreateView):
 
 class MFSUpdate(LoginRequiredMixin, UpdateView):
     model = MonthlyFieldService
-    fields = [
-        'publisher',
-        'month_ending',
-        'placements',
-        'video_showing',
-        'hours',
-        'return_visits',
-        'bible_study',
-        'comments'
-    ]
+    form_class = MFSForm
     context_object_name = 'report'
 
 

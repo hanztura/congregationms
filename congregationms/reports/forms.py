@@ -23,7 +23,8 @@ class MFSForm(ModelForm):
         mfs = super().save(commit=False)
 
         group = mfs.publisher.group
-        mfs.group = group
+        if mfs.group != group:
+            mfs.group = group
         mfs.save()
 
         return mfs
