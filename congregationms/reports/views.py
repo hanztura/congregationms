@@ -108,7 +108,7 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
 
         if view_type == 'publisher':
             publisher = self.kwargs['publisher']
-            publisher = Publisher.objects.get(pk=publisher)
+            publisher = Publisher.objects.get(slug=publisher)
             context['publisher'] = publisher
         else:
             group = self.kwargs['group']
@@ -144,7 +144,7 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
 
         if view_type == 'publisher':
             publisher = self.kwargs['publisher']
-            publisher = Publisher.objects.get(pk=publisher)
+            publisher = Publisher.objects.get(slug=publisher)
 
             queryset = MonthlyFieldService.objects.filter(
                 publisher=publisher,

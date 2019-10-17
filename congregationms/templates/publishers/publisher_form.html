@@ -10,7 +10,7 @@
 
 {% block subbreadcrumbs %}
   {% if publisher %}
-    <li><a href='{% url "publishers:detail" publisher.pk %}'>{{ publisher.name|title }}</a></li>
+    <li><a href='{% url "publishers:detail" publisher.slug %}'>{{ publisher.name|title }}</a></li>
     <li class="is-active"><a href='#'>Edit</a></li>  
   {% else %}
     <li class="is-active"><a href='#'>New</a></li>  
@@ -31,19 +31,25 @@
       <div class="field">
         <label class="label">Last Name</label>
         <div class="control">
-          <input class="input" type="text" name="last_name" value="{{ publisher.last_name}}" required>
+          <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
         </div>
       </div>
       <div class="field">
         <label class="label">First Name</label>
         <div class="control">
-          <input class="input" type="text" name="first_name" value="{{ publisher.first_name}}" required>
+          <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
         </div>
       </div>
       <div class="field">
         <label class="label">Middle Name</label>
         <div class="control">
-        <input class="input" type="text" name="middle_name" value="{{ publisher.middle_name}}">
+        <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Slug</label>
+        <div class="control">
+        <input class="input" type="text" name="slug" value="{{ form.slug.value|default:'' }}"required>
         </div>
       </div>
 
@@ -51,23 +57,27 @@
       <div class="field">
         <label class="label">Date of Birth</label>
         <div class="control">
-        <input class="input" type="date" name="date_of_birth" value="{{ publisher.date_of_birth|date:'Y-m-d' }}">
+        <input class="input" type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
         </div>
       </div>
       <div class="field">
         <label class="label">Date of Baptism</label>
         <div class="control">
-        <input  class="input" type="date" name="date_of_baptism" value="{{ publisher.date_of_baptism|date:'Y-m-d' }}">
+        <input  class="input" type="date" name="date_of_baptism" value="{{ form.date_of_baptism.value|date:'Y-m-d' }}">
         </div>
       </div>
       <div class="field">
         <label class="label">Contact Numbers</label>
         <div class="control">
-        <textarea class="textarea" name="contact_numbers" value="{{ publisher.contact_numbers}}" placeholder="0907123456, 09189876543"></textarea>
+        <textarea class="textarea" name="contact_numbers" value="{{ form.contact_numbers.value }}" placeholder="0907123456, 09189876543"></textarea>
         </div>
       </div>
       {% endif %}
 
-      <input class="button is-success is-fullwidth" type="submit" value="Create">
+      {% if publisher %}
+        <input class="button is-success is-fullwidth" type="submit" value="Save">
+      {% else %}
+        <input class="button is-success is-fullwidth" type="submit" value="Create">
+      {% endif %}
     </form>
 {% endblock main %}

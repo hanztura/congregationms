@@ -9,6 +9,7 @@ from system.models import Congregation as Cong
 # Create your models here.
 class Publisher(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    slug = models.SlugField(blank=True, unique=False)
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
@@ -21,7 +22,7 @@ class Publisher(models.Model):
         return name
 
     def get_absolute_url(self):
-        return reverse('publishers:detail', args=[str(self.pk)])
+        return reverse('publishers:detail', args=[str(self.slug)])
 
     @property
     def name(self):

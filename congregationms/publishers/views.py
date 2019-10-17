@@ -18,7 +18,7 @@ class PublisherList(LoginRequiredMixin, ListView):
 class PublisherUpdate(LoginRequiredMixin, UpdateView):
     model = Publisher
     fields = ['last_name', 'first_name', 'middle_name',
-              'date_of_birth', 'date_of_baptism', 'contact_numbers']
+              'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
     context_object_name = 'publisher'
 
 
@@ -30,7 +30,7 @@ class PublisherDetail(LoginRequiredMixin, DetailView):
 class PublisherCreate(LoginRequiredMixin, CreateView):
     model = Publisher
     fields = [
-        'last_name', 'first_name', 'middle_name'
+        'last_name', 'first_name', 'middle_name', 'slug'
     ]
 
     def form_valid(self, form):
@@ -41,7 +41,7 @@ class PublisherCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self, *args, **kwargs):
-        return reverse('publishers:update', args=[str(self.object.pk)])
+        return reverse('publishers:update', args=[str(self.object.slug)])
 
 
 class PublisherDelete(LoginRequiredMixin, DeleteView):
