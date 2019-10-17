@@ -15,7 +15,7 @@
 
 {% block subbreadcrumbs %}
   {% if report %}
-    <li><a href='{% url "reports:mfs-history" report.publisher.pk %}' title="View publisher history.">{{ report.publisher|title }}</a></li>  
+    <li><a href='{% url "reports:mfs-history" report.publisher.slug %}' title="View publisher history.">{{ report.publisher|title }}</a></li>  
     <li><a href='{% url "reports:mfs-detail" report.pk %}' title="View MFS Detail.">{{ report.month_ending|date:'M-Y' }}</a></li>
     <li class="is-active"><a href='#'>Edit</a></li>
   {% endif %}
