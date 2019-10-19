@@ -26,9 +26,12 @@ class Pioneer(models.Model):
         return reverse('pioneering:index')
 
     @property
+    def name(self):
+        return str(self.publisher)
+    
+    @property
     def slug(self):
         return self.code
-    
 
 
 class PioneerType(Enum):
@@ -38,9 +41,18 @@ class PioneerType(Enum):
 
 
 class PioneerDetail(models.Model):
-    pioneer = models.ForeignKey(Pioneer, on_delete=models.CASCADE)
+    pioneer = models.ForeignKey(Pioneer, on_delete=models.CASCADE, related_name='details')
     pioneer_type = models.CharField(
         max_length=2, choices=[(p.name, p.value) for p in PioneerType]
     )
     date_start = models.DateField()
     date_end = models.DateField(blank=True, null=True)
+    has_ended = models.BooleanField(default=False, blank=True)
+
+    def __str__(self):
+        name = '{} - {}'.format(self.pioneer.name, self.pioneer_type)
+        return name
+
+    @property
+    def publisher(self):
+        return self.pioneer.publisher

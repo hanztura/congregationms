@@ -83,7 +83,6 @@ class GroupUpdate(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         members = context['members']
 
-        print(members.errors)
         with transaction.atomic():
             self.object = form.save()
             if members.is_valid():

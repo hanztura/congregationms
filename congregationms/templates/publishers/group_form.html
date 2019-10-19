@@ -74,11 +74,11 @@
                 </td>
 
                 <td>
-                  <input class="input is-fullwidth" type="date" name="{{form.date_from.html_name}}" id="{{form.date_from.id_for_label}}" value="{{form.date_from.value}}">
+                  <input class="input is-fullwidth" type="date" name="{{form.date_from.html_name}}" id="{{form.date_from.id_for_label}}" value="{{form.date_from.value|date:'Y-m-d'}}">
                 </td>
 
                 <td>
-                  <input class="input is-fullwidth" type="date" name="{{form.date_to.html_name}}" id="{{form.date_to.id_for_label}}" value="{{form.date_to.value}}">
+                  <input class="input is-fullwidth" type="date" name="{{form.date_to.html_name}}" id="{{form.date_to.id_for_label}}" value="{{form.date_to.value|date:'Y-m-d'}}">
                   {{form.id}}
                   {{form.group}}
                 </td>

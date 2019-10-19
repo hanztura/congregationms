@@ -27,5 +27,33 @@
   
   <p class="is-size-3">{{ pioneer.publisher.name|upper }}</p>
   <p>Code: {{ pioneer.code }}</p>
-  <p>Active: {{ pioneer.is_active }}</p>
+  <p>Status: {% if pioneer.is_active %}Active{% else %}Inactive{% endif %}</p>
+
+  <section class="section">
+    <h2>Pioneering Details</h2>
+    <table class="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Start</th>
+          <th>End</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if pioneer.details.all %}
+          {% for detail in pioneer.details.all %}
+          <tr>
+            <td>{{detail.pioneer_type}}</td>
+            <td>{{detail.date_start}}</td>
+            <td>{{detail.date_end}}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="3" class="has-text-centered">No data available. Please create one.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </section>
 {% endblock main %}

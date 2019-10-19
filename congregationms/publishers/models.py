@@ -41,6 +41,18 @@ class Publisher(models.Model):
         if group:
             group = group.group
         return group
+
+    @property
+    def is_pioneer(self):
+        try:
+            pioneering = self.pioneering
+        except Exception as e:
+            pioneering = False
+        finally:
+            if pioneering:
+                return pioneering.is_active
+
+            return False
     
 
 class Group(models.Model):

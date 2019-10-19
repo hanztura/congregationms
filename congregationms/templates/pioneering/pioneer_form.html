@@ -51,6 +51,51 @@
           </label>
       {% endif %}
 
+
+      {# group members #}
+      <section class="section">
+        <h2>Pioneering Details</h2>
+        {{ details.management_form }}
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th class="has-text-centered">Type</th>
+              <th class="has-text-centered">Date Start</th>
+              <th class="has-text-centered">Date End</th>
+              <th class="has-text-centered">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for form in details %}
+              <tr>
+                <td>
+                  <div class="select is-fullwidth">
+                    {{form.pioneer_type}}
+                  </div>
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_start.html_name}}" id="{{form.date_start.id_for_label}}" value="{{form.date_start.value|date:'Y-m-d'}}">
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_end.html_name}}" id="{{form.date_end.id_for_label}}" value="{{form.date_end.value|date:'Y-m-d'}}">
+                  {{form.id}}
+                  {{form.pioneer}}
+                </td>
+                <td>
+                  {% if details.can_delete %}
+                    {{form.DELETE}} 
+                  {% else %}
+                    <input type="checkbox" disabled>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
         <input class="button is-success is-fullwidth" type="submit" {% if pioneer %}value="Save"{% else %} value="Create"{% endif %}>
       
     </form>
