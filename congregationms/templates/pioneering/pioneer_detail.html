@@ -1,0 +1,31 @@
+{% extends "pioneering/base.html" %}
+
+{% block title %}
+  <title>Pioneer's Detail | {{pioneer.publisher.name|title}}</title>
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>{{pioneer.publisher.name|title}}</a></li>
+  <li class="is-active"><a href='#'>Detail</a></li>
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  <h1>Pioneer's Detail</h1>
+
+  <div class="field is-grouped is-pulled-right">
+    <div class="control">
+      <form id="form--{{ pioneer.pk }}" action='{% url "pioneering:delete" pioneer.pk %}' method="POST">
+        {% csrf_token %}
+        <input class="button is-outlined" title="Delete" type="submit" form="form--{{ pioneer.pk }}" value="del">
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "pioneering:update" pioneer.slug %}'><button class="button is-outlined">edit</button></a>
+    </div>
+  </div>
+  
+  <p class="is-size-3">{{ pioneer.publisher.name|upper }}</p>
+  <p>Code: {{ pioneer.code }}</p>
+  <p>Active: {{ pioneer.is_active }}</p>
+{% endblock main %}

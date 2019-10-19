@@ -1,0 +1,57 @@
+{% extends "pioneering/base.html" %}
+
+{% block title %}
+  {% if pioneer %} 
+    <title>Pioneer Edit | {{ pioneer.publisher.name|title }}</title> 
+  {% else %} 
+    <title>Pioneer New</title>  
+  {% endif %}
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  {% if pioneer %}
+    <li><a href='{% url "pioneering:detail" pioneer.slug %}'>{{ pioneer.publisher.name|title }}</a></li>
+    <li class="is-active"><a href='#'>Edit</a></li>  
+  {% else %}
+    <li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  {% if pioneer %} 
+    <h1>Pioneer Edit</h1>
+    <p class="is-size-3">Edit Pioneer Profile</p>  
+  {% else %} 
+    <h1>Pioneer New</h1>
+    <p class="is-size-3">Create a New Pioneer Profile</p>  
+  {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">{{form.publisher.label}}</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            {{form.publisher}}
+          </div>
+        {{form.publisher.errors}}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{form.code.label}}</label>
+        <div class="control">
+          <input class="input" type="text" name="code" value="{{ form.code.value|default:'' }}" required>
+        {{form.code.errors}}
+        </div>
+      </div>
+      {% if pioneer %}  
+          <label class="checkbox" for="{{form.is_active.id_for_label}}">
+            Active
+            <input type="checkbox" name="{{form.is_active.html_name}}" id="{{form.is_active.id_for_label}}" {% if form.is_active.value %}checked{% endif %}>
+          </label>
+      {% endif %}
+
+        <input class="button is-success is-fullwidth" type="submit" {% if pioneer %}value="Save"{% else %} value="Create"{% endif %}>
+      
+    </form>
+{% endblock main %}
