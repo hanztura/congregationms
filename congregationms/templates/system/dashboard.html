@@ -6,4 +6,28 @@
 
 {% block main %}
   <h1 class="title">Dashboard</h1>  
+
+  <section class="section">
+    <h2>Last Month's Stats:</h2>
+    <nav class="level">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Hours</p>
+        <p class="title">{{hours}}</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Return Visits</p>
+        <p class="title">{{return_visits}}</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Bible Studies</p>
+        <p class="title">{{bible_studies}}</p>
+      </div>
+    </div>
+  </nav>
+  </section>
 {% endblock main %}

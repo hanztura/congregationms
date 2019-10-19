@@ -12,10 +12,18 @@
   <script defer src='{% static "vendors/fontawesome.js" %}'></script>
 </head>
 <body>
-  <div id="app">
+  <div class="columns">
+    <div class="column is-full">
     {% block header %}
       {% include "navbar.html" %}
+    {% endblock header %}      
       
+    </div>
+  </div>
+
+  <div class="columns is-gapless">
+
+    <div class="column">
       <div class="container">
         <nav class="breadcrumb" aria-label="breadcrumbs">
           <ul>
@@ -24,9 +32,8 @@
           </ul>
         </nav>
       </div>
-    {% endblock header %}
-    
-      <div class="container">
+
+      <main class="container" id="app">
         {% if messages %}
           <ul>
             {% for message in messages %}
@@ -37,12 +44,17 @@
 
         {% block main %}
         {% endblock main %}
-      </div>
+      </main>
+    </div>
+
+    <div class="column is-one-fifth">
+      {% include "aside.html" %}
+    </div>
+  </div><!--columns -->
 
     {% block footer %}
       
     {% endblock footer %}
-  </div>
 
   <script src='{% static "vendors/vue.js" %}'></script>
 
@@ -56,6 +68,21 @@
       });
     </script>
   {% endblock vueinstance %}
+
+  <script>
+    navbarVue = new Vue({
+      el: '#navbar',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        active: false
+      }),
+      methods: {
+        toggleNavbarMenu: function () {
+          this.active = !this.active
+        }
+      }
+    });
+  </script>
 
   {% block endscript %}{% endblock endscript %}
 </body>

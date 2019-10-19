@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+
+from reports.utils import mfs_stats
 
 # Create your views here.
 def home(request):
@@ -43,4 +47,12 @@ def logout(request):
     return HttpResponseRedirect(reverse('home'))
 
 def dashboard(request):
-    return render(request, 'system/dashboard.html')
+    now = datetime.now().date()
+    prev_month = now.month - 1
+    year = now.year
+
+    if prev_month == 0:
+        prev_month = 12
+        year -= 1
+    context = mfs_stats(prev_month, now.year)
+    return render(request, 'system/dashboard.html', context)
