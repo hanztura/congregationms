@@ -1,7 +1,10 @@
+from django.db.models import Sum
+
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
+from .models import MonthlyFieldService
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
@@ -54,3 +57,18 @@ def generate_mfs(data):
     doc.add_page_break()
 
     return doc
+
+def mfs_stats(month, year):
+    q = MonthlyFieldService.objects.filter(month_ending__month=month)
+    q = q.filter(month_ending__year=year)
+    q = q.aggregate(Sum('hours'), Sum('return_visits'), Sum('bible_study'))
+
+    hours = q['hours__sum']
+    return_visits = q['return_visits__sum']
+    bible_studies = q['bible_study__sum']
+    stats = {
+        'hours': hours,
+        'return_visits': return_visits,
+        'bible_studies': bible_studies
+    }
+    return stats
