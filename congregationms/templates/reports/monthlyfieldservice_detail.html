@@ -26,7 +26,7 @@
   </div>
   
   <p><span class="is-size-3">{{ report.publisher|title }}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" with publisher=report.publisher %}</p>
-  <p><a href='{% url "reports:mfs-history" report.publisher.slug %}'>View history</a></p>
+  <p><a href='{% url "reports:mfs-history" publisher_slug %}'>View history</a></p>
 
   <table class="table">
     <tbody>
@@ -63,6 +63,15 @@
       <tr>
         <th>Comments</th>
         <td>{{ report.comments }}</td>
+      </tr>
+
+      <tr>
+        <th>RP</th>
+        <td>
+          <span class="icon has-text-success">
+            <i class="fas fa-check"></i>
+          </span>
+        </td>
       </tr>
       
     </tbody>

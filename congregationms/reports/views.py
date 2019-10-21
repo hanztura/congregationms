@@ -24,7 +24,6 @@ class MFSList(LoginRequiredMixin, ListView):
     """
     model = MonthlyFieldService
 
-
     def get_queryset(self):
         default_month_year = compute_month_year(now)
         monthyear = self.request.GET.get('monthyear', default_month_year)
@@ -57,6 +56,18 @@ class MFSDelete(LoginRequiredMixin, DeleteView):
 class MFSDetail(LoginRequiredMixin, DetailView):
     model = MonthlyFieldService
     context_object_name = 'report'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['is_rp'] = False
+        if self.object.pioneering:
+            if self.object.pioneering.pioneer_type == 'RP':
+                context['is_rp'] = True
+
+        context['publisher_slug'] = self.object.publisher.slug
+
+        return context
 
 
 class MFSCreate(LoginRequiredMixin, CreateView):
@@ -127,7 +138,6 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
         from_month, from_year = date_from[1], date_to[0]
         to_month, to_year = date_to[1], date_to[0]
 
-
         if view_type == 'publisher':
             publisher = self.kwargs['publisher']
             publisher = Publisher.objects.get(slug=publisher)
@@ -147,12 +157,12 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
                 month_ending__year__gte=from_year
             )
 
-
         queryset = queryset.filter(
             month_ending__month__lte=to_month,
             month_ending__year__lte=to_year
         )
-        queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
+        queryset = queryset.order_by(
+            '-month_ending', 'publisher__last_name', 'publisher__first_name')
 
         return queryset
 
@@ -181,7 +191,8 @@ def sample_mfs(request, pk):
     _to = '{}-{}'.format(to_month, to_year)
 
     group = Group.objects.get(pk=pk)
-    queryset = queryset.order_by('-month_ending', 'publisher__last_name', 'publisher__first_name')
+    queryset = queryset.order_by(
+        '-month_ending', 'publisher__last_name', 'publisher__first_name')
     queryset = [q for q in queryset if q.publisher.group == group]
 
     congregation = str(group.congregation)
@@ -194,7 +205,11 @@ def sample_mfs(request, pk):
         'congregation': congregation,
         'month': month
     }
-    s = '/home/hanz/projects/congregationms/media/{}.docx'.format(str(uuid.uuid1()))
+    s = '/home/hanz/projects/congregationms/media/{}.docx'.format(
+        str(uuid.uuid1()))
     doc = generate_mfs(data)
     doc.save(s)
-    return FileResponse(open(s, 'rb'), as_attachment=True, filename='download.docx')
+    return FileResponse(
+        open(s, 'rb'),
+        as_attachment=True,
+        filename='download.docx')
