@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from enum import Enum
 
@@ -6,6 +7,9 @@ from django.db import models
 from django.urls import reverse
 
 from publishers.models import Publisher
+
+
+DATE_NOW = datetime.now().date()
 
 
 # Create your models here.
@@ -33,6 +37,37 @@ class Pioneer(models.Model):
     def slug(self):
         return self.code
 
+    def is_active_rp(self, date=DATE_NOW):
+        """
+        Check if a pioneer is RP on a given date
+        """
+        active = False
+        pioneer_details = self.details.filter(
+            pioneer_type='RP',
+            date_start__lte=date
+        )
+        pioneer_details_not_ended = pioneer_details.filter(date_end__gte=date).first()
+        pioneer_details_continous = pioneer_details.filter(date_end=None).first()
+        if pioneer_details_not_ended or pioneer_details_continous:
+            active = True
+
+        return active
+
+    def get_active_rp_detail(self, date=DATE_NOW):
+        pioneer_details = self.details.filter(
+            pioneer_type='RP',
+            date_start__lte=date
+        )
+        pioneer_details_not_ended = pioneer_details.filter(date_end__gte=date).first()
+        if pioneer_details_not_ended:
+            return pioneer_details_not_ended
+
+        pioneer_details_continous = pioneer_details.filter(date_end=None).first()
+        if pioneer_details_continous:
+            return pioneer_details_continous
+
+        return None
+
 
 class PioneerType(Enum):
     AU = 'Auxillary Pioneer'
@@ -52,6 +87,17 @@ class PioneerDetail(models.Model):
     def __str__(self):
         name = '{} - {}'.format(self.pioneer.name, self.pioneer_type)
         return name
+
+    def save(self, *args, **kwargs):
+        if not self.has_ended:
+            date_end = self.date_end
+            date_now = DATE_NOW
+            if date_end:
+                if date_now > date_end:
+                    self.has_ended = True
+
+        super().save(*args, **kwargs)
+
 
     @property
     def publisher(self):

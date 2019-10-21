@@ -43,7 +43,9 @@
     <tbody>
       {% for report in object_list %}
           <tr>
-            <td>{{ report.publisher|title }}</td>
+            <td>
+              {{ report.publisher|title }} {% if report.pioneering %}({{report.pioneering.pioneer_type}}){% endif %}
+            </td>
             <td>{{ report.group.name }}</td>
             <td>
               <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">view</span></a>

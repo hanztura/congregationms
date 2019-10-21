@@ -64,11 +64,16 @@ class MFSCreate(LoginRequiredMixin, CreateView):
     form_class = MFSForm
 
     def form_valid(self, form):
-        messages.success(
-            self.request,
-            'Successfully created new Monthly Field Service Report.'
-        )
-        return super().form_valid(form)
+        try:
+            form = super().form_valid(form)
+            messages.success(
+                self.request,
+                'Successfully created new Monthly Field Service Report.'
+            )
+        except Exception as e:
+            raise e
+        finally:
+            return form
 
 
 class MFSUpdate(LoginRequiredMixin, UpdateView):

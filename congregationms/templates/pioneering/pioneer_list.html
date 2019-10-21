@@ -12,7 +12,7 @@
     <thead>
       <tr>
         <th class="has-text-centered">Publisher</th>
-        <th class="has-text-centered">Active</th>
+        <th class="has-text-centered">RP</th>
         <th class="has-text-centered">Actions</th>
       </tr>
     </thead>
@@ -20,7 +20,7 @@
       {% for pioneer in pioneers %}
         <tr>
           <td>{{ pioneer.publisher.name|title }}</td>
-          <td class="has-text-centered">{{ pioneer.is_active }}</td>
+          <td class="has-text-centered">{{ pioneer.is_active_rp }}</td>
           <td>
             <a href='{% url "pioneering:detail" pioneer.slug %}'><span class="button is-outlined">view</span></a>
             <a href='{% url "pioneering:update" pioneer.slug %}'><span class="button is-outlined">edit</span></a></td>

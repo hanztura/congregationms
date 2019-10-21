@@ -12,7 +12,7 @@ class PioneerDetailModelForm(ModelForm):
             'pioneer',
             'pioneer_type',
             'date_start',
-            'date_end'
+            'date_end',
         ]
 
 

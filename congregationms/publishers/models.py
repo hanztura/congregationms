@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from django.db import models
 from django.urls import reverse
@@ -53,6 +54,18 @@ class Publisher(models.Model):
                 return pioneering.is_active
 
             return False
+
+    def is_rp(self, date):
+        try:
+            pioneering = self.pioneering
+        except Exception as e:
+            pioneering = False
+        finally:
+            if pioneering:
+                return pioneering.is_active_rp(date)
+
+            return False
+    
     
 
 class Group(models.Model):

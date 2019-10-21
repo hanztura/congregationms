@@ -28,6 +28,7 @@
   <p class="is-size-3">{{ pioneer.publisher.name|upper }}</p>
   <p>Code: {{ pioneer.code }}</p>
   <p>Status: {% if pioneer.is_active %}Active{% else %}Inactive{% endif %}</p>
+  <p>RP: {% if pioneer.is_active_rp %}Yes{% else %}No{% endif %}</p>
 
   <section class="section">
     <h2>Pioneering Details</h2>
