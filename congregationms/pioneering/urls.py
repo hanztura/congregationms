@@ -1,6 +1,8 @@
 from django.urls import path
 
-from .views import PioneerCreateView, PioneerDeleteView, PioneerDetailView, PioneerListView, PioneerUpdateView
+from .views import (PioneerCreateView, PioneerDeleteView, PioneerDetailView,
+                    PioneerListView, PioneerUpdateView)
+
 
 app_name = 'pioneering'
 urlpatterns = [
