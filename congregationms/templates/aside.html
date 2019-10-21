@@ -16,4 +16,20 @@
         <ul class="menu-list">
           <li><a href="{% url 'reports:mfs-index' %}">Monthly Field Service</a></li>
         </ul>
+
+        {% if messages %}
+          <article class="message is-info">
+            <div class="message-header">
+              <p>Notifications</p>
+              <button class="delete" aria-label="delete"></button>
+            </div>
+            <div class="message-body">
+              <ul>
+                {% for message in messages %}
+                  <li class="is-{{ message.tags }}">{{message}}</li>
+                {% endfor %}
+              </ul>  
+            </div>
+          </article>
+        {% endif %}
       </aside>

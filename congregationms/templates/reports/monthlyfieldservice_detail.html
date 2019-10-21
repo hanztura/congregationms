@@ -66,10 +66,15 @@
       </tr>
 
       <tr>
-        <th>RP</th>
+        <th>Pioneer</th>
         <td>
-          <span class="icon has-text-success">
-            <i class="fas fa-check"></i>
+          <span class="icon">
+            {% if pioneering %}
+              <i class="fas fa-check has-text-success"></i>
+              {{pioneering}}
+            {% else %}
+              <i class="fas fa-times has-text-danger"></i>
+            {% endif %}
           </span>
         </td>
       </tr>

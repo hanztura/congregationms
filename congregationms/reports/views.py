@@ -65,6 +65,10 @@ class MFSDetail(LoginRequiredMixin, DetailView):
             if self.object.pioneering.pioneer_type == 'RP':
                 context['is_rp'] = True
 
+        pioneering = self.object.pioneering
+        if pioneering:
+            context['pioneering'] = pioneering.pioneer_type
+
         context['publisher_slug'] = self.object.publisher.slug
 
         return context
