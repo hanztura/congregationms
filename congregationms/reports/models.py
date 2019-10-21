@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from pioneering.models import PioneerDetail
 from publishers.models import Group, Publisher
 
 
@@ -8,6 +9,7 @@ from publishers.models import Group, Publisher
 class MonthlyFieldService(models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.PROTECT, blank=True, null=True)
+    pioneering = models.ForeignKey(PioneerDetail, on_delete=models.PROTECT, blank=True, null=True, related_name='mfs')
     month_ending = models.DateField()
     placements = models.PositiveSmallIntegerField(default=0)
     video_showing = models.PositiveSmallIntegerField(default=0)

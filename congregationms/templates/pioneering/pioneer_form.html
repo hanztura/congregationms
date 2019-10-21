@@ -1,0 +1,102 @@
+{% extends "pioneering/base.html" %}
+
+{% block title %}
+  {% if pioneer %} 
+    <title>Pioneer Edit | {{ pioneer.publisher.name|title }}</title> 
+  {% else %} 
+    <title>Pioneer New</title>  
+  {% endif %}
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  {% if pioneer %}
+    <li><a href='{% url "pioneering:detail" pioneer.slug %}'>{{ pioneer.publisher.name|title }}</a></li>
+    <li class="is-active"><a href='#'>Edit</a></li>  
+  {% else %}
+    <li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  {% if pioneer %} 
+    <h1>Pioneer Edit</h1>
+    <p class="is-size-3">Edit Pioneer Profile</p>  
+  {% else %} 
+    <h1>Pioneer New</h1>
+    <p class="is-size-3">Create a New Pioneer Profile</p>  
+  {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">{{form.publisher.label}}</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            {{form.publisher}}
+          </div>
+        {{form.publisher.errors}}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">{{form.code.label}}</label>
+        <div class="control">
+          <input class="input" type="text" name="code" value="{{ form.code.value|default:'' }}" required>
+        {{form.code.errors}}
+        </div>
+      </div>
+      {% if pioneer %}  
+          <label class="checkbox" for="{{form.is_active.id_for_label}}">
+            Active
+            <input type="checkbox" name="{{form.is_active.html_name}}" id="{{form.is_active.id_for_label}}" {% if form.is_active.value %}checked{% endif %}>
+          </label>
+      {% endif %}
+
+
+      {# group members #}
+      <section class="section">
+        <h2>Pioneering Details</h2>
+        {{ details.management_form }}
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th class="has-text-centered">Type</th>
+              <th class="has-text-centered">Date Start</th>
+              <th class="has-text-centered">Date End</th>
+              <th class="has-text-centered">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for form in details %}
+              <tr>
+                <td>
+                  <div class="select is-fullwidth">
+                    {{form.pioneer_type}}
+                  </div>
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_start.html_name}}" id="{{form.date_start.id_for_label}}" value="{{form.date_start.value|date:'Y-m-d'}}">
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_end.html_name}}" id="{{form.date_end.id_for_label}}" value="{{form.date_end.value|date:'Y-m-d'}}">
+                  {{form.id}}
+                  {{form.pioneer}}
+                </td>
+                <td>
+                  {% if details.can_delete %}
+                    {{form.DELETE}} 
+                  {% else %}
+                    <input type="checkbox" disabled>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+        <input class="button is-success is-fullwidth" type="submit" {% if pioneer %}value="Save"{% else %} value="Create"{% endif %}>
+      
+    </form>
+{% endblock main %}

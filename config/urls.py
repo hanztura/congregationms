@@ -21,6 +21,7 @@ from django.urls import include, path
 from system.views import home, login, logout
 
 urlpatterns = [
+    path('pioneering/', include('pioneering.urls')),
     path('publishers/', include('publishers.urls')),
     path('reports/', include('reports.urls')),
     path('login/', login, name='system-login'),
