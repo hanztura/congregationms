@@ -14,21 +14,22 @@
 
   <div id="navbarMenu" class="navbar-menu" :class="{ 'is-active': active }">
     <div class="navbar-start">
-      <a class="navbar-item" href="/">
-        Home
-      </a>
+      {% block navbaritems %}
+        <a class="navbar-item" href="/">
+          Home
+        </a>
+        <a class="navbar-item" href='{% url "publishers:index" %}'>
+          Publishers
+        </a>
 
-      <a class="navbar-item" href='{% url "publishers:index" %}'>
-        Publishers
-      </a>
+        <a class="navbar-item" href='{% url "pioneering:index" %}'>
+          Pioneering
+        </a>
 
-      <a class="navbar-item" href='{% url "pioneering:index" %}'>
-        Pioneering
-      </a>
-
-      <a class="navbar-item" href='{% url "reports:mfs-index" %}'>
-        Monthly Field Service
-      </a>
+        <a class="navbar-item" href='{% url "reports:mfs-index" %}'>
+          Monthly Field Service
+        </a>
+      {% endblock navbaritems %}
     </div>
 
     <div class="navbar-end">

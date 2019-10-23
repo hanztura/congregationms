@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "system/base.html" %}
 
 {% block title %}
     <title>Login</title>  
@@ -23,7 +23,7 @@
           <input type="password" name="password" class="input">
         </div>
       </div>
-      <input type="submit" class="button is-success is-fullwidth" value="Login">
+      <button class="button is-warning is-fullwidth" type="submit"><span class="icon"><i class="fas fa-sign-in-alt"></i></span><span>Login</span></button>
     </form>
   </section>
 {% endblock main %}

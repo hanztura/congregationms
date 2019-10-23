@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "system/base.html" %}
+{% load humanize %}
 
 {% block title %}
   <title>Dashboard</title>  
@@ -13,19 +14,19 @@
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Hours</p>
-        <p class="title">{{hours}}</p>
+        <p class="title">{{hours|default_if_none:0}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Return Visits</p>
-        <p class="title">{{return_visits}}</p>
+        <p class="title">{{return_visits|default_if_none:0|intcomma}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Bible Studies</p>
-        <p class="title">{{bible_studies}}</p>
+        <p class="title">{{bible_studies|default_if_none:0|intcomma}}</p>
       </div>
     </div>
   </nav>

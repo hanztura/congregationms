@@ -13,7 +13,8 @@
         <td>{{ publisher.group.name }}</td>
         <td>
           <a href='{% url "publishers:detail" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
-          <a href='{% url "publishers:update" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a></td>
+          <a href='{% url "publishers:update" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+          <a href='{% url "reports:mfs-history" publisher.slug %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
         </td>
       </tr>
     {% endfor %}

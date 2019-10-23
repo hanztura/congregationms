@@ -27,7 +27,7 @@
           <td>
             <a href='{% url "publishers:group-detail" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
             <a href='{% url "publishers:group-update" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
-            <a href='{% url "reports:mfs-history-group" group.pk %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>mfs history</span></button></a>
+            <a href='{% url "reports:mfs-history-group" group.pk %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
           </td>
         </tr>
       {% endfor %}

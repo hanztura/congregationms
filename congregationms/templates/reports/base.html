@@ -5,3 +5,7 @@
   <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
   {% block subbreadcrumbs %}{% endblock subbreadcrumbs %}
 {% endblock breadcrumbs %}
+
+{% block navbaritems %}
+  {% include "_snippets/navbar_items.html" with mfs_active='is-active' %}
+{% endblock navbaritems %}

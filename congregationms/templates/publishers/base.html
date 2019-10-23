@@ -5,3 +5,7 @@
   <li><a href='{% url "publishers:index" %}'>Publishers</a></li>
   {% block subbreadcrumbs %}{% endblock subbreadcrumbs %}
 {% endblock breadcrumbs %}
+
+{% block navbaritems %}
+  {% include "_snippets/navbar_items.html" with publishers_active='is-active' %}
+{% endblock navbaritems %}

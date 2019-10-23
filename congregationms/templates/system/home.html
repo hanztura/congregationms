@@ -1,16 +1,20 @@
-{% extends "base.html" %}
+{% extends "system/base.html" %}
 
 {% block main %}
-  <h1 class="title">Welcome to Congregation Management System!</h1>  
+  <div class="content">
+    <h1 class="title">Welcome to Congregation Management System!</h1>  
 
-  <p>Congregation Management System, <em>CongregationMS</em> for short, is a system for managing a Congregation's main tasks.</p>
-  <br>
-  <p>
-    These tasks includes:
-    <ul>
-      <li>Creating and maintaing Publisher Profiles.</li>
-      <li>Recording Monthly Field Service Reports.</li>
-      <li>and more.</li>
-    </ul>
-  </p>
+    <p>Congregation Management System, <em>CongregationMS</em> for short, is a system for managing a Congregation's main tasks.</p>
+    <br>
+    <p>
+        These tasks includes:
+      <ul>
+        <li>Creating and maintaing Publisher Profiles.</li>
+        <li>Recording Monthly Field Service Reports.</li>
+        <li>and more.</li>
+      </ul>
+    </p>
+    
+    <p><a href="{% url 'system-login' %}">Login</a> to start working!</p>
+  </div>
 {% endblock main %}

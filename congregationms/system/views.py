@@ -42,8 +42,6 @@ def login(request):
 def logout(request):
     user_logout(request)
 
-    message = 'Successfully logged out. Thank you!'
-    messages.success(request, message)
     return HttpResponseRedirect(reverse('home'))
 
 def dashboard(request):
