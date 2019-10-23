@@ -10,7 +10,7 @@
 
 {% block main %}
   <h1>Group List</h1>
-	<a href='{% url "publishers:group-create" %}'><button class="button is-success is-pulled-right">New</button></a>
+	<a href='{% url "publishers:group-create" %}'>{% include "_snippets/button_new.html" %}</a>
   <table class="table is-fullwidth">
     <thead>
       <tr>
@@ -25,9 +25,9 @@
           <td>{{ group.name|title }}</td>
           <td>{{ group.congregation|title }}</td>
           <td>
-            <a href='{% url "publishers:group-detail" group.pk %}'><span class="button is-outlined">view</span></a>
-            <a href='{% url "publishers:group-update" group.pk %}'><span class="button is-outlined">edit</span></a>
-            <a href='{% url "reports:mfs-history-group" group.pk %}'><span class="button is-outlined">view mfs history</span></a>
+            <a href='{% url "publishers:group-detail" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "publishers:group-update" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            <a href='{% url "reports:mfs-history-group" group.pk %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>mfs history</span></button></a>
           </td>
         </tr>
       {% endfor %}

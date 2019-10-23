@@ -6,7 +6,7 @@
 
 {% block main %}
   <h1>Publishers List</h1>
-  <a href='{% url "publishers:create" %}'><button class="button is-success is-pulled-right">New</button></a>
+  <a href='{% url "publishers:create" %}'>{% include "_snippets/button_new.html" %}</a>
 
   {% include "publishers/snippets/publisher_table_list.html" %}
 {% endblock main %}

@@ -9,7 +9,7 @@
 
   <div class="field is-pulled-right">
     <div class="control">
-      <a href='{% url "reports:mfs-create" %}'><button class="button is-success" title="Create new record">New</button></a>
+      <a href='{% url "reports:mfs-create" %}'>{% include "_snippets/button_new.html" with new_button_title='Create new record' %}</a>
     </div>
   </div>
 
@@ -48,8 +48,8 @@
             </td>
             <td>{{ report.group.name }}</td>
             <td>
-              <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">view</span></a>
-              <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">edit</span></a>
+              <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+              <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
             </td>
           </tr>
       {% endfor %}

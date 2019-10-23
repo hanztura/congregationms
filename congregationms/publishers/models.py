@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from django.db import models
 from django.urls import reverse
@@ -18,10 +17,8 @@ class Publisher(models.Model):
     date_of_baptism = models.DateField(blank=True, null=True)
     contact_numbers = models.CharField(max_length=200, blank=True)
 
-
     class Meta:
         ordering = 'last_name', 'first_name', 'middle_name'
-
 
     def __str__(self):
         name = self.name
@@ -65,8 +62,7 @@ class Publisher(models.Model):
                 return pioneering.is_active_rp(date)
 
             return False
-    
-    
+
 
 class Group(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -85,15 +81,20 @@ class Group(models.Model):
         members = [member.publisher for member in members]
 
         return members
-    
 
 
 class Member(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_members')
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='group_members')
+    group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, related_name='group_members')
+    publisher = models.ForeignKey(
+        Publisher, on_delete=models.CASCADE, related_name='group_members')
     is_active = models.BooleanField(default=False)
     date_from = models.DateField(blank=True, null=True, verbose_name='from')
     date_to = models.DateField(blank=True, null=True, verbose_name='to')
 
     def __str__(self):
         return '{} in Group {}'.format(self.publisher, self.group)
+
+    @property
+    def group_name(self):
+        return str(self.group)

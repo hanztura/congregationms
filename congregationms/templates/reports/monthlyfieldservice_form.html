@@ -101,11 +101,9 @@
     </div>
 
     {% if report %}
-      <input class="button is-success is-fullwidth" type="submit" value="Save">
-    {% endif %}
-
-    {% if not report %}
-      <button :disabled="disableSubmit" class="button is-success is-fullwidth" type="button" @click="submitForm">Create</button>
+        {% include "_snippets/button_save.html" %}
+    {% else %}
+      <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
     {% endif %}
   </form>  
 {% endblock main %}

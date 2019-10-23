@@ -81,9 +81,9 @@
       {% endif %}
 
       {% if publisher %}
-        <input class="button is-success is-fullwidth" type="submit" value="Save">
+        {% include "_snippets/button_save.html" %}
       {% else %}
-        <input class="button is-success is-fullwidth" type="submit" value="Create">
+        {% include "_snippets/button_create.html" %}
       {% endif %}
     </form>
 {% endblock main %}
