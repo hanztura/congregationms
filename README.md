@@ -1,0 +1,1 @@
+sass --sourcemap=none static/sass/mystyles.scss:static/sass/css/mystyles.min.css --style compressed
