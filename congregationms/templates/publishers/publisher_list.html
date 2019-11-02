@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "publishers/base.html" %}
 
 {% block title %}
   <title>Publishers</title>  
@@ -6,9 +6,7 @@
 
 {% block main %}
   <h1>Publishers List</h1>
-  <ul>
-    {% for publisher in object_list %}
-      <li>{{ publisher.name }}</li>
-    {% endfor %}
-  </ul>
+  <a href='{% url "publishers:create" %}'>{% include "_snippets/button_new.html" %}</a>
+
+  {% include "publishers/snippets/publisher_table_list.html" %}
 {% endblock main %}

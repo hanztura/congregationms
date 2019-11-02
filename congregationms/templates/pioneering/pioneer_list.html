@@ -1,0 +1,38 @@
+{% extends "pioneering/base.html" %}
+
+{% block title %}
+  <title>Pioneers</title>  
+{% endblock title %}
+
+{% block main %}
+  <h1>Pioneers List</h1>
+  <a href='{% url "pioneering:create" %}'>{% include "_snippets/button_new.html" %}</a>
+
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Publisher</th>
+        <th class="has-text-centered">RP</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pioneer in pioneers %}
+        <tr>
+          <td>{{ pioneer.publisher.name|title }}</td>
+          <td class="has-text-centered">{{ pioneer.is_active_rp }}</td>
+          <td>
+            <a href='{% url "pioneering:detail" pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "pioneering:update" pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a></td>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not pioneers %}
+        <tr>
+          <td colspan="3" class="has-text-centered">No members. Please add.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}

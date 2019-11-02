@@ -1,0 +1,89 @@
+{% extends "publishers/base.html" %}
+
+{% block title %}
+  {% if publisher %} 
+    <title>Publisher Edit | {{ publisher.name|title }}</title> 
+  {% else %} 
+    <title>Publisher New</title>  
+  {% endif %}
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  {% if publisher %}
+    <li><a href='{% url "publishers:detail" publisher.slug %}'>{{ publisher.name|title }}</a></li>
+    <li class="is-active"><a href='#'>Edit</a></li>  
+  {% else %}
+    <li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  {% if publisher %} 
+    <h1>Publisher Edit</h1>
+    <p class="is-size-3">Edit Publisher Profile</p>  
+  {% else %} 
+    <h1>Publisher New</h1>
+    <p class="is-size-3">Create a New Publisher Profile</p>  
+  {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">Last Name</label>
+        <div class="control">
+          <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
+        {{form.last_name.errors}}
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">First Name</label>
+        <div class="control">
+          <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
+        {{form.first_name.errors}}
+        </div>
+      </div>
+      {% if publisher %}  
+        <div class="field">
+          <label class="label">Middle Name</label>
+          <div class="control">
+          <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}">
+          {{form.middle_name.errors}}
+          </div>
+        </div>
+      {% endif %}
+      <div class="field">
+        <label class="label">Slug</label>
+        <div class="control">
+        <input class="input" type="text" name="slug" value="{{ form.slug.value|default:'' }}"required>
+        {{form.slug.errors}}
+        </div>
+      </div>
+
+      {% if publisher %}
+      <div class="field">
+        <label class="label">Date of Birth</label>
+        <div class="control">
+        <input class="input" type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Date of Baptism</label>
+        <div class="control">
+        <input  class="input" type="date" name="date_of_baptism" value="{{ form.date_of_baptism.value|date:'Y-m-d' }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Contact Numbers</label>
+        <div class="control">
+        <textarea class="textarea" name="contact_numbers" value="{{ form.contact_numbers.value }}" placeholder="0907123456, 09189876543"></textarea>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if publisher %}
+        {% include "_snippets/button_save.html" %}
+      {% else %}
+        {% include "_snippets/button_create.html" %}
+      {% endif %}
+    </form>
+{% endblock main %}

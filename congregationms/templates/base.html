@@ -1,4 +1,4 @@
-{% load static%}
+{% load static %}
 
 <!DOCTYPE html>
 <html>
@@ -6,23 +6,117 @@
   {% block title %}
   <title>Home | Congregation Management System</title>
   {% endblock title %}
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='{% static "sass/css/mystyles.min.css" %}' rel="stylesheet">
+  {% block headblock %}{% endblock headblock %}
+  <script defer src='{% static "vendors/fontawesome.js" %}'></script>
 </head>
 <body>
+  <div class="columns">
+    <div class="column is-full">
+
     {% block header %}
-      
-    {% endblock header %}
+      <nav id="navbar" class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <img src="{% static 'congregationms.png' %}" width="112" height="28">
+          </a>
 
-    {% block main %}
-      
-    {% endblock main %}
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" @click="toggleNavbarMenu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
 
+        <div id="navbarMenu" class="navbar-menu" :class="{ 'is-active': active }">
+          <div class="navbar-start">
+            {% block navbaritems %}
+              {% include "_snippets/navbar_items.html" %}
+            {% endblock navbaritems %}
+          </div>
+
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                {% if request.user.is_authenticated %}
+                  <a class="button is-primary">
+                    <strong>Hi, {{user.username|upper}}!</strong>
+                  </a>
+                  
+                  <a class="button is-light" href="{% url 'system-logout' %}">
+                    Log out
+                  </a>
+                {% else %}
+                  <a class="button is-light" href="{% url 'system-login' %}">
+                    Log in
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    {% endblock header %}      
+      
+    </div>
+  </div>
+
+  <div class="columns is-gapless">
+    <div class="column">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+          <ul>
+            {% block breadcrumbs %}{% endblock breadcrumbs %}
+          </ul>
+        </nav>
+      </div>
+
+      <main class="container" id="app">
+        {% block main %}
+        {% endblock main %}
+      </main>
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="column is-one-fifth">
+        {% include "aside.html" %}
+      </div>
+    {% endif %}
+  </div><!--columns -->
 
     {% block footer %}
       
     {% endblock footer %}
+
+  <script src='{% static "vendors/vue.js" %}'></script>
+
+  {% block vueinstance %}
+    <script>
+      vueinstance = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: () => ({
+        })
+      });
+    </script>
+  {% endblock vueinstance %}
+
+  <script>
+    navbarVue = new Vue({
+      el: '#navbar',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        active: false
+      }),
+      methods: {
+        toggleNavbarMenu: function () {
+          this.active = !this.active
+        }
+      }
+    });
+  </script>
+
+  {% block endscript %}{% endblock endscript %}
 </body>
 </html>

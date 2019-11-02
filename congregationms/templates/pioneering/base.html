@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+
+{% block breadcrumbs %}
+  <li><a href='{% url "pioneering:index" %}'>Pioneers</a></li>
+  {% block subbreadcrumbs %}{% endblock subbreadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block navbaritems %}
+  {% include "_snippets/navbar_items.html" with pioneering_active='is-active' %}
+{% endblock navbaritems %}

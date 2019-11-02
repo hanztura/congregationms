@@ -1,0 +1,14 @@
+<a class="navbar-item {{home_active}}" href="/">
+  Home
+</a>
+<a class="navbar-item {{publishers_active}}" href='{% url "publishers:index" %}'>
+  Publishers
+</a>
+
+<a class="navbar-item {{pioneering_active}}" href='{% url "pioneering:index" %}'>
+  Pioneering
+</a>
+
+<a class="navbar-item {{mfs_active}}" href='{% url "reports:mfs-index" %}'>
+  Monthly Field Service
+</a>

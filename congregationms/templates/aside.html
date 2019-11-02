@@ -1,0 +1,35 @@
+
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a href="{% url 'system:dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'pioneering:index' %}">Pioneering</a></li>
+        </ul>
+
+        <p class="menu-label">Publishers</p>
+        <ul class="menu-list">
+          <li><a href="{% url 'publishers:index' %}">Publishers</a></li>
+          <li><a href="{% url 'publishers:group-index' %}">Groups</a></li>
+        </ul>
+
+        <p class="menu-label">Reports</p>
+        <ul class="menu-list">
+          <li><a href="{% url 'reports:mfs-index' %}">Monthly Field Service</a></li>
+        </ul>
+
+        {% if messages %}
+          <article class="message is-info">
+            <div class="message-header">
+              <p>Notifications</p>
+              <button class="delete" aria-label="delete"></button>
+            </div>
+            <div class="message-body">
+              <ul>
+                {% for message in messages %}
+                  <li class="is-{{ message.tags }}">{{message}}</li>
+                {% endfor %}
+              </ul>  
+            </div>
+          </article>
+        {% endif %}
+      </aside>

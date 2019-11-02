@@ -1,0 +1,70 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>Monthly Field Service - List</title>  
+{% endblock title %}
+
+{% block main %}
+  <h1>Monthly Field Service</h1>
+
+  <div class="field is-pulled-right">
+    <div class="control">
+      <a href='{% url "reports:mfs-create" %}'>{% include "_snippets/button_new.html" with new_button_title='Create new record' %}</a>
+    </div>
+  </div>
+
+  <form>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Month/Year:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+              <input class="input" type="month" name="monthyear" value="{{monthyear}}">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+              <input class="button is-info is-outlined" type="submit" value="search">
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Group</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for report in object_list %}
+          <tr>
+            <td>
+              {{ report.publisher|title }} {% if report.pioneering %}({{report.pioneering.pioneer_type}}){% endif %}
+            </td>
+            <td>{{ report.group.name }}</td>
+            <td>
+              <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+              <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}
+
+{% block vueinstance %}
+  <script>
+    vueinstance = new Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      data: () => ({
+        
+      })
+    });
+  </script>
+{% endblock vueinstance %}

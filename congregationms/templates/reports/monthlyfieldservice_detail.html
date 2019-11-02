@@ -1,0 +1,84 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>Monthly Field Service Detail | {{report.publisher|title}} for {{report.month_ending|date:'M-Y'}}</title>
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>Detail</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  <h1>Monthly Field Service Report</h1>
+  
+  <div class="field is-grouped is-pulled-right">
+
+    <div class="control">
+      <form id="form--{{ report.pk }}" action='{% url "reports:mfs-delete" report.pk %}' method="POST">
+        {% csrf_token %}
+        <button class="button is-outlined" type="submit" form="form--{{ report.pk }}">{% include "_snippets/icon_trash.html" %}</button>
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "reports:mfs-update" report.pk %}'><button class="button is-outlined">{% include "_snippets/icon_edit.html" %}</button></a>
+    </div>
+  </div>
+  
+  <p><span class="is-size-3">{{ report.publisher|title }}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" with publisher=report.publisher %}</p>
+  <p><a href='{% url "reports:mfs-history" publisher_slug %}'>View history</a></p>
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <th>Month</th>
+        <td><strong>{{ report.month_ending|date:'M-Y' }}</strong></td>
+      </tr>
+
+      <tr>
+        <th>Placements</th>
+        <td>{{ report.placements }}</td>
+      </tr>
+
+      <tr>
+        <th>Video Showings</th>
+        <td>{{ report.video_showing }}</td>
+      </tr>
+      
+      <tr>
+        <th>Hours</th>
+        <td>{{ report.hours }}</td>
+      </tr>
+      
+      <tr>
+        <th>Return Visits</th>
+        <td>{{ report.return_visits }}</td>
+      </tr>
+      
+      <tr>
+        <th>Bible Studies</th>
+        <td>{{ report.bible_study }}</td>
+      </tr>
+      
+      <tr>
+        <th>Comments</th>
+        <td>{{ report.comments }}</td>
+      </tr>
+
+      <tr>
+        <th>Pioneer</th>
+        <td>
+          <span class="icon">
+            {% if pioneering %}
+              <i class="fas fa-check has-text-success"></i>
+              {{pioneering}}
+            {% else %}
+              <i class="fas fa-times has-text-danger"></i>
+            {% endif %}
+          </span>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+{% endblock main %}

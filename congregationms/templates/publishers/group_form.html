@@ -1,0 +1,104 @@
+{% extends "publishers/base_group.html" %}
+
+{% block title %}
+  {% if group %}
+    <title>Group Edit | {{group|title}}</title>  
+  {% else %}
+    <title>Group New</title>  
+  {% endif %}
+{% endblock title %}
+
+{% block groupbreadcrumbs %}
+  {% if  group %}
+    <li><a href='{% url "publishers:group-detail" group.pk %}'>{{ group|title }}</a></li>
+  	<li class="is-active"><a href='#'>Edit</a></li>  
+  {% else %}
+  	<li class="is-active"><a href='#'>New</a></li>  
+  {% endif %}
+{% endblock groupbreadcrumbs %}
+
+{% block main %}
+  {% if  group %}
+    <h1>Group Edit</h1>
+    <p class="is-size-3">Edit Group</p>
+  {% else %}
+    <h1>Group New</h1>
+    <p class="is-size-3">Create a New Group</p>  
+  {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+          <input class="input" type="text" name="name" value="{{ group.name}}" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Congregation</label>
+        <div class="control">
+        	<div class="select is-fullwidth">
+        		{{form.congregation}}
+        	</div>
+        </div>
+      </div>
+
+      {# group members #}
+      <section>
+        <h2>Members</h2>
+        {{ members.management_form }}
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th class="has-text-centered">Publisher</th>
+              <th class="has-text-centered">Active</th>
+              <th class="has-text-centered">From</th>
+              <th class="has-text-centered">To</th>
+              <th class="has-text-centered">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for form in members %}
+              <tr>
+                <td>
+                  <div class="select is-fullwidth">
+                    {{form.publisher}}
+                  </div>
+                </td>
+
+                <td class="has-text-centered">
+                  <label class="checkbox" for="{{form.is_active.id_for_label}}">
+                    <input type="checkbox" name="{{form.is_active.html_name}}" id="{{form.is_active.id_for_label}}" {% if form.is_active.value %}checked="{{form.is_active.value}}"{% endif %}>
+                  </label>
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_from.html_name}}" id="{{form.date_from.id_for_label}}" value="{{form.date_from.value|date:'Y-m-d'}}">
+                </td>
+
+                <td>
+                  <input class="input is-fullwidth" type="date" name="{{form.date_to.html_name}}" id="{{form.date_to.id_for_label}}" value="{{form.date_to.value|date:'Y-m-d'}}">
+                  {{form.id}}
+                  {{form.group}}
+                </td>
+                <td>
+                  {% if members.can_delete %}
+                    {{form.DELETE}} 
+                  {% else %}
+                    <input type="checkbox" disabled>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      {% if group %}
+        {% include "_snippets/button_save.html" %}
+      {% else %}
+        {% include "_snippets/button_create.html" %}
+      {% endif %}
+    </form>
+{% endblock main %}

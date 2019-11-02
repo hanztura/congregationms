@@ -1,0 +1,36 @@
+{% extends "publishers/base_group.html" %}
+
+{% block title %}
+  <title>Groups</title>  
+{% endblock title %}
+
+{% block groupbreadcrumbs %}
+	<li class="is-active">List</li>	
+{% endblock groupbreadcrumbs %}
+
+{% block main %}
+  <h1>Group List</h1>
+	<a href='{% url "publishers:group-create" %}'>{% include "_snippets/button_new.html" %}</a>
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Congregation</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for group in object_list %}
+        <tr>
+          <td>{{ group.name|title }}</td>
+          <td>{{ group.congregation|title }}</td>
+          <td>
+            <a href='{% url "publishers:group-detail" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "publishers:group-update" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            <a href='{% url "reports:mfs-history-group" group.pk %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock main %}
