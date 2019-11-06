@@ -1,6 +1,7 @@
-import uuid
+import os, uuid
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -209,8 +210,9 @@ def sample_mfs(request, pk):
         'congregation': congregation,
         'month': month
     }
-    s = '/home/hanz/projects/congregationms/media/{}.docx'.format(
-        str(uuid.uuid1()))
+    filename = '{}.docx'.format(str(uuid.uuid1()))
+    s = os.path.join(settings.ROOT_DIR, 'media')
+    s = os.path.join(s, filename)
     doc = generate_mfs(data)
     doc.save(s)
     return FileResponse(

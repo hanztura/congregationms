@@ -65,7 +65,7 @@
 		<thead>
 			<tr>
 				<th class="has-text-centered">Month</th>
-				{% if group %}<th>Publisher</th>{% endif %}
+				{% if not group %}<th>Publisher</th>{% endif %}
 				<th class="has-text-centered" title="Placements">P</th>
 				<th class="has-text-centered" title="Video Showings">VS</th>
 				<th class="has-text-centered">Hours</th>
@@ -89,7 +89,11 @@
 			{% endfor %}
 			{% if not reports %}
 			<tr>
-				<td colspan=7>No data available.</td>
+				{% if group %}
+					<td class="has-text-centered" colspan=7>No data available.</td>	
+				{% else %}
+					<td class="has-text-centered" colspan=8>No data available.</td>
+				{% endif %}
 			</tr>	
 			{% endif %}
 		</tbody>
