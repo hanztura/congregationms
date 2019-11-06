@@ -25,7 +25,7 @@ APPS_DIR = ROOT_DIR.path('congregationms')
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'l=w0%rdlz74xuy2*i*rsqr8b=ppn@eui7rz4i^uo3b-2)ny2)s'
+SECRET_KEY = os.environ.setdefault('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'system',
     'publishers',
     'pioneering',
-    'reports'
+    'reports',
+    'mailing',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'congregationms.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database

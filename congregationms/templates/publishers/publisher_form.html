@@ -1,4 +1,5 @@
 {% extends "publishers/base.html" %}
+{% load static %}
 
 {% block title %}
   {% if publisher %} 
@@ -26,23 +27,32 @@
     <p class="is-size-3">Create a New Publisher Profile</p>  
   {% endif %}
 
-    <form method="POST">
+    <form method="POST" id="form--publisher-form">
       {% csrf_token %}
       <div class="field">
         <label class="label">Last Name</label>
         <div class="control">
-          <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
+          <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" ref="lastName" @change="updateSlug" required>
         {{form.last_name.errors}}
         </div>
       </div>
       <div class="field">
         <label class="label">First Name</label>
         <div class="control">
-          <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
+          <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" ref="firstName" @change="updateSlug" required>
         {{form.first_name.errors}}
         </div>
       </div>
-      {% if publisher %}  
+
+      <div class="field">
+        <label class="label">Slug</label>
+        <div class="control">
+        <input class="input" type="text" name="slug" value="{{ form.slug.value|default:'' }}" ref="slug" required>
+        {{form.slug.errors}}
+        </div>
+      </div>
+
+      {% if publisher %}
         <div class="field">
           <label class="label">Middle Name</label>
           <div class="control">
@@ -50,16 +60,7 @@
           {{form.middle_name.errors}}
           </div>
         </div>
-      {% endif %}
-      <div class="field">
-        <label class="label">Slug</label>
-        <div class="control">
-        <input class="input" type="text" name="slug" value="{{ form.slug.value|default:'' }}"required>
-        {{form.slug.errors}}
-        </div>
-      </div>
 
-      {% if publisher %}
       <div class="field">
         <label class="label">Date of Birth</label>
         <div class="control">
@@ -87,3 +88,34 @@
       {% endif %}
     </form>
 {% endblock main %}
+
+{% block endscript %}
+  {% if debug %}
+      <script src="{% static 'vendors/lodash/lodash.min.js' %}"></script>
+  {% else %}
+      <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/kebabCase.js"></script>
+  {% endif %}
+
+  <script>
+    publisherFormApp = new Vue({
+      el: '#form--publisher-form',
+      delimiters: ['[[', ']]'],
+
+      data: () => {
+        return {
+        }
+      },
+
+      methods: {
+        updateSlug() {
+          let lastName = this.$refs.lastName.value;
+          let firstName = this.$refs.firstName.value;
+          let slug = lastName + ' ' + firstName;
+
+          slug = _.kebabCase(slug);
+          this.$refs.slug.value = slug;
+        }
+      }
+    });
+  </script>  
+{% endblock endscript %}
