@@ -78,7 +78,7 @@
 			{% for report in  reports %}
 			<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
 				<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
-				{% if group %}<td>{{report.publisher|title}}</td>{% endif %}
+				{% if not group %}<td>{{report.publisher|title}}</td>{% endif %}
 				<td class="has-text-centered">{{report.placements}}</td>
 				<td class="has-text-centered">{{report.video_showing}}</td>
 				<td class="has-text-centered">{{report.hours}}</td>
