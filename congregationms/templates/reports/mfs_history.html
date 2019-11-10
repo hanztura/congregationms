@@ -69,7 +69,7 @@
 			<thead>
 				<tr>
 					<th class="has-text-centered">Month</th>
-					{% if not group %}<th>Publisher</th>{% endif %}
+					{% if group %}<th>Publisher</th>{% endif %}
 					<th class="has-text-centered" title="Placements">P</th>
 					<th class="has-text-centered" title="Video Showings">VS</th>
 					<th class="has-text-centered">Hours</th>
@@ -82,7 +82,7 @@
 				{% for report in  reports %}
 				<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
 					<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
-					{% if not group %}<td>{{report.publisher|title}}</td>{% endif %}
+					{% if group %}<td>{{report.publisher|title}}</td>{% endif %}
 					<td class="has-text-centered">{{report.placements}}</td>
 					<td class="has-text-centered">{{report.video_showing}}</td>
 					<td class="has-text-centered">{{report.hours}}</td>
@@ -94,9 +94,9 @@
 				{% if not reports %}
 				<tr>
 					{% if group %}
-						<td class="has-text-centered" colspan=7>No data available.</td>	
+						<td class="has-text-centered" colspan=8>No data available.</td>	
 					{% else %}
-						<td class="has-text-centered" colspan=8>No data available.</td>
+						<td class="has-text-centered" colspan=7>No data available.</td>
 					{% endif %}
 				</tr>	
 				{% endif %}

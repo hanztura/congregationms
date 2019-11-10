@@ -191,7 +191,8 @@ def sample_mfs(request, pk):
         'queryset': data['queryset'],
         'group': group.name,
         'congregation': str(group.congregation),
-        'month': period
+        'month': period,
+        'totals': data['totals'],
     }
     fullpath = generate_mfs(data)['fullpath']
     return FileResponse(
@@ -231,7 +232,8 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
             'queryset': data['queryset'],
             'group': group,
             'congregation': congregation,
-            'month': period
+            'month': period,
+            'totals': data['totals'],
         }
         filename = generate_mfs(data, 'publisher')['filename']
 
