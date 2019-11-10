@@ -193,11 +193,7 @@ def sample_mfs(request, pk):
         'congregation': str(group.congregation),
         'month': period
     }
-    filename = '{}.docx'.format(str(uuid.uuid1()))
-    fullpath = os.path.join(settings.ROOT_DIR, 'media')
-    fullpath = os.path.join(fullpath, filename)
-    doc = generate_mfs(data)
-    doc.save(fullpath)
+    fullpath = generate_mfs(data)['fullpath']
     return FileResponse(
         open(fullpath, 'rb'),
         as_attachment=True,
@@ -237,11 +233,7 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
             'congregation': congregation,
             'month': period
         }
-        filename = '{}.docx'.format(str(uuid.uuid1()))
-        fullpath = os.path.join(settings.ROOT_DIR, 'media')
-        fullpath = os.path.join(fullpath, filename)
-        doc = generate_mfs(data, 'publisher')
-        doc.save(fullpath)
+        filename = generate_mfs(data, 'publisher')['filename']
 
         # redirect
         url = reverse_lazy('mailing:new', args=[publisher.pk])  # base url

@@ -1,3 +1,7 @@
+import os
+import uuid
+
+from django.conf import settings
 from django.db.models import Sum
 
 from docx import Document
@@ -117,7 +121,16 @@ def generate_mfs(data, report_type='group'):
 
     doc.add_page_break()
 
-    return doc
+    filename = '{}.docx'.format(str(uuid.uuid1()))
+    fullpath = os.path.join(settings.ROOT_DIR, 'media')
+    fullpath = os.path.join(fullpath, filename)
+    doc.save(fullpath)
+
+    return {
+        'doc': doc,
+        'filename': filename,
+        'fullpath': fullpath,
+    }
 
 
 def mfs_stats(month, year):
