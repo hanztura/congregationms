@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import CreateView
+from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
+from django.views.generic.edit import CreateView
 
 from .forms import MailModelForm
 from .models import Mail
@@ -37,4 +38,5 @@ class MailCreateView(LoginRequiredMixin, CreateView):
             messages.error(
                 self.request,
                 'Something went wrong. Unable to share via email. Please check your internet connection.')
+            return HttpResponseRedirect(self.request.GET.get(on_fail))
         return _value

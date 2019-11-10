@@ -249,11 +249,12 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
             month_ending__year__lte=to_year
         )
 
+        referer = self.request.headers['Referer']
         if queryset.count() < 1:
             messages.warning(
                 self.request,
                 "Unable to share MFS History with no data.")
-            return self.request.headers['Referer']
+            return referer
 
         _from = '{}-{}'.format(from_month, from_year)
         _to = '{}-{}'.format(to_month, to_year)
@@ -276,6 +277,8 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
 
         # redirect
         url = reverse_lazy('mailing:new', args=[publisher.pk])  # base url
-        query_string = urlencode({'filename': filename})
+        query_string = urlencode({
+            'filename': filename,
+            'on_fail': referer})
         url = '{}?{}'.format(url, query_string)
         return url
