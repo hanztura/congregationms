@@ -9,6 +9,9 @@ from .models import Mail
 
 
 class MailCreateView(LoginRequiredMixin, CreateView):
+    """
+    Receive query params [filename].
+    """
     form_class = MailModelForm
     model = Mail
 
@@ -26,7 +29,6 @@ class MailCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self, *args, **kwargs):
         return reverse('publishers:index')
 
-
     def form_valid(self, form):
         _value = super().form_valid(form)
 
@@ -35,8 +37,8 @@ class MailCreateView(LoginRequiredMixin, CreateView):
                 self.request,
                 'Successfully shared via email!')
         else:
-            messages.error(
-                self.request,
-                'Something went wrong. Unable to share via email. Please check your internet connection.')
-            return HttpResponseRedirect(self.request.GET.get(on_fail))
+            message = 'Something went wrong. Unable to share via \
+                        email. Please check your internet connection.'
+            messages.error(self.request, message)
+            return HttpResponseRedirect(self.request.GET.get('on_fail'))
         return _value

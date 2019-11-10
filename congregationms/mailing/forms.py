@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.mail import get_connection, EmailMessage
 
 from .models import Mail, UserMail
+from .utils import user_has_no_mail
 
 
 class UserMailModelForm(ModelForm):
@@ -42,6 +43,14 @@ class MailModelForm(ModelForm):
         attachment = self.cleaned_data['attachment']
         attachment = os.path.join(settings.MEDIA_ROOT, attachment)
         return attachment
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if user_has_no_mail(self.user.pk):
+            msg = 'Please setup your user mailing settings first.'
+            self.add_error('', msg)
+
+        return cleaned_data
 
     def save(self, commit=False):
         mail = super().save(commit=commit)
