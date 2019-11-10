@@ -123,6 +123,9 @@ def generate_mfs(data, report_type='group'):
 
     filename = '{}.docx'.format(str(uuid.uuid1()))
     fullpath = os.path.join(settings.ROOT_DIR, 'media')
+    fullpath = os.path.join(fullpath, 'temp--mfs_export')
+    if not os.path.exists(fullpath):
+        os.mkdir(fullpath)
     fullpath = os.path.join(fullpath, filename)
     doc.save(fullpath)
 
