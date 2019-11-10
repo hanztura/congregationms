@@ -144,3 +144,8 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/login/'
 
 INTERNAL_IPS = ('127.0.0.1', 'localhost')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+SECRET_KEY = os.environ.setdefault('SECRET_KEY_CONGREGATIONMS', '')
