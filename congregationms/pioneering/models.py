@@ -16,12 +16,13 @@ DATE_NOW = datetime.now().date()
 class Pioneer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.SlugField(max_length=50, unique=True, blank=True)
-    publisher = models.OneToOneField(Publisher, on_delete=models.CASCADE, related_name='pioneering')
-    is_active = models.BooleanField(default=False, blank=True)
-
+    publisher = models.OneToOneField(
+        Publisher, on_delete=models.CASCADE, related_name='pioneering')
+    is_active = models.BooleanField(default=False, blank=True, editable=False)
 
     class Meta:
-        ordering = 'publisher__last_name', 'publisher__first_name', 'publisher__middle_name'
+        ordering = ('publisher__last_name', 'publisher__first_name',
+                    'publisher__middle_name')
 
     def __str__(self):
         return str(self.publisher)
@@ -32,10 +33,18 @@ class Pioneer(models.Model):
     @property
     def name(self):
         return str(self.publisher)
-    
+
     @property
     def slug(self):
         return self.code
+
+    def save(self, *args, **kwargs):
+        active = False
+        pioneer_details = self.details.filter(has_ended=False)
+        if pioneer_details.count() > 0:
+            active = True
+        self.is_active = active
+        super().save(*args, **kwargs)
 
     def is_active_rp(self, date=DATE_NOW):
         """
@@ -46,8 +55,10 @@ class Pioneer(models.Model):
             pioneer_type='RP',
             date_start__lte=date
         )
-        pioneer_details_not_ended = pioneer_details.filter(date_end__gte=date).first()
-        pioneer_details_continous = pioneer_details.filter(date_end=None).first()
+        pioneer_details_not_ended = pioneer_details.filter(
+            date_end__gte=date).first()
+        pioneer_details_continous = pioneer_details.filter(
+            date_end=None).first()
         if pioneer_details_not_ended or pioneer_details_continous:
             active = True
 
@@ -58,11 +69,13 @@ class Pioneer(models.Model):
             pioneer_type='RP',
             date_start__lte=date
         )
-        pioneer_details_not_ended = pioneer_details.filter(date_end__gte=date).first()
+        pioneer_details_not_ended = pioneer_details.filter(
+            date_end__gte=date).first()
         if pioneer_details_not_ended:
             return pioneer_details_not_ended
 
-        pioneer_details_continous = pioneer_details.filter(date_end=None).first()
+        pioneer_details_continous = pioneer_details.filter(
+            date_end=None).first()
         if pioneer_details_continous:
             return pioneer_details_continous
 
@@ -76,13 +89,14 @@ class PioneerType(Enum):
 
 
 class PioneerDetail(models.Model):
-    pioneer = models.ForeignKey(Pioneer, on_delete=models.CASCADE, related_name='details')
+    pioneer = models.ForeignKey(
+        Pioneer, on_delete=models.CASCADE, related_name='details')
     pioneer_type = models.CharField(
         max_length=2, choices=[(p.name, p.value) for p in PioneerType]
     )
     date_start = models.DateField()
     date_end = models.DateField(blank=True, null=True)
-    has_ended = models.BooleanField(default=False, blank=True)
+    has_ended = models.BooleanField(default=False, blank=True, editable=False)
 
     def __str__(self):
         name = '{} - {}'.format(self.pioneer.name, self.pioneer_type)
@@ -97,7 +111,6 @@ class PioneerDetail(models.Model):
                     self.has_ended = True
 
         super().save(*args, **kwargs)
-
 
     @property
     def publisher(self):

@@ -42,10 +42,10 @@ class PioneerCreateView(LoginRequiredMixin, CreateView):
         details = context['details']
 
         with transaction.atomic():
-            self.object = form.save()
             if details.is_valid():
                 details.instance = self.object
                 details.save()
+                self.object = form.save()
 
         messages.success(
             self.request,
@@ -59,9 +59,7 @@ class PioneerCreateView(LoginRequiredMixin, CreateView):
 
 class PioneerUpdateView(LoginRequiredMixin, UpdateView):
     model = Pioneer
-    fields = [
-        'publisher', 'code', 'is_active'
-    ]
+    fields = ['publisher', 'code']
     context_object_name = 'pioneer'
     slug_field = 'code'
 
@@ -71,6 +69,7 @@ class PioneerUpdateView(LoginRequiredMixin, UpdateView):
             data['details'] = PioneerDetailFormSet(self.request.POST, instance=self.object)
         else:
             data['details'] = PioneerDetailFormSet(instance=self.object)
+        data['is_active'] = self.object.is_active
         return data
 
 
@@ -79,10 +78,10 @@ class PioneerUpdateView(LoginRequiredMixin, UpdateView):
         details = context['details']
 
         with transaction.atomic():
-            self.object = form.save()
             if details.is_valid():
                 details.instance = self.object
                 details.save()
+                self.object = form.save()
 
         messages.success(
             self.request,
