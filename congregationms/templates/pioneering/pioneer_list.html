@@ -20,7 +20,13 @@
       {% for pioneer in pioneers %}
         <tr>
           <td>{{ pioneer.publisher.name|title }}</td>
-          <td class="has-text-centered">{{ pioneer.is_active_rp }}</td>
+          <td class="has-text-centered">
+            {% if  pioneer.is_active_rp %}
+                {% include "_snippets/icon_check.html" %}
+            {% else %}
+              {% include "_snippets/icon_times.html" %}
+            {% endif %}
+          </td>
           <td>
             <a href='{% url "pioneering:detail" pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
             <a href='{% url "pioneering:update" pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a></td>
