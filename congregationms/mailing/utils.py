@@ -1,6 +1,8 @@
 from django.core.mail import get_connection
 from django.core.mail import send_mail
 
+from .models import UserMail
+
 
 def send_email(user_mail):
     # user_mail = self.instance.user_mail
@@ -21,3 +23,11 @@ def send_email(user_mail):
     mail_result = send_mail('test', 'hello world', username,
                             ['hanz@xofytech.com', ], connection=connection)
     return mail_result
+
+
+def user_has_no_mail(pk):
+    mail = UserMail.objects.filter(user=pk)
+    if mail.count() < 1:
+        return True
+    else:
+        return False
