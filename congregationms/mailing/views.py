@@ -36,5 +36,5 @@ class MailCreateView(LoginRequiredMixin, CreateView):
         else:
             messages.error(
                 self.request,
-                'Something went wrong.')
+                'Something went wrong. Unable to share via email. Please check your internet connection.')
         return _value

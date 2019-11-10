@@ -62,7 +62,7 @@ class MailModelForm(ModelForm):
         port = user_mail.tls_port
         connection = get_connection(
             backend='django.core.mail.backends.smtp.EmailBackend',
-            fail_silently=False,
+            fail_silently=True,
             host=host,
             port=port,
             username=username,
@@ -84,7 +84,7 @@ class MailModelForm(ModelForm):
             connection=connection
         )
         email.attach_file(attachment)
-        mail_result = email.send(fail_silently=False)
+        mail_result = email.send(fail_silently=True)
 
         if mail_result:
             self.instance.sent = True

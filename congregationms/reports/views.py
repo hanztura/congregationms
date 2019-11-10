@@ -249,6 +249,12 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
             month_ending__year__lte=to_year
         )
 
+        if queryset.count() < 1:
+            messages.warning(
+                self.request,
+                "Unable to share MFS History with no data.")
+            return self.request.headers['Referer']
+
         _from = '{}-{}'.format(from_month, from_year)
         _to = '{}-{}'.format(to_month, to_year)
 
