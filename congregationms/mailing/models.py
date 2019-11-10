@@ -6,6 +6,9 @@ from system.models import User
 
 
 class UserMail(models.Model):
+    """
+    User SMTP settings. Designed with GMail settings.
+    """
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='mail')
     server = models.CharField(max_length=200)
     tls = models.BooleanField(default=True)

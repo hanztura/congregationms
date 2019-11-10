@@ -1,13 +1,16 @@
 import os, uuid
 from datetime import datetime
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from django.views.generic.base import RedirectView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
@@ -195,6 +198,7 @@ def sample_mfs(request, pk):
     _from = '{}-{}'.format(from_month, from_year)
     _to = '{}-{}'.format(to_month, to_year)
 
+    # filter for group only
     group = Group.objects.get(pk=pk)
     queryset = queryset.order_by(
         '-month_ending', 'publisher__last_name', 'publisher__first_name')
@@ -211,11 +215,61 @@ def sample_mfs(request, pk):
         'month': month
     }
     filename = '{}.docx'.format(str(uuid.uuid1()))
-    s = os.path.join(settings.ROOT_DIR, 'media')
-    s = os.path.join(s, filename)
+    fullpath = os.path.join(settings.ROOT_DIR, 'media')
+    fullpath = os.path.join(fullpath, filename)
     doc = generate_mfs(data)
-    doc.save(s)
+    doc.save(fullpath)
     return FileResponse(
-        open(s, 'rb'),
+        open(fullpath, 'rb'),
         as_attachment=True,
         filename='download.docx')
+
+
+class ShareToRedirectView(LoginRequiredMixin, RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        # generate mfs
+        publisher = get_object_or_404(Publisher, pk=self.kwargs['publisher'])
+        date_from = self.request.GET.get('from', str(now))
+        date_to = self.request.GET.get('to', str(now))
+
+        date_from = date_from.split('-')
+        date_to = date_to.split('-')
+
+        from_month, from_year = date_from[1], date_to[0]
+        to_month, to_year = date_to[1], date_to[0]
+
+        queryset = MonthlyFieldService.objects.filter(
+            publisher=publisher.pk,
+            month_ending__month__gte=from_month,
+            month_ending__year__gte=from_year
+        )
+        queryset = queryset.filter(
+            month_ending__month__lte=to_month,
+            month_ending__year__lte=to_year
+        )
+
+        _from = '{}-{}'.format(from_month, from_year)
+        _to = '{}-{}'.format(to_month, to_year)
+
+        congregation = str(publisher.group.congregation)
+        group = publisher.group.name
+        month = '{} to {}'.format(_from, _to)
+
+        data = {
+            'queryset': queryset,
+            'group': group,
+            'congregation': congregation,
+            'month': month
+        }
+        filename = '{}.docx'.format(str(uuid.uuid1()))
+        fullpath = os.path.join(settings.ROOT_DIR, 'media')
+        fullpath = os.path.join(fullpath, filename)
+        doc = generate_mfs(data, 'publisher')
+        doc.save(fullpath)
+
+        # redirect
+        url = reverse_lazy('mailing:new', args=[publisher.pk])  # base url
+        query_string = urlencode({'filename': filename})
+        url = '{}?{}'.format(url, query_string)
+        return url

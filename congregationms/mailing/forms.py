@@ -1,5 +1,8 @@
-from django.forms import FilePathField, ModelForm
-from django.core.mail import get_connection, send_mail, EmailMessage
+import os
+
+from django.forms import CharField, ModelForm
+from django.conf import settings
+from django.core.mail import get_connection, EmailMessage
 
 from .models import Mail, UserMail
 
@@ -19,6 +22,7 @@ class UserMailModelForm(ModelForm):
 
 
 class MailModelForm(ModelForm):
+    attachment = CharField()
 
     class Meta:
         model = Mail
@@ -29,9 +33,15 @@ class MailModelForm(ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        self.fields['filename'].required = True
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields['attachment'].required = True
+
+    def clean_attachment(self):
+        attachment = self.cleaned_data['attachment']
+        attachment = os.path.join(settings.MEDIA_ROOT, attachment)
+        return attachment
 
     def save(self, commit=False):
         mail = super().save(commit=commit)
@@ -40,8 +50,9 @@ class MailModelForm(ModelForm):
 
         return mail
 
-    def send_email(self, attachment):
+    def send_email(self):
         user_mail = self.instance.user_mail
+        attachment = self.cleaned_data['attachment']
 
         # connection settings
         host = user_mail.server

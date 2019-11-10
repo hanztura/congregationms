@@ -6,18 +6,27 @@ from docx.shared import Inches
 
 from .models import MonthlyFieldService
 
+
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
 
-def generate_mfs(data):
+
+def generate_mfs(data, report_type='group'):
     title = 'Monthly Field Service Report'
     doc = Document()
 
-    doc.add_heading(title, 0).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_heading(
+        title, 0).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.add_paragraph(data['group']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    doc.add_paragraph(data['congregation']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    if report_type == 'group':
+        doc.add_paragraph(
+            data['group']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    p = 'Congregation: {}'.format(data['congregation'])
+    p = doc.add_paragraph(p)
+    p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     p = doc.add_paragraph('For the month {}'.format(data['month']))
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
@@ -57,6 +66,7 @@ def generate_mfs(data):
     doc.add_page_break()
 
     return doc
+
 
 def mfs_stats(month, year):
     q = MonthlyFieldService.objects.filter(month_ending__month=month)

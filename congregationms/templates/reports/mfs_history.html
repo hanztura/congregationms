@@ -22,87 +22,92 @@
 {% endblock subbreadcrumbs %}
 
 {% block main %}
-	{% if  publisher %}
-		<h1>Monthly Field Service - Publisher History</h1>
-	{% endif %}
-	{% if group %}
-		<h1>Monthly Field Service - Group History</h1>
-	{% endif %}
+	<div id="app">
+		{% if  publisher %}
+			<h1>Monthly Field Service - Publisher History</h1>
+			<a :href="'{% url 'reports:share_to' publisher.pk %}?from=' + from + '&to=' + to">
+				<button class="button is-pulled-right is-info"><span class="icon"><i class="fas fa-share"></i></span><span>Share</span></button>
+			</a>
+		{% endif %}
+		{% if group %}
+			<h1>Monthly Field Service - Group History</h1>
+		{% endif %}
 
-	{% if  publisher %}
-		<p><span class="is-size-3">{{publisher.name|title}}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" %}</p>
-	{% endif %}
-	{% if group %}
-		<p><a href="{% url 'publishers:group-detail' group.pk %}" title="View Group detail."><span class="is-size-3">{{group|title}}</span></a></p>
-	{% endif %}
+		{% if  publisher %}
+			<p><span class="is-size-3">{{publisher.name|title}}</span> {% include "publishers/snippets/iconlinkedtopublisher.html" %}</p>
+		{% endif %}
+		{% if group %}
+			<p><a href="{% url 'publishers:group-detail' group.pk %}" title="View Group detail."><span class="is-size-3">{{group|title}}</span></a></p>
+		{% endif %}
 
-	<form>
-	    <div class="field is-horizontal">
-	      <div class="field-body">
-		      <div class="field">
-	        <label class="label">From</label>
-			      <div class="control">
-			      	<input class="input" type="month" name="from" v-model="from">
+		<form>
+		    <div class="field is-horizontal">
+		      <div class="field-body">
+			      <div class="field">
+		        <label class="label">From</label>
+				      <div class="control">
+				      	<input class="input" type="month" name="from" v-model="from">
+				      </div>
 			      </div>
-		      </div>
-	      	
-		    <div class="field">
-	        <label class="label">To</label>
-		      <div class="control">
-		      	<input class="input" type="month" name="to" v-model="to">
-		      </div>
-		    </div>
+		      	
+			    <div class="field">
+		        <label class="label">To</label>
+			      <div class="control">
+			      	<input class="input" type="month" name="to" v-model="to">
+			      </div>
+			    </div>
 
-		    <div class="field">
-		      <div class="control">
-		      	<input type="submit" class="button is-outlined is-info" value="Search">
+			    <div class="field">
+			      <div class="control">
+			      	<input type="submit" class="button is-outlined is-info" value="Search">
+			      </div>
+			    </div>
 		      </div>
 		    </div>
-	      </div>
-	    </div>
-	</form>
-	<table class="table is-bordered is-hoverable is-fullwidth ">
-		<thead>
-			<tr>
-				<th class="has-text-centered">Month</th>
-				{% if not group %}<th>Publisher</th>{% endif %}
-				<th class="has-text-centered" title="Placements">P</th>
-				<th class="has-text-centered" title="Video Showings">VS</th>
-				<th class="has-text-centered">Hours</th>
-				<th class="has-text-centered" title="Return Visits">RV</th>
-				<th class="has-text-centered" title="Bible Studies">BS</th>
-				<th class="has-text-centered">Comments</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for report in  reports %}
-			<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
-				<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
-				{% if not group %}<td>{{report.publisher|title}}</td>{% endif %}
-				<td class="has-text-centered">{{report.placements}}</td>
-				<td class="has-text-centered">{{report.video_showing}}</td>
-				<td class="has-text-centered">{{report.hours}}</td>
-				<td class="has-text-centered">{{report.return_visits}}</td>
-				<td class="has-text-centered">{{report.bible_study}}</td>
-				<td>{{report.comments}}</td>
-			</tr>
-			{% endfor %}
-			{% if not reports %}
-			<tr>
-				{% if group %}
-					<td class="has-text-centered" colspan=7>No data available.</td>	
-				{% else %}
-					<td class="has-text-centered" colspan=8>No data available.</td>
+		</form>
+		<table class="table is-bordered is-hoverable is-fullwidth ">
+			<thead>
+				<tr>
+					<th class="has-text-centered">Month</th>
+					{% if not group %}<th>Publisher</th>{% endif %}
+					<th class="has-text-centered" title="Placements">P</th>
+					<th class="has-text-centered" title="Video Showings">VS</th>
+					<th class="has-text-centered">Hours</th>
+					<th class="has-text-centered" title="Return Visits">RV</th>
+					<th class="has-text-centered" title="Bible Studies">BS</th>
+					<th class="has-text-centered">Comments</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for report in  reports %}
+				<tr @click="goTo('{% url 'reports:mfs-detail' report.pk %}')">
+					<td class="has-text-centered"><u class="has-text-link">{{report.month_ending|date:'M-Y'}}</u></td>
+					{% if not group %}<td>{{report.publisher|title}}</td>{% endif %}
+					<td class="has-text-centered">{{report.placements}}</td>
+					<td class="has-text-centered">{{report.video_showing}}</td>
+					<td class="has-text-centered">{{report.hours}}</td>
+					<td class="has-text-centered">{{report.return_visits}}</td>
+					<td class="has-text-centered">{{report.bible_study}}</td>
+					<td>{{report.comments}}</td>
+				</tr>
+				{% endfor %}
+				{% if not reports %}
+				<tr>
+					{% if group %}
+						<td class="has-text-centered" colspan=7>No data available.</td>	
+					{% else %}
+						<td class="has-text-centered" colspan=8>No data available.</td>
+					{% endif %}
+				</tr>	
 				{% endif %}
-			</tr>	
-			{% endif %}
-		</tbody>
-	</table>
+			</tbody>
+		</table>
 
-	{% if group %}
-		<a :href="'{% url 'reports:mfs-download' group.pk %}?from=' + from + '&to=' + to"><button class="button is-outlined is-pulled-right">Export as Document</button></a>
-		
-	{% endif %}
+		{% if group %}
+			<a :href="'{% url 'reports:mfs-download' group.pk %}?from=' + from + '&to=' + to"><button class="button is-outlined is-pulled-right">Export as Document</button></a>
+			
+		{% endif %}
+	</div>
 {% endblock main %}
 
 {% block vueinstance %}
