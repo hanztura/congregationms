@@ -5,11 +5,63 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
 from .models import MonthlyFieldService
+from publishers.models import Group
 
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
+
+
+def get_months_and_years(date_from, date_to):
+    """
+    Return months and years from [date from] and [date to]
+    """
+    date_from = date_from.split('-')
+    date_to = date_to.split('-')
+
+    return {
+        'fm': date_from[1],
+        'tm': date_to[1],
+        'fy': date_from[0],
+        'ty': date_to[0]
+    }
+
+
+def get_mfs_data(date_from, date_to, pk, is_publisher=True):
+    months_years = get_months_and_years(date_from, date_to)
+    from_month, from_year = months_years['fm'], months_years['fy']
+    to_month, to_year = months_years['tm'], months_years['ty']
+
+    queryset = MonthlyFieldService.objects.filter(
+        month_ending__month__gte=from_month,
+        month_ending__year__gte=from_year
+    ).order_by(
+        '-month_ending', 'publisher__last_name', 'publisher__first_name')
+
+    if is_publisher:
+        queryset = queryset.filter(publisher=pk)
+
+    queryset = queryset.filter(
+        month_ending__month__lte=to_month,
+        month_ending__year__lte=to_year
+    )
+
+    if not is_publisher:
+        # filter for group only
+        group = Group.objects.get(pk=pk)
+        queryset = [q for q in queryset if q.publisher.group == group]
+
+    data = {
+        'queryset': queryset,
+        'from': '{}-{}'.format(from_month, from_year),
+        'to': '{}-{}'.format(to_month, to_year),
+    }
+
+    if not is_publisher:
+        data['group'] = group
+
+    return data
 
 
 def generate_mfs(data, report_type='group'):
@@ -20,8 +72,8 @@ def generate_mfs(data, report_type='group'):
         title, 0).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     if report_type == 'group':
-        doc.add_paragraph(
-            data['group']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p = doc.add_paragraph(data['group'])
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     p = 'Congregation: {}'.format(data['congregation'])
     p = doc.add_paragraph(p)

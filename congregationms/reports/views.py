@@ -1,4 +1,6 @@
-import os, uuid
+import os
+import uuid
+
 from datetime import datetime
 from urllib.parse import urlencode
 
@@ -15,7 +17,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
 from .models import MonthlyFieldService
-from .utils import compute_month_year, generate_mfs
+from .utils import compute_month_year, generate_mfs, get_mfs_data
 from publishers.models import Publisher, Group
 
 
@@ -180,39 +182,16 @@ def sample_mfs(request, pk):
     date_from = request.GET.get('from', str(now))
     date_to = request.GET.get('to', str(now))
 
-    date_from = date_from.split('-')
-    date_to = date_to.split('-')
+    data = get_mfs_data(date_from, date_to, pk, False)
 
-    from_month, from_year = date_from[1], date_to[0]
-    to_month, to_year = date_to[1], date_to[0]
-
-    queryset = MonthlyFieldService.objects.filter(
-        month_ending__month__gte=from_month,
-        month_ending__year__gte=from_year
-    )
-    queryset = queryset.filter(
-        month_ending__month__lte=to_month,
-        month_ending__year__lte=to_year
-    )
-
-    _from = '{}-{}'.format(from_month, from_year)
-    _to = '{}-{}'.format(to_month, to_year)
-
-    # filter for group only
-    group = Group.objects.get(pk=pk)
-    queryset = queryset.order_by(
-        '-month_ending', 'publisher__last_name', 'publisher__first_name')
-    queryset = [q for q in queryset if q.publisher.group == group]
-
-    congregation = str(group.congregation)
-    group = group.name
-    month = '{} to {}'.format(_from, _to)
+    group = data['group']
+    period = '{} to {}'.format(data['from'], data['to'])
 
     data = {
-        'queryset': queryset,
-        'group': group,
-        'congregation': congregation,
-        'month': month
+        'queryset': data['queryset'],
+        'group': group.name,
+        'congregation': str(group.congregation),
+        'month': period
     }
     filename = '{}.docx'.format(str(uuid.uuid1()))
     fullpath = os.path.join(settings.ROOT_DIR, 'media')
@@ -226,48 +205,37 @@ def sample_mfs(request, pk):
 
 
 class ShareToRedirectView(LoginRequiredMixin, RedirectView):
+    """
+    Redirect to Draft Email Page.
+
+    Generate Publisher's MFS History Document first.
+    """
 
     def get_redirect_url(self, *args, **kwargs):
-        # generate mfs
         publisher = get_object_or_404(Publisher, pk=self.kwargs['publisher'])
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
-        date_from = date_from.split('-')
-        date_to = date_to.split('-')
+        data = get_mfs_data(date_from, date_to, publisher.pk)
 
-        from_month, from_year = date_from[1], date_to[0]
-        to_month, to_year = date_to[1], date_to[0]
-
-        queryset = MonthlyFieldService.objects.filter(
-            publisher=publisher.pk,
-            month_ending__month__gte=from_month,
-            month_ending__year__gte=from_year
-        )
-        queryset = queryset.filter(
-            month_ending__month__lte=to_month,
-            month_ending__year__lte=to_year
-        )
-
+        # if queryset is blank, redirect to referer
         referer = self.request.headers['Referer']
-        if queryset.count() < 1:
+        if data['queryset'].count() < 1:
             messages.warning(
                 self.request,
                 "Unable to share MFS History with no data.")
             return referer
 
-        _from = '{}-{}'.format(from_month, from_year)
-        _to = '{}-{}'.format(to_month, to_year)
-
         congregation = str(publisher.group.congregation)
         group = publisher.group.name
-        month = '{} to {}'.format(_from, _to)
+        period = '{} to {}'.format(data['from'], data['to'])
 
+        # data for mfs document
         data = {
-            'queryset': queryset,
+            'queryset': data['queryset'],
             'group': group,
             'congregation': congregation,
-            'month': month
+            'month': period
         }
         filename = '{}.docx'.format(str(uuid.uuid1()))
         fullpath = os.path.join(settings.ROOT_DIR, 'media')
