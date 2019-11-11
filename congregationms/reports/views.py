@@ -249,12 +249,12 @@ class ShareToRedirectView(LoginRequiredMixin, RedirectView):
             'month': period,
             'totals': data['totals'],
         }
-        filename = generate_mfs(data, 'publisher')['filename']
+        fullpath = generate_mfs(data, 'publisher')['fullpath']
 
         # redirect
         url = reverse_lazy('mailing:new', args=[publisher.pk])  # base url
         query_string = urlencode({
-            'filename': filename,
+            'filename': fullpath,
             'on_fail': referer})
         url = '{}?{}'.format(url, query_string)
         return url

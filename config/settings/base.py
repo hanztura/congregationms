@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.setdefault('SECRET_KEY', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.12']
 
 
 # Application definition
@@ -143,7 +143,7 @@ STATICFILES_DIRS = [
 
 LOGIN_URL = '/login/'
 
-INTERNAL_IPS = ('127.0.0.1', 'localhost')
+INTERNAL_IPS = ('127.0.0.1', 'localhost', '192.168.1.12')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
