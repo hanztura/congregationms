@@ -28,7 +28,7 @@
 {% block main %}
   <h1>Create/Edit Monthly Field Service</h1>
 
-  <form method="POST" id="new-edit-form">
+  <form method="POST" id="new-edit-form" ref="form" action="{% url 'reports:mfs-create' %}">
     {% csrf_token %}
     <div class="field">
       <label class="label">{{form.publisher.label}}</label>
@@ -103,6 +103,7 @@
     {% if report %}
         {% include "_snippets/button_save.html" %}
     {% else %}
+      <button :disabled="disableSubmit" class="button is-default is-fullwidth is-outlined" type="button" @click="submitForm(true)">{% include "_snippets/icon_save.html" %}<span>Create and add another</span></button>
       <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
     {% endif %}
   </form>  
@@ -119,7 +120,7 @@
     var minValue = window.validators.minValue
 
     vueinstance = new Vue({
-      el: '#app',
+      el: '#new-edit-form',
       delimiters: ['[[', ']]'],
       data: () => ({
         placements: {{form.placements.value}},
@@ -172,7 +173,7 @@
         },
       },
       methods: {
-        submitForm: function (){
+        submitForm: function (another=false){
           this.disableSubmit = true;
 
           this.$v.$touch();
@@ -180,11 +181,15 @@
             this.submitStatus = 'ERROR';
             this.disableSubmit = false;
           } else {
-            let formId = 'new-edit-form';
-            let form = window.document.getElementById(formId);
+            // let formId = 'new-edit-form';
+            let form = this.$refs.form;
 
             if (form.checkValidity()){
               this.submitStatus = 'PENDING';
+
+              if (another) {
+                form.action = form.action + '?another=True'
+              }
               form.submit();
               this.submitStatus = 'OK'
             } else {

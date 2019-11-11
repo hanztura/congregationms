@@ -1,3 +1,9 @@
+import calendar
+import datetime
+import os
+import uuid
+
+from django.conf import settings
 from django.db.models import Sum
 
 from docx import Document
@@ -5,19 +11,116 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
 from .models import MonthlyFieldService
+from publishers.models import Group, Publisher
+
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
 
-def generate_mfs(data):
+
+def get_publishers_as_choices():
+    publishers = Publisher.objects.all()
+    publishers = [(p.pk, p.name) for p in publishers if p.group]
+    publishers.insert(0, ('', '[Select a publisher]'))
+    return publishers
+
+
+def get_months_and_years(date_from, date_to):
+    """
+    Return months and years from [date from] and [date to]
+    """
+    date_from = date_from.split('-')
+    date_to = date_to.split('-')
+    df = '{}-{}'.format(date_from[0], date_from[1])
+    dt = '{}-{}'.format(date_to[0], date_to[1])
+
+    return {
+        'fm': date_from[1],
+        'tm': date_to[1],
+        'fy': date_from[0],
+        'ty': date_to[0],
+        'df': df,
+        'dt': dt,
+    }
+
+
+def get_mfs_data(date_from, date_to, pk, is_publisher=True):
+    months_years = get_months_and_years(date_from, date_to)
+    from_month, from_year = months_years['fm'], months_years['fy']
+    to_month, to_year = months_years['tm'], months_years['ty']
+
+    queryset = MonthlyFieldService.objects.filter(
+        month_ending__month__gte=from_month,
+        month_ending__year__gte=from_year
+    ).order_by(
+        '-month_ending', 'publisher__last_name', 'publisher__first_name')
+
+    if is_publisher:
+        queryset = queryset.filter(publisher=pk)
+
+    queryset = queryset.filter(
+        month_ending__month__lte=to_month,
+        month_ending__year__lte=to_year
+    )
+
+    if not is_publisher:
+        # filter for group only
+        group = Group.objects.get(pk=pk)
+        queryset = [q for q in queryset if q.publisher.group == group]
+
+    # get totals
+    if is_publisher:
+        totals = queryset.aggregate(
+            Sum('placements'),
+            Sum('video_showing'),
+            Sum('hours'),
+            Sum('return_visits'),
+            Sum('bible_study'))
+    else:
+        totals = {
+            'placements__sum': 0,
+            'video_showing__sum': 0,
+            'hours__sum': 0,
+            'return_visits__sum': 0,
+            'bible_study__sum': 0,
+        }
+        for q in queryset:
+            totals['placements__sum'] += q.placements
+            totals['video_showing__sum'] += q.video_showing
+            totals['hours__sum'] += q.hours
+            totals['return_visits__sum'] += q.return_visits
+            totals['bible_study__sum'] += q.bible_study
+
+    print(totals)
+    data = {
+        'queryset': queryset,
+        'totals': totals,
+        'from': '{}-{}'.format(from_month, from_year),
+        'to': '{}-{}'.format(to_month, to_year),
+    }
+
+    if not is_publisher:
+        data['group'] = group
+
+    return data
+
+
+def generate_mfs(data, report_type='group'):
     title = 'Monthly Field Service Report'
     doc = Document()
 
-    doc.add_heading(title, 0).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_heading(
+        title, 0).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.add_paragraph(data['group']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    doc.add_paragraph(data['congregation']).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    if report_type == 'group':
+        p = doc.add_paragraph(data['group'])
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    p = 'Congregation: {}'.format(data['congregation'])
+    p = doc.add_paragraph(p)
+    p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     p = doc.add_paragraph('For the month {}'.format(data['month']))
     p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
@@ -54,9 +157,39 @@ def generate_mfs(data):
         row_cells[6].text = str(report.bible_study)
         row_cells[7].text = str(report.comments)
 
+
+    # totals
+    totals = data['totals']
+    row_cells = table.add_row().cells
+    row_cells[0].text = 'TOTALS'
+    row_cells[2].text = str(totals['placements__sum'])
+    row_cells[3].text = str(totals['video_showing__sum'])
+    row_cells[4].text = str(totals['hours__sum'])
+    row_cells[5].text = str(totals['return_visits__sum'])
+    row_cells[6].text = str(totals['bible_study__sum'])
+
+    if report_type=='group':
+        other_rows = ['PUB.', 'AUXI.', 'RP']
+        for row in other_rows:
+            row_cells = table.add_row().cells
+            row_cells[0].text = row
+
     doc.add_page_break()
 
-    return doc
+    filename = '{}.docx'.format(str(uuid.uuid1()))
+    fullpath = os.path.join(settings.ROOT_DIR, 'media')
+    fullpath = os.path.join(fullpath, 'temp--mfs_export')
+    if not os.path.exists(fullpath):
+        os.mkdir(fullpath)
+    fullpath = os.path.join(fullpath, filename)
+    doc.save(fullpath)
+
+    return {
+        'doc': doc,
+        'filename': filename,
+        'fullpath': fullpath,
+    }
+
 
 def mfs_stats(month, year):
     q = MonthlyFieldService.objects.filter(month_ending__month=month)
@@ -72,3 +205,22 @@ def mfs_stats(month, year):
         'bible_studies': bible_studies
     }
     return stats
+
+
+def get_previous_month_end(now=None):
+    if now is None:
+        now = datetime.datetime.now().date()
+
+    # get previous month
+    previous_month = now.month - 1
+    previous_year = now.year
+    if previous_month == 0:
+        previous_month = 12
+        previous_year -= 1
+
+    cal = calendar.Calendar()
+    month = cal.monthdayscalendar(previous_year, previous_month)
+
+    # previous month end
+    month = datetime.date(previous_year, previous_month, max(month[-1]))
+    return month

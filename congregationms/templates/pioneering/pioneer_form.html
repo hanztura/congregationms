@@ -47,7 +47,7 @@
       {% if pioneer %}  
           <label class="checkbox" for="{{form.is_active.id_for_label}}">
             Active
-            <input type="checkbox" name="{{form.is_active.html_name}}" id="{{form.is_active.id_for_label}}" {% if form.is_active.value %}checked{% endif %}>
+            <input type="checkbox" disabled {% if is_active %}checked{% endif %}>
           </label>
       {% endif %}
 

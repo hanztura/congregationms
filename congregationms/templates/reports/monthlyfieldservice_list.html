@@ -46,7 +46,7 @@
             <td>
               {{ report.publisher|title }} {% if report.pioneering %}({{report.pioneering.pioneer_type}}){% endif %}
             </td>
-            <td>{{ report.group.name }}</td>
+            <td><a href="{% url 'publishers:group-detail' report.group.pk %}" title="View group detail">{{ report.group.name }}</a></td>
             <td>
               <a href='{% url "reports:mfs-detail" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
               <a href='{% url "reports:mfs-update" report.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>

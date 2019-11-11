@@ -3,13 +3,14 @@ from django.forms.models import inlineformset_factory
 
 from .models import Group, Member, Publisher
 
-class PublisherModelForm(ModelForm):
 
+class PublisherModelForm(ModelForm):
 
     class Meta:
         model = Publisher
         fields = ['last_name', 'first_name', 'middle_name',
-              'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
+                  'date_of_birth', 'date_of_baptism', 'contact_numbers',
+                  'slug']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,7 +26,6 @@ class PublisherModelForm(ModelForm):
 
 class GroupMemberForm(ModelForm):
 
-
     class Meta:
         model = Member
         fields = [
@@ -40,5 +40,5 @@ class GroupMemberForm(ModelForm):
 GroupMemberFormSet = inlineformset_factory(
     Group, Member, form=GroupMemberForm,
     fields=['publisher', 'is_active', 'date_from', 'date_to'],
-    extra=1, can_delete=True
+    extra=3, can_delete=True
 )

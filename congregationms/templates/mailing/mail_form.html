@@ -1,0 +1,47 @@
+{% extends "mailing/base.html" %}
+
+{% block title %}
+    <title>Draft new Email Message</title>  
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+    <li class="is-active"><a href='#'>New</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+    <h1>Draft new Email Message</h1>
+    <p class="is-size-3">Share document via email.</p> 
+
+    <form method="POST">
+      {% csrf_token %}
+      {{form.errors}}
+      <div class="field">
+        <label class="label">{{ form.to.label }}</label>
+        <div class="control">
+          <input class="input" type="email" name="to" value="{{ form.to.value|default:'' }}" required placeholder="john_doe@email.com">
+        {{form.to.errors}}
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">{{ form.subject.label }}</label>
+        <div class="control">
+          <input class="input" type="text" name="subject" value="{{ form.subject.value|default:'' }}" required placeholder="John Doe's Report Card">
+        {{form.subject.errors}}
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">{{ form.message.label }}</label>
+        <div class="control">
+          <textarea class="textarea" name="message" value="{{ form.message.value|default:'' }}" required placeholder="Your message"></textarea>
+        {{form.message.errors}}
+        </div>
+      </div>
+      <p>Attachement: <span>{{ form.attachment.value }}</span></p>
+      <input type="hidden" name="attachment" value="{{form.attachment.value}}">
+
+      <button class="button is-fullwidth is-warning"><span class="icon"><i class="fas fa-envelope"></i></span><span>Send now</span></button>
+      
+    </form>
+{% endblock main %}

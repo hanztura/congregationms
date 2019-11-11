@@ -72,7 +72,7 @@
         </nav>
       </div>
 
-      <main class="container" id="app">
+      <main class="container">
         {% block main %}
         {% endblock main %}
       </main>
@@ -92,16 +92,9 @@
   <script src='{% static "vendors/vue.js" %}'></script>
 
   {% block vueinstance %}
-    <script>
-      vueinstance = new Vue({
-        el: '#app',
-        delimiters: ['[[', ']]'],
-        data: () => ({
-        })
-      });
-    </script>
-  {% endblock vueinstance %}
 
+  {% endblock vueinstance %}
+  
   <script>
     navbarVue = new Vue({
       el: '#navbar',
