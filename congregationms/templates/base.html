@@ -66,15 +66,15 @@
     <div class="column">
 
       {% if messages %}
-        <article class="container message is-info">
+        <article class="container message is-info" id="messages-container" v-show="!hidden">
           <div class="message-header">
             <p>Notifications</p>
-            <button class="delete" aria-label="delete"></button>
+            <button class="delete" aria-label="delete" @click="hidden=true"></button>
           </div>
           <div class="message-body">
             <ul>
               {% for message in messages %}
-                <li class="is-{{ message.tags }}">{{message}}</li>
+                <li class="is-{{ message.tags }} cursor-pointer" @click="hide" title="click to hide"><u>{{message}}</u></li>
               {% endfor %}
             </ul>  
           </div>
@@ -126,6 +126,26 @@
       }
     });
   </script>
+
+  {% if  messages %}
+    <script>
+      messagesContainerApp = new Vue({
+        el: '#messages-container',
+        delimiters: ['[[', ']]'],
+        data: () => {
+          return {
+            hidden: false
+          }
+        },
+        methods: {
+          hide: function (e) {
+            let target = e.target;
+            target.attributes.class.value += ' is-hidden';
+          }
+        }
+      });
+    </script>
+  {% endif %}
 
   {% block endscript %}{% endblock endscript %}
 </body>
