@@ -11,12 +11,19 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
 from .models import MonthlyFieldService
-from publishers.models import Group
+from publishers.models import Group, Publisher
 
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
+
+
+def get_publishers_as_choices():
+    publishers = Publisher.objects.all()
+    publishers = [(p.pk, p.name) for p in publishers if p.group]
+    publishers.insert(0, ('', '[Select a publisher]'))
+    return publishers
 
 
 def get_months_and_years(date_from, date_to):

@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 
 from .models import MonthlyFieldService
-from .utils import get_previous_month_end
+from .utils import get_previous_month_end, get_publishers_as_choices
 
 
 class MFSForm(ModelForm):
@@ -22,6 +22,7 @@ class MFSForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['month_ending'].initial = get_previous_month_end()
+        self.fields['publisher'].choices = get_publishers_as_choices()
 
     def save(self, commit=True):
         mfs = super().save(commit=False)
