@@ -1,13 +1,10 @@
-import os
-import uuid
+
 
 from datetime import datetime
 from urllib.parse import urlencode
 
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -21,16 +18,16 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
+from system.utils import LoginAndPermissionRequiredMixin
 
 
 now = datetime.now().date()
 
 
-class MFSList(LoginRequiredMixin, ListView):
-    """
-    MFS stands for Month Field Service.
-    """
+class MFSList(LoginAndPermissionRequiredMixin, ListView):
+    """MFS stands for Month Field Service."""
     model = MonthlyFieldService
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_queryset(self):
         default_month_year = compute_month_year(now)
@@ -51,9 +48,10 @@ class MFSList(LoginRequiredMixin, ListView):
         return context
 
 
-class MFSDelete(LoginRequiredMixin, DeleteView):
+class MFSDelete(LoginAndPermissionRequiredMixin, DeleteView):
     model = MonthlyFieldService
     success_url = reverse_lazy('reports:mfs-index')
+    permission_required = 'reports.delete_monthlyfieldservice',
 
     def get_success_url(self):
         message = "Successfully deleted."
@@ -61,9 +59,10 @@ class MFSDelete(LoginRequiredMixin, DeleteView):
         return super().get_success_url()
 
 
-class MFSDetail(LoginRequiredMixin, DetailView):
+class MFSDetail(LoginAndPermissionRequiredMixin, DetailView):
     model = MonthlyFieldService
     context_object_name = 'report'
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,9 +81,10 @@ class MFSDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class MFSCreate(LoginRequiredMixin, CreateView):
+class MFSCreate(LoginAndPermissionRequiredMixin, CreateView):
     model = MonthlyFieldService
     form_class = MFSForm
+    permission_required = 'reports.add_monthlyfieldservice',
 
     def form_valid(self, form):
         try:
@@ -109,16 +109,18 @@ class MFSCreate(LoginRequiredMixin, CreateView):
         return super().get_success_url()
 
 
-class MFSUpdate(LoginRequiredMixin, UpdateView):
+class MFSUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = MonthlyFieldService
     form_class = MFSForm
     context_object_name = 'report'
+    permission_required = 'reports.change_monthlyfieldservice',
 
 
-class MFSHistoryList(LoginRequiredMixin, ListView):
+class MFSHistoryList(LoginAndPermissionRequiredMixin, ListView):
     model = MonthlyFieldService
     template_name = 'reports/mfs_history.html'
     context_object_name = 'reports'
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -192,6 +194,7 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
 
 
 @login_required
+@permission_required('reports.view_monthlyfieldservice', raise_exception=True)
 def sample_mfs(request, pk):
     date_from = request.GET.get('from', str(now))
     date_to = request.GET.get('to', str(now))
@@ -215,12 +218,12 @@ def sample_mfs(request, pk):
         filename='download.docx')
 
 
-class ShareToRedirectView(LoginRequiredMixin, RedirectView):
-    """
-    Redirect to Draft Email Page.
+class ShareToRedirectView(LoginAndPermissionRequiredMixin, RedirectView):
+    """Redirect to Draft Email Page.
 
     Generate Publisher's MFS History Document first.
     """
+    permission_required = 'mailing.add_mail',
 
     def get_redirect_url(self, *args, **kwargs):
         publisher = get_object_or_404(Publisher, pk=self.kwargs['publisher'])

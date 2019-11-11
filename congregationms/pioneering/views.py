@@ -1,31 +1,33 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import PioneerDetailFormSet
 from .models import Pioneer
+from system.utils import LoginAndPermissionRequiredMixin
 
 
-class PioneerListView(LoginRequiredMixin, ListView):
+class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
     model = Pioneer
     context_object_name = 'pioneers'
+    permission_required = ('pioneering.view_pioneer',)
 
 
-class PioneerDetailView(LoginRequiredMixin, DetailView):
+class PioneerDetailView(LoginAndPermissionRequiredMixin, DetailView):
     model = Pioneer
     context_object_name = 'pioneer'
     slug_field = 'code'
+    permission_required = ('pioneering.view_pioneer',)
 
 
-class PioneerCreateView(LoginRequiredMixin, CreateView):
+class PioneerCreateView(LoginAndPermissionRequiredMixin, CreateView):
     model = Pioneer
     fields = [
         'publisher', 'code', 'is_active'
     ]
+    permission_required = ('pioneering.add_pioneer',)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -35,7 +37,6 @@ class PioneerCreateView(LoginRequiredMixin, CreateView):
             data['details'] = PioneerDetailFormSet()
 
         return data
-
 
     def form_valid(self, form):
         context = self.get_context_data()
@@ -57,11 +58,12 @@ class PioneerCreateView(LoginRequiredMixin, CreateView):
         return reverse('pioneering:update', args=[str(self.object.code)])
 
 
-class PioneerUpdateView(LoginRequiredMixin, UpdateView):
+class PioneerUpdateView(LoginAndPermissionRequiredMixin, UpdateView):
     model = Pioneer
     fields = ['publisher', 'code']
     context_object_name = 'pioneer'
     slug_field = 'code'
+    permission_required = ('pioneering.change_pioneer',)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -71,7 +73,6 @@ class PioneerUpdateView(LoginRequiredMixin, UpdateView):
             data['details'] = PioneerDetailFormSet(instance=self.object)
         data['is_active'] = self.object.is_active
         return data
-
 
     def form_valid(self, form):
         context = self.get_context_data()
@@ -90,9 +91,10 @@ class PioneerUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class PioneerDeleteView(LoginRequiredMixin, DeleteView):
+class PioneerDeleteView(LoginAndPermissionRequiredMixin, DeleteView):
     model = Pioneer
     success_url = reverse_lazy('pioneering:index')
+    permission_required = ('pioneering.delete_pioneer',)
 
     def get_success_url(self):
         messages.success(
