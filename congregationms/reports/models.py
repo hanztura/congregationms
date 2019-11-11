@@ -18,6 +18,10 @@ class MonthlyFieldService(models.Model):
     bible_study = models.PositiveSmallIntegerField(default=0)
     comments = models.CharField(max_length=255, blank=True)
 
+    class Meta:
+        ordering = ('publisher__last_name', 'publisher__first_name',
+                    'publisher__middle_name')
+
     def __str__(self):
       name = str(self.publisher)
       return '{} for month ending {}'.format(name, self.month_ending)
