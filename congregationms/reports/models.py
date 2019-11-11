@@ -3,10 +3,11 @@ from django.urls import reverse
 
 from pioneering.models import PioneerDetail
 from publishers.models import Group, Publisher
+from publishers.utils import OrderByPublisherMixin
 
 
 # Create your models here.
-class MonthlyFieldService(models.Model):
+class MonthlyFieldService(OrderByPublisherMixin, models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.PROTECT, blank=True, null=True)
     pioneering = models.ForeignKey(PioneerDetail, on_delete=models.PROTECT, blank=True, null=True, related_name='mfs')
@@ -17,10 +18,6 @@ class MonthlyFieldService(models.Model):
     return_visits = models.PositiveSmallIntegerField(default=0)
     bible_study = models.PositiveSmallIntegerField(default=0)
     comments = models.CharField(max_length=255, blank=True)
-
-    class Meta:
-        ordering = ('publisher__last_name', 'publisher__first_name',
-                    'publisher__middle_name')
 
     def __str__(self):
       name = str(self.publisher)

@@ -7,22 +7,19 @@ from django.db import models
 from django.urls import reverse
 
 from publishers.models import Publisher
+from publishers.utils import OrderByPublisherMixin
 
 
 DATE_NOW = datetime.now().date()
 
 
 # Create your models here.
-class Pioneer(models.Model):
+class Pioneer(OrderByPublisherMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.SlugField(max_length=50, unique=True, blank=True)
     publisher = models.OneToOneField(
         Publisher, on_delete=models.CASCADE, related_name='pioneering')
     is_active = models.BooleanField(default=False, blank=True, editable=False)
-
-    class Meta:
-        ordering = ('publisher__last_name', 'publisher__first_name',
-                    'publisher__middle_name')
 
     def __str__(self):
         return str(self.publisher)
