@@ -15,6 +15,20 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
     model = Publisher
     permission_required = 'publishers.view_publisher',
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        user = self.request.user
+        group = user.publisher.group
+        if group:
+            members = group.group_members.filter(is_active=True)
+            members = [m.publisher.pk for m in members]  # member pk
+            queryset = queryset.filter(id__in=members)
+        else:
+            queryset = None
+
+        return queryset
+
 
 class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Publisher
@@ -62,6 +76,16 @@ class PublisherDelete(LoginAndPermissionRequiredMixin, DeleteView):
 class GroupList(LoginAndPermissionRequiredMixin, ListView):
     model = Group
     permission_required = 'publishers.view_group',
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        user = self.request.user
+        group = user.publisher.group
+        if group:
+            queryset = queryset.filter(id=group.pk)
+
+        return queryset
 
 
 class GroupDetail(LoginAndPermissionRequiredMixin, DetailView):

@@ -18,7 +18,8 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
-from system.utils import LoginAndPermissionRequiredMixin
+from publishers.utils import get_group_members
+from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
 
 
 now = datetime.now().date()
@@ -35,10 +36,20 @@ class MFSList(LoginAndPermissionRequiredMixin, ListView):
         monthyear = monthyear.split('-')
         year = monthyear[0]
         month = monthyear[1]
-        return MonthlyFieldService.objects.filter(
+        queryset = MonthlyFieldService.objects.filter(
             month_ending__year=year,
             month_ending__month=month
         )
+
+        # filter mfs of user's group only
+        user = self.request.user
+        group = user.publisher.group
+        if group:
+            queryset = queryset.filter(publisher__in=get_group_members(group))
+        else:
+            queryset = None
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         default_month_year = compute_month_year(now)
@@ -81,7 +92,8 @@ class MFSDetail(LoginAndPermissionRequiredMixin, DetailView):
         return context
 
 
-class MFSCreate(LoginAndPermissionRequiredMixin, CreateView):
+class MFSCreate(
+        AddUserToFormMixin, LoginAndPermissionRequiredMixin, CreateView):
     model = MonthlyFieldService
     form_class = MFSForm
     permission_required = 'reports.add_monthlyfieldservice',
@@ -109,7 +121,8 @@ class MFSCreate(LoginAndPermissionRequiredMixin, CreateView):
         return super().get_success_url()
 
 
-class MFSUpdate(LoginAndPermissionRequiredMixin, UpdateView):
+class MFSUpdate(
+        AddUserToFormMixin, LoginAndPermissionRequiredMixin, UpdateView):
     model = MonthlyFieldService
     form_class = MFSForm
     context_object_name = 'report'

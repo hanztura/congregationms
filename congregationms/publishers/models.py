@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 
-from system.models import Congregation as Cong
+from system.models import Congregation as Cong, User
 
 
 # Create your models here.
@@ -16,6 +16,9 @@ class Publisher(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     date_of_baptism = models.DateField(blank=True, null=True)
     contact_numbers = models.CharField(max_length=200, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.PROTECT, related_name='publisher',
+        null=True, blank=True)
 
     class Meta:
         ordering = 'last_name', 'first_name', 'middle_name'
@@ -91,6 +94,9 @@ class Member(models.Model):
     is_active = models.BooleanField(default=False)
     date_from = models.DateField(blank=True, null=True, verbose_name='from')
     date_to = models.DateField(blank=True, null=True, verbose_name='to')
+
+    class Meta:
+        ordering = '-date_from', '-date_to'
 
     def __str__(self):
         return '{} in Group {}'.format(self.publisher, self.group)

@@ -4,15 +4,28 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .forms import PioneerDetailFormSet
+from .forms import PioneerDetailFormSet, PioneerModelForm
 from .models import Pioneer
-from system.utils import LoginAndPermissionRequiredMixin
+from publishers.utils import get_group_members
+from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
 
 
 class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
     model = Pioneer
     context_object_name = 'pioneers'
     permission_required = ('pioneering.view_pioneer',)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        user = self.request.user
+        group = user.publisher.group
+        if group:
+            queryset = queryset.filter(publisher__in=get_group_members(group))
+        else:
+            queryset = None
+
+        return queryset
 
 
 class PioneerDetailView(LoginAndPermissionRequiredMixin, DetailView):
@@ -22,11 +35,10 @@ class PioneerDetailView(LoginAndPermissionRequiredMixin, DetailView):
     permission_required = ('pioneering.view_pioneer',)
 
 
-class PioneerCreateView(LoginAndPermissionRequiredMixin, CreateView):
+class PioneerCreateView(
+        AddUserToFormMixin, LoginAndPermissionRequiredMixin, CreateView):
     model = Pioneer
-    fields = [
-        'publisher', 'code', 'is_active'
-    ]
+    form_class = PioneerModelForm
     permission_required = ('pioneering.add_pioneer',)
 
     def get_context_data(self, **kwargs):
@@ -44,9 +56,9 @@ class PioneerCreateView(LoginAndPermissionRequiredMixin, CreateView):
 
         with transaction.atomic():
             if details.is_valid():
+                self.object = form.save()
                 details.instance = self.object
                 details.save()
-                self.object = form.save()
 
         messages.success(
             self.request,
@@ -58,9 +70,10 @@ class PioneerCreateView(LoginAndPermissionRequiredMixin, CreateView):
         return reverse('pioneering:update', args=[str(self.object.code)])
 
 
-class PioneerUpdateView(LoginAndPermissionRequiredMixin, UpdateView):
+class PioneerUpdateView(
+        AddUserToFormMixin, LoginAndPermissionRequiredMixin, UpdateView):
     model = Pioneer
-    fields = ['publisher', 'code']
+    form_class = PioneerModelForm
     context_object_name = 'pioneer'
     slug_field = 'code'
     permission_required = ('pioneering.change_pioneer',)
@@ -68,7 +81,8 @@ class PioneerUpdateView(LoginAndPermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['details'] = PioneerDetailFormSet(self.request.POST, instance=self.object)
+            data['details'] = PioneerDetailFormSet(
+                self.request.POST, instance=self.object)
         else:
             data['details'] = PioneerDetailFormSet(instance=self.object)
         data['is_active'] = self.object.is_active
