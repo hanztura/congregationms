@@ -61,11 +61,29 @@ class Pioneer(OrderByPublisherMixin, models.Model):
 
         return active
 
+    def get_active_pioneer_detail(self, date=None):
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
+        pioneer_details = self.details.filter(
+            date_start__lte=date
+        )
+        pioneer_details_not_ended = pioneer_details.filter(
+            date_end__gte=date).first()
+        if pioneer_details_not_ended:
+            return pioneer_details_not_ended
+
+        pioneer_details_continous = pioneer_details.filter(
+            date_end=None).first()
+        if pioneer_details_continous:
+            return pioneer_details_continous
+
+        return None
+
     def get_active_rp_detail(self, date=None):
         DATE_NOW = datetime.now().date()
         if not date:
             date = DATE_NOW
-        active = False
         pioneer_details = self.details.filter(
             pioneer_type='RP',
             date_start__lte=date

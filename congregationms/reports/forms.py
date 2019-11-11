@@ -39,10 +39,10 @@ class MFSForm(ModelForm):
         if mfs.group != group:
             mfs.group = group
 
-        # check if publisher is RP
-        is_rp = mfs.publisher.is_rp(mfs.month_ending)
-        if is_rp:
-            mfs.pioneering = mfs.publisher.pioneering.get_active_rp_detail(mfs.month_ending)
+        # check if publisher is pioneer
+        is_pioneer = mfs.publisher.is_pioneer
+        if is_pioneer:
+            mfs.pioneering = mfs.publisher.pioneering.get_active_pioneer_detail(mfs.month_ending)
 
         mfs.save()
 
