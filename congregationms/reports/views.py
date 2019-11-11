@@ -22,15 +22,13 @@ from publishers.utils import get_user_groups_members
 from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
 
 
-now = datetime.now().date()
-
-
 class MFSList(LoginAndPermissionRequiredMixin, ListView):
     """MFS stands for Month Field Service."""
     model = MonthlyFieldService
     permission_required = 'reports.view_monthlyfieldservice',
 
     def get_queryset(self):
+        now = datetime.now().date()
         default_month_year = compute_month_year(now)
         monthyear = self.request.GET.get('monthyear', default_month_year)
         monthyear = monthyear.split('-')
@@ -53,6 +51,7 @@ class MFSList(LoginAndPermissionRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        now = datetime.now().date()
         default_month_year = compute_month_year(now)
         monthyear = self.request.GET.get('monthyear', default_month_year)
         context = super().get_context_data(**kwargs)
@@ -156,7 +155,8 @@ class MFSHistoryList(LoginAndPermissionRequiredMixin, ListView):
             group = Group.objects.get(pk=group)
             context['group'] = group
 
-        # date from and date to
+        # date from and date to for default date search value
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
@@ -169,47 +169,29 @@ class MFSHistoryList(LoginAndPermissionRequiredMixin, ListView):
     def get_queryset(self):
         view_type = self.kwargs['view_type']  # publisher or group
 
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
-        date_from = date_from.split('-')
-        date_to = date_to.split('-')
-
-        from_month, from_year = date_from[1], date_to[0]
-        to_month, to_year = date_to[1], date_to[0]
-
-        if view_type == 'publisher':
+        is_vt_publisher = view_type == 'publisher'  # view type publisher
+        if is_vt_publisher:
             publisher = self.kwargs['publisher']
             publisher = Publisher.objects.get(slug=publisher)
 
-            queryset = MonthlyFieldService.objects.filter(
-                publisher=publisher,
-                month_ending__month__gte=from_month,
-                month_ending__year__gte=from_year
-            )
+            data = get_mfs_data(
+                date_from, date_to, publisher.pk, is_vt_publisher)
         else:
-            group = self.kwargs['group']
-            group = Group.objects.get(pk=group)
+            group_pk = self.kwargs['group']
 
-            queryset = MonthlyFieldService.objects.filter(
-                group=group,
-                month_ending__month__gte=from_month,
-                month_ending__year__gte=from_year
-            )
+            data = get_mfs_data(date_from, date_to, group_pk, is_vt_publisher)
 
-        queryset = queryset.filter(
-            month_ending__month__lte=to_month,
-            month_ending__year__lte=to_year
-        )
-        queryset = queryset.order_by(
-            '-month_ending', 'publisher__last_name', 'publisher__first_name')
-
-        return queryset
+        return data['queryset']
 
 
 @login_required
 @permission_required('reports.view_monthlyfieldservice', raise_exception=True)
 def sample_mfs(request, pk):
+    now = datetime.now().date()
     date_from = request.GET.get('from', str(now))
     date_to = request.GET.get('to', str(now))
 
@@ -241,6 +223,7 @@ class ShareToRedirectView(LoginAndPermissionRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         publisher = get_object_or_404(Publisher, pk=self.kwargs['publisher'])
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
