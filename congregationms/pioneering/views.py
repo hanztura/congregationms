@@ -23,7 +23,7 @@ class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
             queryset = Pioneer.objects.filter(publisher__in=members)
             queryset = queryset.select_related('publisher')
         else:
-            queryset = None
+            queryset = self.model.objects.none()
 
         return queryset
 

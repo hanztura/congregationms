@@ -25,7 +25,7 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
                 members.extend(m)
             queryset = Publisher.objects.filter(id__in=members)
         else:
-            queryset = None
+            queryset = self.model.objects.none()
 
         return queryset
 

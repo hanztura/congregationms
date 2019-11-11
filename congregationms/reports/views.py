@@ -48,7 +48,7 @@ class MFSList(LoginAndPermissionRequiredMixin, ListView):
             members = get_user_groups_members(authorized_groups)
             queryset = queryset.filter(publisher__in=members)
         else:
-            queryset = None
+            queryset = self.model.objects.none()
 
         return queryset
 
