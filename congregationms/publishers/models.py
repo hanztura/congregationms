@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from django.db import models
 from django.urls import reverse
@@ -44,6 +45,15 @@ class Publisher(models.Model):
         return group
 
     @property
+    def authorized_groups(self):
+        groups = self.user.publisher_groups.all()
+        if groups:
+            groups = [g.group.pk for g in groups]
+
+        groups = Group.objects.filter(id__in=groups)
+        return groups
+
+    @property
     def is_pioneer(self):
         try:
             pioneering = self.pioneering
@@ -80,9 +90,16 @@ class Group(models.Model):
 
     @property
     def members(self):
-        members = self.group_members.all()
+        members = self.group_members.filter(is_active=True)
+        members = members.select_related('publisher')
         members = [member.publisher for member in members]
 
+        return members
+
+    @property
+    def members_as_pk(self):
+        members = self.members
+        members = [m.pk for m in members]
         return members
 
 
@@ -101,6 +118,30 @@ class Member(models.Model):
     def __str__(self):
         return '{} in Group {}'.format(self.publisher, self.group)
 
+    def save(self, *args, **kwargs):
+        DATE_NOW = datetime.now().date()
+        if self.is_active:
+            date_to = self.date_to
+            date_now = DATE_NOW
+            if date_to:
+                if date_now > date_to:
+                    self.is_active = True
+
+        super().save(*args, **kwargs)
+
     @property
     def group_name(self):
         return str(self.group)
+
+
+class UserGroup(models.Model):
+    """One or more Groups a user is authorized."""
+    user = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='publisher_groups')
+    group = models.ForeignKey(
+        Group, on_delete=models.PROTECT, related_name='users')
+
+    def __str__(self):
+        user = self.user.username
+        group = str(self.group)
+        return '{} - {}'.format(user, group)

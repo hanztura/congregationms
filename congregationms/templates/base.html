@@ -74,7 +74,7 @@
           <div class="message-body">
             <ul>
               {% for message in messages %}
-                <li class="is-{{ message.tags }} cursor-pointer" @click="hide" title="click to hide"><u>{{message}}</u></li>
+                <li class="is-{{ message.tags }} cursor-pointer" @click="hide($event)" title="click to hide"><u>{{message}}</u></li>
               {% endfor %}
             </ul>  
           </div>

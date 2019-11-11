@@ -18,7 +18,7 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
-from publishers.utils import get_group_members
+from publishers.utils import get_user_groups_members
 from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
 
 
@@ -39,13 +39,14 @@ class MFSList(LoginAndPermissionRequiredMixin, ListView):
         queryset = MonthlyFieldService.objects.filter(
             month_ending__year=year,
             month_ending__month=month
-        )
+        ).select_related('pioneering', 'publisher', 'group')
 
         # filter mfs of user's group only
         user = self.request.user
-        group = user.publisher.group
-        if group:
-            queryset = queryset.filter(publisher__in=get_group_members(group))
+        authorized_groups = user.publisher_groups.select_related('group')
+        if authorized_groups:
+            members = get_user_groups_members(authorized_groups)
+            queryset = queryset.filter(publisher__in=members)
         else:
             queryset = None
 

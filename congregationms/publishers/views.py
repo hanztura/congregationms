@@ -16,14 +16,14 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
     permission_required = 'publishers.view_publisher',
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-
         user = self.request.user
-        group = user.publisher.group
-        if group:
-            members = group.group_members.filter(is_active=True)
-            members = [m.publisher.pk for m in members]  # member pk
-            queryset = queryset.filter(id__in=members)
+        authorized_groups = user.publisher_groups.select_related('group')
+        if authorized_groups:
+            _members = [g.group.members_as_pk for g in authorized_groups]
+            members = []
+            for m in _members:
+                members.extend(m)
+            queryset = Publisher.objects.filter(id__in=members)
         else:
             queryset = None
 

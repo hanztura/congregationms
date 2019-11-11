@@ -10,9 +10,6 @@ from publishers.models import Publisher
 from publishers.utils import OrderByPublisherMixin
 
 
-DATE_NOW = datetime.now().date()
-
-
 # Create your models here.
 class Pioneer(OrderByPublisherMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -43,10 +40,13 @@ class Pioneer(OrderByPublisherMixin, models.Model):
         self.is_active = active
         super().save(*args, **kwargs)
 
-    def is_active_rp(self, date=DATE_NOW):
+    def is_active_rp(self, date=None):
         """
         Check if a pioneer is RP on a given date
         """
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
         active = False
         pioneer_details = self.details.filter(
             pioneer_type='RP',
@@ -61,7 +61,11 @@ class Pioneer(OrderByPublisherMixin, models.Model):
 
         return active
 
-    def get_active_rp_detail(self, date=DATE_NOW):
+    def get_active_rp_detail(self, date=None):
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
+        active = False
         pioneer_details = self.details.filter(
             pioneer_type='RP',
             date_start__lte=date
@@ -101,6 +105,7 @@ class PioneerDetail(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.has_ended:
+            DATE_NOW = datetime.now().date()
             date_end = self.date_end
             date_now = DATE_NOW
             if date_end:
