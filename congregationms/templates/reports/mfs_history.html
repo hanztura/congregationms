@@ -101,6 +101,33 @@
 						<td class="has-text-centered">{{totals.bible_study__sum}}</td>
 						<td></td>
 					</tr>
+					<tr>
+						<td class="has-text-centered" {% if group %}colspan=2{% endif %}>Auxillary Pioneer</td>
+						<td class="has-text-centered">{{totals.au_placements|default:0}}</td>
+						<td class="has-text-centered">{{totals.au_video_showing|default:0}}</td>
+						<td class="has-text-centered">{{totals.au_hours|default:0}}</td>
+						<td class="has-text-centered">{{totals.au_return_visits|default:0}}</td>
+						<td class="has-text-centered">{{totals.au_bible_study|default:0}}</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="has-text-centered" {% if group %}colspan=2{% endif %}>Regular Pioneer</td>
+						<td class="has-text-centered">{{totals.rp_placements|default:0}}</td>
+						<td class="has-text-centered">{{totals.rp_video_showing|default:0}}</td>
+						<td class="has-text-centered">{{totals.rp_hours|default:0}}</td>
+						<td class="has-text-centered">{{totals.rp_return_visits|default:0}}</td>
+						<td class="has-text-centered">{{totals.rp_bible_study|default:0}}</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="has-text-centered" {% if group %}colspan=2{% endif %}>Special Pioneer</td>
+						<td class="has-text-centered">{{totals.sp_placements|default:0}}</td>
+						<td class="has-text-centered">{{totals.sp_video_showing|default:0}}</td>
+						<td class="has-text-centered">{{totals.sp_hours|default:0}}</td>
+						<td class="has-text-centered">{{totals.sp_return_visits|default:0}}</td>
+						<td class="has-text-centered">{{totals.sp_bible_study|default:0}}</td>
+						<td></td>
+					</tr>
 				{% else %}
 					
 				{% endif %}

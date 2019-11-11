@@ -37,33 +37,8 @@ def get_months_and_years(date_from, date_to):
     }
 
 
-def get_mfs_data(date_from, date_to, pk, is_publisher=True):
-    months_years = get_months_and_years(date_from, date_to)
-    from_month, from_year = months_years['fm'], months_years['fy']
-    to_month, to_year = months_years['tm'], months_years['ty']
-
-    queryset = MonthlyFieldService.objects.filter(
-        month_ending__month__gte=from_month,
-        month_ending__year__gte=from_year
-    ).order_by(
-        '-month_ending', 'publisher__last_name', 'publisher__first_name')
-
-    queryset = queryset.select_related('publisher', 'pioneering')
-
-    if is_publisher:
-        queryset = queryset.filter(publisher=pk)
-
-    queryset = queryset.filter(
-        month_ending__month__lte=to_month,
-        month_ending__year__lte=to_year
-    )
-
-    if not is_publisher:
-        # filter for group only
-        group = Group.objects.get(pk=pk)
-        queryset = queryset.filter(group=pk)
-
-    totals = queryset.aggregate(
+def aggregate_mfs_queryset(queryset):
+    q = queryset.aggregate(
         Sum('placements'),
         Sum('video_showing'),
         Sum('hours'),
@@ -97,6 +72,37 @@ def get_mfs_data(date_from, date_to, pk, is_publisher=True):
         sp_bible_study=Sum('bible_study', filter=Q(
             pioneering__pioneer_type='SP')),
     )
+
+    return q
+
+
+def get_mfs_data(date_from, date_to, pk, is_publisher=True):
+    months_years = get_months_and_years(date_from, date_to)
+    from_month, from_year = months_years['fm'], months_years['fy']
+    to_month, to_year = months_years['tm'], months_years['ty']
+
+    queryset = MonthlyFieldService.objects.filter(
+        month_ending__month__gte=from_month,
+        month_ending__year__gte=from_year
+    ).order_by(
+        '-month_ending', 'publisher__last_name', 'publisher__first_name')
+
+    queryset = queryset.select_related('publisher', 'pioneering')
+
+    if is_publisher:
+        queryset = queryset.filter(publisher=pk)
+
+    queryset = queryset.filter(
+        month_ending__month__lte=to_month,
+        month_ending__year__lte=to_year
+    )
+
+    if not is_publisher:
+        # filter for group only
+        group = Group.objects.get(pk=pk)
+        queryset = queryset.filter(group=pk)
+
+    totals = aggregate_mfs_queryset(queryset)
 
     data = {
         'queryset': queryset,

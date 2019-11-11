@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
 from .models import MonthlyFieldService
-from .utils import (compute_month_year, generate_mfs,
+from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
 from publishers.utils import get_user_groups_members
@@ -137,12 +137,7 @@ class MFSHistoryList(LoginAndPermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['totals'] = context['reports'].aggregate(
-            Sum('placements'),
-            Sum('video_showing'),
-            Sum('hours'),
-            Sum('return_visits'),
-            Sum('bible_study'))
+        context['totals'] = aggregate_mfs_queryset(context['reports'])
 
         view_type = self.kwargs['view_type']  # publisher or group
 
