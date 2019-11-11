@@ -1,3 +1,5 @@
+import calendar
+import datetime
 import os
 import uuid
 
@@ -192,3 +194,22 @@ def mfs_stats(month, year):
         'bible_studies': bible_studies
     }
     return stats
+
+
+def get_previous_month_end(now=None):
+    if now is None:
+        now = datetime.datetime.now().date()
+
+    # get previous month
+    previous_month = now.month - 1
+    previous_year = now.year
+    if previous_month == 0:
+        previous_month = 12
+        previous_year -= 1
+
+    cal = calendar.Calendar()
+    month = cal.monthdayscalendar(previous_year, previous_month)
+
+    # previous month end
+    month = datetime.date(previous_year, previous_month, max(month[-1]))
+    return month
