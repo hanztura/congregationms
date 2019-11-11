@@ -1,19 +1,26 @@
 from datetime import datetime
 
-from django.contrib.auth import authenticate, login as user_login, logout as user_logout
+from django.contrib.auth import (
+    authenticate, login as user_login, logout as user_logout)
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.generic.base import TemplateView
 
 from reports.utils import mfs_stats
 
-# Create your views here.
+
+class AccountView(TemplateView):
+    template_name = 'system/account.html'
+
+
 def home(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('system:dashboard'))
     else:
         return render(request, 'system/home.html')
+
 
 def login(request):
     if request.user.is_authenticated:
@@ -28,21 +35,24 @@ def login(request):
             user_login(request, user)
             next_url = request.GET.get('next', reverse('home'))
 
-            message = 'Successfully logged in. Thank you! You can start working now.'
+            message = 'Successfully logged in. Thank you! \
+                        You can start working now.'
             messages.success(request, message)
             return HttpResponseRedirect(next_url)
         else:
             return render(request, 'system/login.html', context={
                 'username': username,
-                'password': password    
+                'password': password
             })
     else:
         return render(request, 'system/login.html')
+
 
 def logout(request):
     user_logout(request)
 
     return HttpResponseRedirect(reverse('home'))
+
 
 def dashboard(request):
     now = datetime.now().date()

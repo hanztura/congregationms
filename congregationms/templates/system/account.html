@@ -1,0 +1,18 @@
+{% extends "system/base.html" %}
+
+{% block title %}
+  <title>Account | {{user}}</title>  
+{% endblock title %}
+
+{% block main %}
+<div class="content">
+  <h1>User Account</h1> 
+  <p>Username: {{user.username}}</p>
+  <section class="container content">
+    <h2>Links</h2>
+    <ul>
+      <li><a href="{% url 'password_change'  %}">Change password</a></li>
+    </ul>
+  </section>
+</div>
+{% endblock main %}
