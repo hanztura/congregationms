@@ -87,14 +87,24 @@ class MFSCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         try:
             form = super().form_valid(form)
+            msg = 'Successfully created new \
+                    Monthly Field Service Report of {}.'
+            msg = msg.format(str(self.object))
             messages.success(
                 self.request,
-                'Successfully created new Monthly Field Service Report.'
+                msg
             )
         except Exception as e:
             raise e
         finally:
             return form
+
+    def get_success_url(self):
+        another = self.request.GET.get('another', False)
+        if another:
+            return reverse_lazy('reports:mfs-create')
+
+        return super().get_success_url()
 
 
 class MFSUpdate(LoginRequiredMixin, UpdateView):
