@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -121,6 +122,12 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['totals'] = context['reports'].aggregate(
+            Sum('placements'),
+            Sum('video_showing'),
+            Sum('hours'),
+            Sum('return_visits'),
+            Sum('bible_study'))
 
         view_type = self.kwargs['view_type']  # publisher or group
 
@@ -138,12 +145,6 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
         date_to = self.request.GET.get('to', str(now))
 
         dates = get_months_and_years(date_from, date_to)
-
-        # date_from = date_from.split('-')
-        # date_to = date_to.split('-')
-
-        # date_from = '{}-{}'.format(date_from[0], date_from[1])
-        # date_to = '{}-{}'.format(date_to[0], date_to[1])
 
         context['from'] = dates['df']
         context['to'] = dates['dt']

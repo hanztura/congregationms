@@ -2,10 +2,10 @@
 
 {% block title %}
 	{% if publisher %}
-  	<title>Monthly Field Service - Publisher History</title>  
+  	<title>Monthly Field Service - Publisher History | {{publisher|title}}</title>  
 	{% endif %}
 	{% if group %}
-  	<title>Monthly Field Service - Group History</title>  
+  	<title>Monthly Field Service - Group History | {{group|title}}</title>  
 	{% endif %}
 {% endblock title %}
 
@@ -91,6 +91,19 @@
 					<td>{{report.comments}}</td>
 				</tr>
 				{% endfor %}
+				{% if reports %}
+					<tr>
+						<td class="has-text-centered" {% if group %}colspan=2{% endif %}>***TOTALS***</td>
+						<td class="has-text-centered">{{totals.placements__sum}}</td>
+						<td class="has-text-centered">{{totals.video_showing__sum}}</td>
+						<td class="has-text-centered">{{totals.hours__sum}}</td>
+						<td class="has-text-centered">{{totals.return_visits__sum}}</td>
+						<td class="has-text-centered">{{totals.bible_study__sum}}</td>
+						<td></td>
+					</tr>
+				{% else %}
+					
+				{% endif %}
 				{% if not reports %}
 				<tr>
 					{% if group %}
