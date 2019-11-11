@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -17,7 +18,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
 from .models import MonthlyFieldService
-from .utils import compute_month_year, generate_mfs, get_mfs_data
+from .utils import (compute_month_year, generate_mfs,
+                    get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
 
 
@@ -87,14 +89,24 @@ class MFSCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         try:
             form = super().form_valid(form)
+            msg = 'Successfully created new \
+                    Monthly Field Service Report of {}.'
+            msg = msg.format(str(self.object))
             messages.success(
                 self.request,
-                'Successfully created new Monthly Field Service Report.'
+                msg
             )
         except Exception as e:
             raise e
         finally:
             return form
+
+    def get_success_url(self):
+        another = self.request.GET.get('another', False)
+        if another:
+            return reverse_lazy('reports:mfs-create')
+
+        return super().get_success_url()
 
 
 class MFSUpdate(LoginRequiredMixin, UpdateView):
@@ -110,6 +122,12 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['totals'] = context['reports'].aggregate(
+            Sum('placements'),
+            Sum('video_showing'),
+            Sum('hours'),
+            Sum('return_visits'),
+            Sum('bible_study'))
 
         view_type = self.kwargs['view_type']  # publisher or group
 
@@ -126,14 +144,10 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
-        date_from = date_from.split('-')
-        date_to = date_to.split('-')
+        dates = get_months_and_years(date_from, date_to)
 
-        date_from = '{}-{}'.format(date_from[0], date_from[1])
-        date_to = '{}-{}'.format(date_to[0], date_to[1])
-
-        context['from'] = date_from
-        context['to'] = date_to
+        context['from'] = dates['df']
+        context['to'] = dates['dt']
         return context
 
     def get_queryset(self):

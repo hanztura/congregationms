@@ -73,7 +73,7 @@ class Group(models.Model):
         return '{} at {}'.format(self.name, self.congregation)
 
     def get_absolute_url(self):
-        return reverse('publishers:group-detail', args=[str(self.pk)])
+        return reverse('publishers:group-update', args=[str(self.pk)])
 
     @property
     def members(self):

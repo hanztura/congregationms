@@ -1,3 +1,5 @@
+import calendar
+import datetime
 import os
 import uuid
 
@@ -9,12 +11,19 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
 from .models import MonthlyFieldService
-from publishers.models import Group
+from publishers.models import Group, Publisher
 
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
+
+
+def get_publishers_as_choices():
+    publishers = Publisher.objects.all()
+    publishers = [(p.pk, p.name) for p in publishers if p.group]
+    publishers.insert(0, ('', '[Select a publisher]'))
+    return publishers
 
 
 def get_months_and_years(date_from, date_to):
@@ -23,12 +32,16 @@ def get_months_and_years(date_from, date_to):
     """
     date_from = date_from.split('-')
     date_to = date_to.split('-')
+    df = '{}-{}'.format(date_from[0], date_from[1])
+    dt = '{}-{}'.format(date_to[0], date_to[1])
 
     return {
         'fm': date_from[1],
         'tm': date_to[1],
         'fy': date_from[0],
-        'ty': date_to[0]
+        'ty': date_to[0],
+        'df': df,
+        'dt': dt,
     }
 
 
@@ -192,3 +205,22 @@ def mfs_stats(month, year):
         'bible_studies': bible_studies
     }
     return stats
+
+
+def get_previous_month_end(now=None):
+    if now is None:
+        now = datetime.datetime.now().date()
+
+    # get previous month
+    previous_month = now.month - 1
+    previous_year = now.year
+    if previous_month == 0:
+        previous_month = 12
+        previous_year -= 1
+
+    cal = calendar.Calendar()
+    month = cal.monthdayscalendar(previous_year, previous_month)
+
+    # previous month end
+    month = datetime.date(previous_year, previous_month, max(month[-1]))
+    return month
