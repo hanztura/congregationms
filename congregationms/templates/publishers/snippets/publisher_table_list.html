@@ -2,7 +2,6 @@
   <thead>
     <tr>
       <th class="has-text-centered">Name</th>
-      <th class="has-text-centered">Group</th>
       <th class="has-text-centered">Actions</th>
     </tr>
   </thead>
@@ -10,13 +9,6 @@
     {% for publisher in object_list %}
       <tr>
         <td>{{ publisher.name|title }}</td>
-        <td class="has-text-centered">
-          {% if publisher.group %}
-            {{ publisher.group.name }}
-          {% else %}
-            {% include "_snippets/icon_times.html" %} Please <a href="{% url 'publishers:group-index' %}"><u>add to a group</u></a>.
-          {% endif %}
-        </td>
         <td>
           <a href='{% url "publishers:detail" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
           <a href='{% url "publishers:update" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
