@@ -25,12 +25,16 @@ def get_months_and_years(date_from, date_to):
     """
     date_from = date_from.split('-')
     date_to = date_to.split('-')
+    df = '{}-{}'.format(date_from[0], date_from[1])
+    dt = '{}-{}'.format(date_to[0], date_to[1])
 
     return {
         'fm': date_from[1],
         'tm': date_to[1],
         'fy': date_from[0],
-        'ty': date_to[0]
+        'ty': date_to[0],
+        'df': df,
+        'dt': dt,
     }
 
 

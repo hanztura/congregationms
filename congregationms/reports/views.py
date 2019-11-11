@@ -17,7 +17,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
 from .models import MonthlyFieldService
-from .utils import compute_month_year, generate_mfs, get_mfs_data
+from .utils import (compute_month_year, generate_mfs,
+                    get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
 
 
@@ -136,14 +137,16 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
-        date_from = date_from.split('-')
-        date_to = date_to.split('-')
+        dates = get_months_and_years(date_from, date_to)
 
-        date_from = '{}-{}'.format(date_from[0], date_from[1])
-        date_to = '{}-{}'.format(date_to[0], date_to[1])
+        # date_from = date_from.split('-')
+        # date_to = date_to.split('-')
 
-        context['from'] = date_from
-        context['to'] = date_to
+        # date_from = '{}-{}'.format(date_from[0], date_from[1])
+        # date_to = '{}-{}'.format(date_to[0], date_to[1])
+
+        context['from'] = dates['df']
+        context['to'] = dates['dt']
         return context
 
     def get_queryset(self):
