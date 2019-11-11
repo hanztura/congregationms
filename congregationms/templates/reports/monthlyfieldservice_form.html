@@ -104,7 +104,7 @@
         {% include "_snippets/button_save.html" %}
     {% else %}
       <button :disabled="disableSubmit" class="button is-default is-fullwidth is-outlined" type="button" @click="submitForm(true)">{% include "_snippets/icon_save.html" %}<span>Create and add another</span></button>
-      <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
+      <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm(false)">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
     {% endif %}
   </form>  
 {% endblock main %}
@@ -188,7 +188,7 @@
               this.submitStatus = 'PENDING';
 
               if (another) {
-                form.action = form.action + '?another=True'
+                form.action = form.action + '?another=True';
               }
               form.submit();
               this.submitStatus = 'OK'
