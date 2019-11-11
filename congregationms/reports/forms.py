@@ -21,15 +21,13 @@ class MFSForm(ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         self.fields['month_ending'].initial = get_previous_month_end()
 
-        group = user.publisher.group
-        publishers = []
-        if group:
+        if request:
             # get publishers as choices
-            publishers = get_publishers_as_choices(group=group)
+            publishers = get_publishers_as_choices(request=request)
         self.fields['publisher'].choices = publishers
 
     def save(self, commit=True):

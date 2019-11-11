@@ -7,7 +7,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .forms import PioneerDetailFormSet, PioneerModelForm
 from .models import Pioneer
 from publishers.utils import get_user_groups_members
-from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
+from system.utils import (
+    LoginAndPermissionRequiredMixin, AddUserToFormMixin, AddRequestToForm)
 
 
 class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
@@ -16,11 +17,9 @@ class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
     permission_required = ('pioneering.view_pioneer',)
 
     def get_queryset(self):
-        user = self.request.user
-        authorized_groups = user.publisher_groups.select_related('group')
-        if authorized_groups:
-            members = get_user_groups_members(authorized_groups)
-            queryset = Pioneer.objects.filter(publisher__in=members)
+        auth_pubs = self.request.authorized_publisher_pks
+        if auth_pubs:
+            queryset = Pioneer.objects.filter(publisher__in=auth_pubs)
             queryset = queryset.select_related('publisher')
         else:
             queryset = self.model.objects.none()
@@ -36,7 +35,7 @@ class PioneerDetailView(LoginAndPermissionRequiredMixin, DetailView):
 
 
 class PioneerCreateView(
-        AddUserToFormMixin, LoginAndPermissionRequiredMixin, CreateView):
+        AddRequestToForm, LoginAndPermissionRequiredMixin, CreateView):
     model = Pioneer
     form_class = PioneerModelForm
     permission_required = ('pioneering.add_pioneer',)
@@ -71,7 +70,7 @@ class PioneerCreateView(
 
 
 class PioneerUpdateView(
-        AddUserToFormMixin, LoginAndPermissionRequiredMixin, UpdateView):
+        AddRequestToForm, LoginAndPermissionRequiredMixin, UpdateView):
     model = Pioneer
     form_class = PioneerModelForm
     context_object_name = 'pioneer'

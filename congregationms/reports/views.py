@@ -19,7 +19,7 @@ from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
 from publishers.utils import get_user_groups_members
-from system.utils import LoginAndPermissionRequiredMixin, AddUserToFormMixin
+from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
 
 
 class MFSList(LoginAndPermissionRequiredMixin, ListView):
@@ -40,11 +40,9 @@ class MFSList(LoginAndPermissionRequiredMixin, ListView):
         ).select_related('pioneering', 'publisher', 'group')
 
         # filter mfs of user's group only
-        user = self.request.user
-        authorized_groups = user.publisher_groups.select_related('group')
-        if authorized_groups:
-            members = get_user_groups_members(authorized_groups)
-            queryset = queryset.filter(publisher__in=members)
+        auth_pubs = self.request.authorized_publisher_pks
+        if auth_pubs:
+            queryset = queryset.filter(publisher__in=auth_pubs)
         else:
             queryset = self.model.objects.none()
 
@@ -93,7 +91,7 @@ class MFSDetail(LoginAndPermissionRequiredMixin, DetailView):
 
 
 class MFSCreate(
-        AddUserToFormMixin, LoginAndPermissionRequiredMixin, CreateView):
+        AddRequestToForm, LoginAndPermissionRequiredMixin, CreateView):
     model = MonthlyFieldService
     form_class = MFSForm
     permission_required = 'reports.add_monthlyfieldservice',
@@ -122,7 +120,7 @@ class MFSCreate(
 
 
 class MFSUpdate(
-        AddUserToFormMixin, LoginAndPermissionRequiredMixin, UpdateView):
+        AddRequestToForm, LoginAndPermissionRequiredMixin, UpdateView):
     model = MonthlyFieldService
     form_class = MFSForm
     context_object_name = 'report'

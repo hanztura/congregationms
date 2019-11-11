@@ -23,15 +23,14 @@ def get_user_groups_members(authorized_groups):
     return members
 
 
-def get_publishers_as_choices(group=None):
+def get_publishers_as_choices(request=None):
     """"""
-    publishers = Publisher.objects.all()
-    if group:
-        members = get_group_members(group)
-        publishers = publishers.filter(id__in=members)
+    if request:
+        members = request.authorized_publisher_pks
+        publishers = Publisher.objects.filter(id__in=members)
 
     # transform into (pk, value) Tuple
-    publishers = [(p.pk, p.name) for p in publishers if p.group]
+    publishers = [(p.pk, p.name) for p in publishers]
     publishers.insert(0, ('', '[Select a publisher]'))
     return publishers
 

@@ -16,15 +16,9 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
     permission_required = 'publishers.view_publisher',
 
     def get_queryset(self):
-        authorized_groups = self.request.authorized_groups
-        if authorized_groups:
-            _members = [g.group.group_members.filter(is_active=True) for g in authorized_groups]
-            members = []
-            for mem in _members:
-                for m in mem:
-                    members.append(m.publisher_id)
-            # members = [m.publisher_id for m in members]
-            queryset = Publisher.objects.filter(id__in=members)
+        auth_pubs = self.request.authorized_publisher_pks
+        if auth_pubs:
+            queryset = Publisher.objects.filter(id__in=auth_pubs)
         else:
             queryset = self.model.objects.none()
 
