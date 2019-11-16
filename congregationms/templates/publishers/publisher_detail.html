@@ -1,4 +1,5 @@
 {% extends "publishers/base.html" %}
+{% load static %}
 
 {% block title %}
   <title>Publisher Detail | {{publisher.name|title}}</title>
@@ -11,11 +12,11 @@
 {% block main %}
   <h1>Publisher Detail</h1>
 
-  <div class="field is-grouped is-pulled-right">
+  <div class="field is-grouped is-pulled-right" id="delete-button-app">
     <div class="control">
-      <form id="form--{{ publisher.pk }}" action='{% url "publishers:delete" publisher.pk %}' method="POST">
+      <form id="form--{{ publisher.pk }}" action='{% url "publishers:delete" publisher.pk %}' method="POST" @submit.prevent="confirmDelete">
         {% csrf_token %}
-        <button class="button is-outlined" type="submit" form="form--{{ publisher.pk }}">{% include "_snippets/icon_trash.html" %}</button>
+        <button class="button is-outlined" type="submit" form="form--{{ publisher.pk }}" :disabled="disabled">{% include "_snippets/icon_trash.html" %}</button>
       </form>
     </div>
 
@@ -31,3 +32,7 @@
   <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
   <p>Group: {{ publisher.group|title }}</p>
 {% endblock main %}
+
+{% block vueinstance %}
+    <script src="{% static "deleteButtonApp.js" %}"></script>
+{% endblock vueinstance %}

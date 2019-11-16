@@ -40,8 +40,8 @@
             <div class="navbar-item">
               <div class="buttons">
                 {% if request.user.is_authenticated %}
-                  <a class="button is-primary">
-                    <strong>Hi, {{user.username|upper}}!</strong>
+                  <a class="button is-primary" href="{% url 'system:account' %}">
+                    <strong>Hi {{user.username|title}}!</strong>
                   </a>
                   
                   <a class="button is-light" href="{% url 'system-logout' %}">
@@ -64,6 +64,23 @@
 
   <div class="columns is-gapless">
     <div class="column">
+
+      {% if messages %}
+        <article class="container message is-info" id="messages-container" v-show="!hidden">
+          <div class="message-header">
+            <p>Notifications</p>
+            <button class="delete" aria-label="delete" @click="hidden=true"></button>
+          </div>
+          <div class="message-body">
+            <ul>
+              {% for message in messages %}
+                <li class="is-{{ message.tags }} cursor-pointer" @click="hide($event)" title="click to hide"><u>{{message}}</u></li>
+              {% endfor %}
+            </ul>  
+          </div>
+        </article>
+      {% endif %}
+
       <div class="container">
         <nav class="breadcrumb" aria-label="breadcrumbs">
           <ul>
@@ -109,6 +126,26 @@
       }
     });
   </script>
+
+  {% if  messages %}
+    <script>
+      messagesContainerApp = new Vue({
+        el: '#messages-container',
+        delimiters: ['[[', ']]'],
+        data: () => {
+          return {
+            hidden: false
+          }
+        },
+        methods: {
+          hide: function (e) {
+            let target = e.target;
+            target.attributes.class.value += ' is-hidden';
+          }
+        }
+      });
+    </script>
+  {% endif %}
 
   {% block endscript %}{% endblock endscript %}
 </body>

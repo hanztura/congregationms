@@ -3,10 +3,11 @@ from django.urls import reverse
 
 from pioneering.models import PioneerDetail
 from publishers.models import Group, Publisher
+from publishers.utils import OrderByPublisherMixin
 
 
 # Create your models here.
-class MonthlyFieldService(models.Model):
+class MonthlyFieldService(OrderByPublisherMixin, models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.PROTECT, blank=True, null=True)
     pioneering = models.ForeignKey(PioneerDetail, on_delete=models.PROTECT, blank=True, null=True, related_name='mfs')

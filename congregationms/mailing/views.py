@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
@@ -8,12 +9,11 @@ from .forms import MailModelForm
 from .models import Mail
 
 
-class MailCreateView(LoginRequiredMixin, CreateView):
-    """
-    Receive query params [filename].
-    """
+class MailCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Receive query params [filename]."""
     form_class = MailModelForm
     model = Mail
+    permission_required = ('mailing.add_mail',)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

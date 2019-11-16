@@ -53,6 +53,12 @@
             </td>
           </tr>
       {% endfor %}
+
+    {% if not object_list %}
+      <tr>
+        <td colspan="3" class="has-text-centered">No data. Please <a href="{% url 'reports:mfs-create' %}"><u>add</u></a>.</td>
+      </tr>  
+    {% endif %}
     </tbody>
   </table>
 {% endblock main %}

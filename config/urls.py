@@ -23,6 +23,7 @@ from debug_toolbar import urls as debug_toolbar_urls
 from system.views import home, login, logout
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('mailing/', include('mailing.urls')),
     path('pioneering/', include('pioneering.urls')),
     path('publishers/', include('publishers.urls')),

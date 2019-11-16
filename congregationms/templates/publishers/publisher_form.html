@@ -44,6 +44,16 @@
         </div>
       </div>
 
+      {% if publisher %}
+        <div class="field">
+          <label class="label">Middle Name</label>
+          <div class="control">
+          <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}">
+          {{form.middle_name.errors}}
+          </div>
+        </div>
+      {% endif %}
+      
       <div class="field">
         <label class="label">Slug</label>
         <div class="control">
@@ -53,13 +63,6 @@
       </div>
 
       {% if publisher %}
-        <div class="field">
-          <label class="label">Middle Name</label>
-          <div class="control">
-          <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}">
-          {{form.middle_name.errors}}
-          </div>
-        </div>
 
       <div class="field">
         <label class="label">Date of Birth</label>

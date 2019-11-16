@@ -4,26 +4,18 @@ import os
 import uuid
 
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Q, Sum
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches
 
 from .models import MonthlyFieldService
-from publishers.models import Group, Publisher
+from publishers.models import Group
 
 
 def compute_month_year(date):
     default_month_year = '{}-{}'.format(date.year, date.month)
     return default_month_year
-
-
-def get_publishers_as_choices():
-    publishers = Publisher.objects.all()
-    publishers = [(p.pk, p.name) for p in publishers if p.group]
-    publishers.insert(0, ('', '[Select a publisher]'))
-    return publishers
 
 
 def get_months_and_years(date_from, date_to):
@@ -45,6 +37,45 @@ def get_months_and_years(date_from, date_to):
     }
 
 
+def aggregate_mfs_queryset(queryset):
+    q = queryset.aggregate(
+        Sum('placements'),
+        Sum('video_showing'),
+        Sum('hours'),
+        Sum('return_visits'),
+        Sum('bible_study'),
+        rp_placements=Sum('placements', filter=Q(
+            pioneering__pioneer_type='RP')),
+        rp_video_showing=Sum('video_showing', filter=Q(
+            pioneering__pioneer_type='RP')),
+        rp_hours=Sum('hours', filter=Q(pioneering__pioneer_type='RP')),
+        rp_return_visits=Sum('return_visits', filter=Q(
+            pioneering__pioneer_type='RP')),
+        rp_bible_study=Sum('bible_study', filter=Q(
+            pioneering__pioneer_type='RP')),
+        au_placements=Sum('placements', filter=Q(
+            pioneering__pioneer_type='AU')),
+        au_video_showing=Sum('video_showing', filter=Q(
+            pioneering__pioneer_type='AU')),
+        au_hours=Sum('hours', filter=Q(pioneering__pioneer_type='AU')),
+        au_return_visits=Sum('return_visits', filter=Q(
+            pioneering__pioneer_type='AU')),
+        au_bible_study=Sum('bible_study', filter=Q(
+            pioneering__pioneer_type='AU')),
+        sp_placements=Sum('placements', filter=Q(
+            pioneering__pioneer_type='SP')),
+        sp_video_showing=Sum('video_showing', filter=Q(
+            pioneering__pioneer_type='SP')),
+        sp_hours=Sum('hours', filter=Q(pioneering__pioneer_type='SP')),
+        sp_return_visits=Sum('return_visits', filter=Q(
+            pioneering__pioneer_type='SP')),
+        sp_bible_study=Sum('bible_study', filter=Q(
+            pioneering__pioneer_type='SP')),
+    )
+
+    return q
+
+
 def get_mfs_data(date_from, date_to, pk, is_publisher=True):
     months_years = get_months_and_years(date_from, date_to)
     from_month, from_year = months_years['fm'], months_years['fy']
@@ -55,6 +86,8 @@ def get_mfs_data(date_from, date_to, pk, is_publisher=True):
         month_ending__year__gte=from_year
     ).order_by(
         '-month_ending', 'publisher__last_name', 'publisher__first_name')
+
+    queryset = queryset.select_related('publisher', 'pioneering')
 
     if is_publisher:
         queryset = queryset.filter(publisher=pk)
@@ -67,32 +100,10 @@ def get_mfs_data(date_from, date_to, pk, is_publisher=True):
     if not is_publisher:
         # filter for group only
         group = Group.objects.get(pk=pk)
-        queryset = [q for q in queryset if q.publisher.group == group]
+        queryset = queryset.filter(group=pk)
 
-    # get totals
-    if is_publisher:
-        totals = queryset.aggregate(
-            Sum('placements'),
-            Sum('video_showing'),
-            Sum('hours'),
-            Sum('return_visits'),
-            Sum('bible_study'))
-    else:
-        totals = {
-            'placements__sum': 0,
-            'video_showing__sum': 0,
-            'hours__sum': 0,
-            'return_visits__sum': 0,
-            'bible_study__sum': 0,
-        }
-        for q in queryset:
-            totals['placements__sum'] += q.placements
-            totals['video_showing__sum'] += q.video_showing
-            totals['hours__sum'] += q.hours
-            totals['return_visits__sum'] += q.return_visits
-            totals['bible_study__sum'] += q.bible_study
+    totals = aggregate_mfs_queryset(queryset)
 
-    print(totals)
     data = {
         'queryset': queryset,
         'totals': totals,
@@ -136,7 +147,7 @@ def generate_mfs(data, report_type='group'):
         ('H', 'Hours'),
         ('RV', 'Return Visits'),
         ('BS', 'Bible Studies'),
-        ('Comment', 'Comments')
+        ('Comments', 'Comments')
     ]
 
     table = doc.add_table(rows=1, cols=len(headers))
@@ -157,7 +168,6 @@ def generate_mfs(data, report_type='group'):
         row_cells[6].text = str(report.bible_study)
         row_cells[7].text = str(report.comments)
 
-
     # totals
     totals = data['totals']
     row_cells = table.add_row().cells
@@ -168,13 +178,46 @@ def generate_mfs(data, report_type='group'):
     row_cells[5].text = str(totals['return_visits__sum'])
     row_cells[6].text = str(totals['bible_study__sum'])
 
-    if report_type=='group':
-        other_rows = ['PUB.', 'AUXI.', 'RP']
-        for row in other_rows:
-            row_cells = table.add_row().cells
-            row_cells[0].text = row
+    # convert none values to 0
+    for (k, v) in totals.items():
+        if v is None:
+            totals[k] = 0
 
-    doc.add_page_break()
+    if report_type == 'group':
+        other_rows = [
+            ('rp', 'Regular Pioneer'),
+            ('au', 'Auxillary Pioneer'),
+            ('sp', 'Special Pioneer')]
+        for r in other_rows:
+            row = r[0]
+            placements = totals['{}_placements'.format(row)]
+            video_showing = totals['{}_video_showing'.format(row)]
+            hours = totals['{}_hours'.format(row)]
+            return_visits = totals['{}_return_visits'.format(row)]
+            bible_study = totals['{}_bible_study'.format(row)]
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = r[1].upper()
+            row_cells[2].text = str(placements)
+            row_cells[3].text = str(video_showing)
+            row_cells[4].text = str(hours)
+            row_cells[5].text = str(return_visits)
+            row_cells[6].text = str(bible_study)
+
+            totals['placements__sum'] -= placements
+            totals['video_showing__sum'] -= video_showing
+            totals['hours__sum'] -= hours
+            totals['return_visits__sum'] -= return_visits
+            totals['bible_study__sum'] -= bible_study
+
+    # publishers row
+    row_cells = table.add_row().cells
+    row_cells[0].text = 'PUBLISHERS'
+    row_cells[2].text = str(totals['placements__sum'])
+    row_cells[3].text = str(totals['video_showing__sum'])
+    row_cells[4].text = str(totals['hours__sum'])
+    row_cells[5].text = str(totals['return_visits__sum'])
+    row_cells[6].text = str(totals['bible_study__sum'])
 
     filename = '{}.docx'.format(str(uuid.uuid1()))
     fullpath = os.path.join(settings.ROOT_DIR, 'media')

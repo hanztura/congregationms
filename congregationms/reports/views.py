@@ -1,13 +1,10 @@
-import os
-import uuid
+
 
 from datetime import datetime
 from urllib.parse import urlencode
 
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -18,32 +15,41 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import MFSForm
 from .models import MonthlyFieldService
-from .utils import (compute_month_year, generate_mfs,
+from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
+from publishers.utils import get_user_groups_members
+from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
 
 
-now = datetime.now().date()
-
-
-class MFSList(LoginRequiredMixin, ListView):
-    """
-    MFS stands for Month Field Service.
-    """
+class MFSList(LoginAndPermissionRequiredMixin, ListView):
+    """MFS stands for Month Field Service."""
     model = MonthlyFieldService
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_queryset(self):
+        now = datetime.now().date()
         default_month_year = compute_month_year(now)
         monthyear = self.request.GET.get('monthyear', default_month_year)
         monthyear = monthyear.split('-')
         year = monthyear[0]
         month = monthyear[1]
-        return MonthlyFieldService.objects.filter(
+        queryset = MonthlyFieldService.objects.filter(
             month_ending__year=year,
             month_ending__month=month
-        )
+        ).select_related('pioneering', 'publisher', 'group')
+
+        # filter mfs of user's group only
+        auth_pubs = self.request.authorized_publisher_pks
+        if auth_pubs:
+            queryset = queryset.filter(publisher__in=auth_pubs)
+        else:
+            queryset = self.model.objects.none()
+
+        return queryset
 
     def get_context_data(self, **kwargs):
+        now = datetime.now().date()
         default_month_year = compute_month_year(now)
         monthyear = self.request.GET.get('monthyear', default_month_year)
         context = super().get_context_data(**kwargs)
@@ -51,9 +57,10 @@ class MFSList(LoginRequiredMixin, ListView):
         return context
 
 
-class MFSDelete(LoginRequiredMixin, DeleteView):
+class MFSDelete(LoginAndPermissionRequiredMixin, DeleteView):
     model = MonthlyFieldService
     success_url = reverse_lazy('reports:mfs-index')
+    permission_required = 'reports.delete_monthlyfieldservice',
 
     def get_success_url(self):
         message = "Successfully deleted."
@@ -61,9 +68,10 @@ class MFSDelete(LoginRequiredMixin, DeleteView):
         return super().get_success_url()
 
 
-class MFSDetail(LoginRequiredMixin, DetailView):
+class MFSDetail(LoginAndPermissionRequiredMixin, DetailView):
     model = MonthlyFieldService
     context_object_name = 'report'
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,9 +90,11 @@ class MFSDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class MFSCreate(LoginRequiredMixin, CreateView):
+class MFSCreate(
+        AddRequestToForm, LoginAndPermissionRequiredMixin, CreateView):
     model = MonthlyFieldService
     form_class = MFSForm
+    permission_required = 'reports.add_monthlyfieldservice',
 
     def form_valid(self, form):
         try:
@@ -109,25 +119,23 @@ class MFSCreate(LoginRequiredMixin, CreateView):
         return super().get_success_url()
 
 
-class MFSUpdate(LoginRequiredMixin, UpdateView):
+class MFSUpdate(
+        AddRequestToForm, LoginAndPermissionRequiredMixin, UpdateView):
     model = MonthlyFieldService
     form_class = MFSForm
     context_object_name = 'report'
+    permission_required = 'reports.change_monthlyfieldservice',
 
 
-class MFSHistoryList(LoginRequiredMixin, ListView):
+class MFSHistoryList(LoginAndPermissionRequiredMixin, ListView):
     model = MonthlyFieldService
     template_name = 'reports/mfs_history.html'
     context_object_name = 'reports'
+    permission_required = 'reports.view_monthlyfieldservice',
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['totals'] = context['reports'].aggregate(
-            Sum('placements'),
-            Sum('video_showing'),
-            Sum('hours'),
-            Sum('return_visits'),
-            Sum('bible_study'))
+        context['totals'] = aggregate_mfs_queryset(context['reports'])
 
         view_type = self.kwargs['view_type']  # publisher or group
 
@@ -140,7 +148,8 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
             group = Group.objects.get(pk=group)
             context['group'] = group
 
-        # date from and date to
+        # date from and date to for default date search value
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
@@ -153,46 +162,29 @@ class MFSHistoryList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         view_type = self.kwargs['view_type']  # publisher or group
 
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 
-        date_from = date_from.split('-')
-        date_to = date_to.split('-')
-
-        from_month, from_year = date_from[1], date_to[0]
-        to_month, to_year = date_to[1], date_to[0]
-
-        if view_type == 'publisher':
+        is_vt_publisher = view_type == 'publisher'  # view type publisher
+        if is_vt_publisher:
             publisher = self.kwargs['publisher']
             publisher = Publisher.objects.get(slug=publisher)
 
-            queryset = MonthlyFieldService.objects.filter(
-                publisher=publisher,
-                month_ending__month__gte=from_month,
-                month_ending__year__gte=from_year
-            )
+            data = get_mfs_data(
+                date_from, date_to, publisher.pk, is_vt_publisher)
         else:
-            group = self.kwargs['group']
-            group = Group.objects.get(pk=group)
+            group_pk = self.kwargs['group']
 
-            queryset = MonthlyFieldService.objects.filter(
-                group=group,
-                month_ending__month__gte=from_month,
-                month_ending__year__gte=from_year
-            )
+            data = get_mfs_data(date_from, date_to, group_pk, is_vt_publisher)
 
-        queryset = queryset.filter(
-            month_ending__month__lte=to_month,
-            month_ending__year__lte=to_year
-        )
-        queryset = queryset.order_by(
-            '-month_ending', 'publisher__last_name', 'publisher__first_name')
-
-        return queryset
+        return data['queryset']
 
 
 @login_required
+@permission_required('reports.view_monthlyfieldservice', raise_exception=True)
 def sample_mfs(request, pk):
+    now = datetime.now().date()
     date_from = request.GET.get('from', str(now))
     date_to = request.GET.get('to', str(now))
 
@@ -215,15 +207,16 @@ def sample_mfs(request, pk):
         filename='download.docx')
 
 
-class ShareToRedirectView(LoginRequiredMixin, RedirectView):
-    """
-    Redirect to Draft Email Page.
+class ShareToRedirectView(LoginAndPermissionRequiredMixin, RedirectView):
+    """Redirect to Draft Email Page.
 
     Generate Publisher's MFS History Document first.
     """
+    permission_required = 'mailing.add_mail',
 
     def get_redirect_url(self, *args, **kwargs):
         publisher = get_object_or_404(Publisher, pk=self.kwargs['publisher'])
+        now = datetime.now().date()
         date_from = self.request.GET.get('from', str(now))
         date_to = self.request.GET.get('to', str(now))
 

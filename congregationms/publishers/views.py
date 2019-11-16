@@ -1,6 +1,5 @@
 #from django.shortcuts import render
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
@@ -8,28 +7,42 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import GroupMemberForm, GroupMemberFormSet, PublisherModelForm
 from .models import Group, Publisher
+from system.utils import LoginAndPermissionRequiredMixin
 
 
 # Create your views here.
-class PublisherList(LoginRequiredMixin, ListView):
+class PublisherList(LoginAndPermissionRequiredMixin, ListView):
     model = Publisher
+    permission_required = 'publishers.view_publisher',
+
+    def get_queryset(self):
+        auth_pubs = self.request.authorized_publisher_pks
+        if auth_pubs:
+            queryset = Publisher.objects.filter(id__in=auth_pubs)
+        else:
+            queryset = self.model.objects.none()
+
+        return queryset
 
 
-class PublisherUpdate(LoginRequiredMixin, UpdateView):
+class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Publisher
     fields = ['last_name', 'first_name', 'middle_name',
               'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
     context_object_name = 'publisher'
+    permission_required = 'publishers.change_publisher',
 
 
-class PublisherDetail(LoginRequiredMixin, DetailView):
+class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
     model = Publisher
     context_object_name = 'publisher'
+    permission_required = 'publishers.view_publisher',
 
 
-class PublisherCreate(LoginRequiredMixin, CreateView):
+class PublisherCreate(LoginAndPermissionRequiredMixin, CreateView):
     model = Publisher
     form_class = PublisherModelForm
+    permission_required = 'publishers.add_publisher',
 
     def form_valid(self, form):
         messages.success(
@@ -42,9 +55,10 @@ class PublisherCreate(LoginRequiredMixin, CreateView):
         return reverse('publishers:update', args=[str(self.object.slug)])
 
 
-class PublisherDelete(LoginRequiredMixin, DeleteView):
+class PublisherDelete(LoginAndPermissionRequiredMixin, DeleteView):
     model = Publisher
     success_url = reverse_lazy('publishers:index')
+    permission_required = 'publishers.delete_publisher',
 
     def get_success_url(self):
         messages.success(
@@ -54,21 +68,34 @@ class PublisherDelete(LoginRequiredMixin, DeleteView):
         return super().get_success_url()
 
 
-class GroupList(LoginRequiredMixin, ListView):
+class GroupList(LoginAndPermissionRequiredMixin, ListView):
     model = Group
+    permission_required = 'publishers.view_group',
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        user = self.request.user
+        group = user.publisher.group
+        if group:
+            queryset = queryset.filter(id=group.pk)
+
+        return queryset
 
 
-class GroupDetail(LoginRequiredMixin, DetailView):
+class GroupDetail(LoginAndPermissionRequiredMixin, DetailView):
     model = Group
     context_object_name = 'group'
+    permission_required = 'publishers.view_group',
 
 
-class GroupUpdate(LoginRequiredMixin, UpdateView):
+class GroupUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Group
     fields = [
         'name', 'congregation'
     ]
     context_object_name = 'group'
+    permission_required = 'publishers.change_group',
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -96,9 +123,10 @@ class GroupUpdate(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class GroupDelete(LoginRequiredMixin, DeleteView):
+class GroupDelete(LoginAndPermissionRequiredMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('publishers:group-index')
+    permission_required = 'publishers.delete_group',
 
     def get_success_url(self):
         messages.success(
@@ -108,9 +136,10 @@ class GroupDelete(LoginRequiredMixin, DeleteView):
         return super().get_success_url()
 
 
-class GroupCreate(LoginRequiredMixin, CreateView):
+class GroupCreate(LoginAndPermissionRequiredMixin, CreateView):
     model = Group
     fields = ['name', 'congregation']
+    permission_required = 'publishers.add_group',
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)

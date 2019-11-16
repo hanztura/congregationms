@@ -7,22 +7,16 @@ from django.db import models
 from django.urls import reverse
 
 from publishers.models import Publisher
-
-
-DATE_NOW = datetime.now().date()
+from publishers.utils import OrderByPublisherMixin
 
 
 # Create your models here.
-class Pioneer(models.Model):
+class Pioneer(OrderByPublisherMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.SlugField(max_length=50, unique=True, blank=True)
     publisher = models.OneToOneField(
         Publisher, on_delete=models.CASCADE, related_name='pioneering')
     is_active = models.BooleanField(default=False, blank=True, editable=False)
-
-    class Meta:
-        ordering = ('publisher__last_name', 'publisher__first_name',
-                    'publisher__middle_name')
 
     def __str__(self):
         return str(self.publisher)
@@ -46,10 +40,13 @@ class Pioneer(models.Model):
         self.is_active = active
         super().save(*args, **kwargs)
 
-    def is_active_rp(self, date=DATE_NOW):
+    def is_active_rp(self, date=None):
         """
         Check if a pioneer is RP on a given date
         """
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
         active = False
         pioneer_details = self.details.filter(
             pioneer_type='RP',
@@ -64,7 +61,29 @@ class Pioneer(models.Model):
 
         return active
 
-    def get_active_rp_detail(self, date=DATE_NOW):
+    def get_active_pioneer_detail(self, date=None):
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
+        pioneer_details = self.details.filter(
+            date_start__lte=date
+        )
+        pioneer_details_not_ended = pioneer_details.filter(
+            date_end__gte=date).first()
+        if pioneer_details_not_ended:
+            return pioneer_details_not_ended
+
+        pioneer_details_continous = pioneer_details.filter(
+            date_end=None).first()
+        if pioneer_details_continous:
+            return pioneer_details_continous
+
+        return None
+
+    def get_active_rp_detail(self, date=None):
+        DATE_NOW = datetime.now().date()
+        if not date:
+            date = DATE_NOW
         pioneer_details = self.details.filter(
             pioneer_type='RP',
             date_start__lte=date
@@ -104,6 +123,7 @@ class PioneerDetail(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.has_ended:
+            DATE_NOW = datetime.now().date()
             date_end = self.date_end
             date_now = DATE_NOW
             if date_end:
