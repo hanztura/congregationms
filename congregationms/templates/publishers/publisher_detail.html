@@ -31,8 +31,8 @@
   <p>Date of Baptism: {{ publisher.date_of_baptism }}</p>
   <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
   <p>Group: {{ publisher.group|title }}</p>
-  <p>Infirmed: {% if publisher.infirmed %}{% include "_snippets/icon_check.html" with color='has-text-warning' %}{% else %}{% include "_snippets/icon_times.html" with color='has-text-success' %}{% endif %}</p>
-  <p>Elderly: {% if publisher.elderly %}{% include "_snippets/icon_check.html" with color='has-text-warning' %}{% else %}{% include "_snippets/icon_times.html" with color='has-text-success' %}{% endif %}</p>
+  <p>Infirmed: {% if publisher.infirmed %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" %}{% endif %}</p>
+  <p>Elderly: {% if publisher.elderly %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html"  %}{% endif %}</p>
 {% endblock main %}
 
 {% block vueinstance %}

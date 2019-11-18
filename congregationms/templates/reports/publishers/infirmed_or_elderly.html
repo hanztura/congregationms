@@ -1,0 +1,50 @@
+{% extends "reports/publishers/base.html" %}
+
+{% block main %}
+  <h1 class="title">{{h1}}</h1>
+  
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Birthdate</th>
+        <th class="has-text-centered">Infirmed</th>
+        <th class="has-text-centered">Elderly</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for publisher in object_list %}
+        <tr>
+          <td>{{ publisher.name|title }}</td>
+          <td>{{ publisher.date_of_birth }}</td>
+          <td class="has-text-centered">
+            {% if  publisher.infirmed %}
+                {% include "_snippets/icon_check.html"%}
+            {% else %}
+              {% include "_snippets/icon_times.html"%}
+            {% endif %}
+          </td>
+          <td class="has-text-centered">
+            {% if  publisher.elderly %}
+                {% include "_snippets/icon_check.html" %}
+            {% else %}
+              {% include "_snippets/icon_times.html"  %}
+            {% endif %}
+          </td>
+          <td>
+            <a href='{% url "publishers:detail" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "publishers:update" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            <a href='{% url "reports:mfs-history" publisher.slug %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="5" class="has-text-centered">No {{view_type}} available.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}
