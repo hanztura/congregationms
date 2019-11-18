@@ -7,7 +7,6 @@
     <thead>
       <tr>
         <th class="has-text-centered">Name</th>
-        <th class="has-text-centered">Birthdate</th>
         <th class="has-text-centered">Infirmed</th>
         <th class="has-text-centered">Elderly</th>
         <th class="has-text-centered">Actions</th>
@@ -17,7 +16,6 @@
       {% for publisher in object_list %}
         <tr>
           <td>{{ publisher.name|title }}</td>
-          <td>{{ publisher.date_of_birth }}</td>
           <td class="has-text-centered">
             {% if  publisher.infirmed %}
                 {% include "_snippets/icon_check.html"%}

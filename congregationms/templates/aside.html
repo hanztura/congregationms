@@ -15,7 +15,12 @@
         <p class="menu-label">Reports</p>
         <ul class="menu-list">
           <li><a href="{% url 'reports:mfs-index' %}">Monthly Field Service</a></li>
-          <li><a href="{% url 'reports:infirmed_publishers' %}">Infirmed Publishers</a></li>
-          <li><a href="{% url 'reports:elderly_publishers' %}">Elderly Publishers</a></li>
+          <li>
+            <a>Publishers</a>
+            <ul>
+              <li><a href="{% url 'reports:infirmed_publishers' %}">Infirmed Publishers</a></li>
+              <li><a href="{% url 'reports:elderly_publishers' %}">Elderly Publishers</a></li>
+            </ul>
+          </li>
         </ul>
       </aside>
