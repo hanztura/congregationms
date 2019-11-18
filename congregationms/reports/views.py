@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -18,8 +17,76 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
-from publishers.utils import get_user_groups_members
+from pioneering.models import Pioneer, PioneerDetail
 from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
+
+
+class InfirmedListView(LoginAndPermissionRequiredMixin, ListView):
+    model = Publisher
+    permission_required = 'publishers.view_publisher'
+    template_name = 'reports/publishers/infirmed_or_elderly.html'
+    context_object_name = 'publishers'
+
+    def get_queryset(self):
+        q = super().get_queryset()
+
+        view_type = self.kwargs['view_type']
+        if view_type == 'infirmed':
+            q = q.filter(infirmed=True)
+        elif view_type == ('elderly'):
+            q = q.filter(elderly=True)
+        else:
+            q = self.models.objects.none()
+
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = 'Infirmed/Elderly Publishers'
+        view_types = {
+            'infirmed': 'Infirmed Publishers',
+            'elderly': 'Elderly Publishers'
+        }
+
+        view_type = self.kwargs['view_type']
+
+        title = view_types[view_type]
+        context['view_type'] = view_type.title()
+        context['h1'] = title
+        context['head_title'] = '{} - Report'.format(title)
+        return context
+
+
+class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
+    model = PioneerDetail
+    permission_required = 'pioneering.view_pioneer'
+    template_name = 'reports/pioneering/list.html'
+
+    def get_queryset(self):
+        q = super().get_queryset().select_related('pioneer__publisher')
+        q = q.filter(has_ended=False)
+
+        view_type = self.kwargs['view_type']
+        q = q.filter(pioneer_type=view_type.upper())  # RP, AU, SP
+
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = 'Pioneers'
+
+        view_type = self.kwargs['view_type']
+        if view_type == 'rp':
+            title = 'Regular Pioneers'
+        elif view_type == 'au':
+            title = 'Auxillary Pioneers'
+        elif view_type == 'sp':
+            title = 'Special Pioneers'
+
+        context['h1'] = title
+        context['head_title'] = '{} - Report'.format(title)
+
+        return context
 
 
 class MFSList(LoginAndPermissionRequiredMixin, ListView):
@@ -251,3 +318,4 @@ class ShareToRedirectView(LoginAndPermissionRequiredMixin, RedirectView):
             'on_fail': referer})
         url = '{}?{}'.format(url, query_string)
         return url
+

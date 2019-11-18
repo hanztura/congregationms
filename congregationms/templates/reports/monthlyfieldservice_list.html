@@ -4,6 +4,11 @@
   <title>Monthly Field Service - List</title>  
 {% endblock title %}
 
+{% block subbreadcrumbs %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
+  <li class="is-active"><a href='#'>List</a></li>
+{% endblock subbreadcrumbs %}
+
 {% block main %}
   <h1>Monthly Field Service</h1>
 

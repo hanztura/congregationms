@@ -33,7 +33,3 @@ def get_publishers_as_choices(request=None):
     publishers = [(p.pk, p.name) for p in publishers]
     publishers.insert(0, ('', '[Select a publisher]'))
     return publishers
-
-
-def get_authorized_publishers():
-    pass

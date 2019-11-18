@@ -10,6 +10,7 @@
 {% endblock title %}
 
 {% block subbreadcrumbs %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
 	{% if publisher %}
 		<li><a href="#">{{publisher.name|title}}</a></li>
 	{% endif %}

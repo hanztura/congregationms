@@ -27,10 +27,16 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
 
 class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Publisher
-    fields = ['last_name', 'first_name', 'middle_name',
-              'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
+    form_class = PublisherModelForm
     context_object_name = 'publisher'
     permission_required = 'publishers.change_publisher',
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            'Successfully updated.'
+        )
+        return super().form_valid(form)
 
 
 class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
@@ -73,12 +79,20 @@ class GroupList(LoginAndPermissionRequiredMixin, ListView):
     permission_required = 'publishers.view_group',
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = self.model.objects.none()
 
-        user = self.request.user
-        group = user.publisher.group
-        if group:
-            queryset = queryset.filter(id=group.pk)
+        # user = self.request.user
+        # publisher = user.publisher
+        # group = publisher.group_members.filter(is_active=True)
+        # group = group.first()  # publishers.Member object
+        # if group:
+        #     queryset = super().get_queryset()
+        #     queryset = queryset.filter(id=group.group_id)
+        groups = self.request.authorized_groups  # publisher.UserGroup objects
+        if groups:
+            groups = [g.group_id for g in groups]  # Group pks
+            queryset = super().get_queryset().filter(id__in=groups)
+            queryset = queryset.select_related('congregation')
 
         return queryset
 

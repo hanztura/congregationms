@@ -15,5 +15,22 @@
         <p class="menu-label">Reports</p>
         <ul class="menu-list">
           <li><a href="{% url 'reports:mfs-index' %}">Monthly Field Service</a></li>
+
+          <li>
+            <a>Publishers</a>
+            <ul>
+              <li><a href="{% url 'reports:publishers' 'infirmed' %}">Infirmed Publishers</a></li>
+              <li><a href="{% url 'reports:publishers' 'elderly' %}">Elderly Publishers</a></li>
+            </ul>
+          </li>
+
+          <li>
+            <a>Pioneering</a>
+            <ul>
+              <li><a href="{% url 'reports:pioneering' 'rp' %}">Regular Pioneers</a></li>
+              <li><a href="{% url 'reports:pioneering' 'au' %}">Auxillary Pioneers</a></li>
+              <li><a href="{% url 'reports:pioneering' 'sp' %}">Special Pioneers</a></li>
+            </ul>
+          </li>
         </ul>
       </aside>

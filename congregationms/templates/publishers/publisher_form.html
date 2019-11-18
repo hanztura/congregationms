@@ -82,6 +82,19 @@
         <textarea class="textarea" name="contact_numbers" value="{{ form.contact_numbers.value }}" placeholder="0907123456, 09189876543"></textarea>
         </div>
       </div>
+
+      <div class="field">
+        </div>
+        <label class="checkbox" for="{{form.infirmed.id_for_label}}">
+          <input type="checkbox" name="infirmed" id="{{form.infirmed.id_for_label}}" {% if form.infirmed.value %}checked{% endif %}>
+          Infirmed
+        </label>
+      <div class="field">
+        <label class="checkbox" for="{{form.elderly.id_for_label}}">
+          <input type="checkbox" name="elderly" id="{{form.elderly.id_for_label}}" {% if form.elderly.value %}checked{% endif %}>
+          Elderly
+        </label>
+      </div>
       {% endif %}
 
       {% if publisher %}

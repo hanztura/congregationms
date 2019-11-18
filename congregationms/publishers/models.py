@@ -17,6 +17,8 @@ class Publisher(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     date_of_baptism = models.DateField(blank=True, null=True)
     contact_numbers = models.CharField(max_length=200, blank=True)
+    infirmed = models.BooleanField(default=False, blank=True)
+    elderly = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name='publisher',
         null=True, blank=True)
