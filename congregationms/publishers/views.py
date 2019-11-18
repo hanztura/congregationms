@@ -27,10 +27,16 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
 
 class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Publisher
-    fields = ['last_name', 'first_name', 'middle_name',
-              'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
+    form_class = PublisherModelForm
     context_object_name = 'publisher'
     permission_required = 'publishers.change_publisher',
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            'Successfully updated.'
+        )
+        return super().form_valid(form)
 
 
 class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
