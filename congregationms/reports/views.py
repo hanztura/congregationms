@@ -17,6 +17,7 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
+from pioneering.models import Pioneer, PioneerDetail
 from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
 
 
@@ -28,13 +29,12 @@ class InfirmedListView(LoginAndPermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         q = super().get_queryset()
+
         view_type = self.kwargs['view_type']
         if view_type == 'infirmed':
             q = q.filter(infirmed=True)
-
         elif view_type == ('elderly'):
             q = q.filter(elderly=True)
-
         else:
             q = self.models.objects.none()
 
@@ -42,18 +42,49 @@ class InfirmedListView(LoginAndPermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        title = 'Infirmed/Elderly Publishers'
+        view_types = {
+            'infirmed': 'Infirmed Publishers',
+            'elderly': 'Elderly Publishers'
+        }
 
         view_type = self.kwargs['view_type']
-        if view_type == 'infirmed':
-            title = 'Infirmed Publishers'
-            context['h1'] = title
-            context['head_title'] = '{} - Report'.format(title)
-            context['view_type'] = 'Infirmed'
-        elif view_type == 'elderly':
-            title = 'Elderly Publishers'
-            context['h1'] = title
-            context['head_title'] = 'Elderly Publishers - Report'
-            context['view_type'] = 'Elderly'
+
+        title = view_types[view_type]
+        context['view_type'] = view_type.title()
+        context['h1'] = title
+        context['head_title'] = '{} - Report'.format(title)
+        return context
+
+
+class PioneerListView(LoginAndPermissionRequiredMixin, ListView):
+    model = PioneerDetail
+    permission_required = 'pioneering.view_pioneer'
+    template_name = 'reports/pioneering/list.html'
+
+    def get_queryset(self):
+        q = super().get_queryset().select_related('pioneer__publisher')
+        q = q.filter(has_ended=False)
+
+        view_type = self.kwargs['view_type']
+        q = q.filter(pioneer_type=view_type.upper())  # RP, AU, SP
+
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = 'Pioneers'
+
+        view_type = self.kwargs['view_type']
+        if view_type == 'rp':
+            title = 'Regular Pioneers'
+        elif view_type == 'au':
+            title = 'Auxillary Pioneers'
+        elif view_type == 'sp':
+            title = 'Special Pioneers'
+
+        context['h1'] = title
+        context['head_title'] = '{} - Report'.format(title)
 
         return context
 

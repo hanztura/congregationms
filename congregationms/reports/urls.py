@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     InfirmedListView, MFSCreate, MFSDelete, MFSDetail, MFSList, MFSUpdate,
-    MFSHistoryList, sample_mfs, ShareToRedirectView
+    MFSHistoryList, PioneerListView, sample_mfs, ShareToRedirectView
 )
 
 app_name = 'reports'
@@ -22,17 +22,18 @@ urlpatterns = [
     path('monthly-field-service/update/<str:pk>/',
          MFSUpdate.as_view(), name='mfs-update'),
 
+
     path('mfs/download/group/<str:pk>/', sample_mfs, name='mfs-download'),
     path('mfs/<str:publisher>/share-to/',
          ShareToRedirectView.as_view(), name='share_to'),
+
     path(
-        'publishers/infirmed/',
+        'publishers/<str:view_type>/',
         InfirmedListView.as_view(),
-        {'view_type': 'infirmed'},
-        name='infirmed_publishers'),
+        name='publishers'),
+
     path(
-        'publishers/elderly/',
-        InfirmedListView.as_view(),
-        {'view_type': 'elderly'},
-        name='elderly_publishers'),
+        'pioneering/<str:view_type>/',
+        PioneerListView.as_view(),
+        name='pioneering'),
 ]

@@ -1,0 +1,32 @@
+{% extends "reports/pioneering/base.html" %}
+
+{% block main %}
+  <h1 class="title">{{h1}}</h1>
+
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pd in object_list %}
+        <tr>
+          <td>{{ pd.pioneer.publisher.name|title }}</td>
+          <td>
+            <a href='{% url "pioneering:detail" pd.pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "pioneering:update" pd.pioneer.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            <a href='{% url "reports:mfs-history" pd.pioneer.publisher.slug %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a></td>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="3" class="has-text-centered">Sorry, there are no {{h1}}.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}

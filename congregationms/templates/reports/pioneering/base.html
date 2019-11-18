@@ -1,0 +1,14 @@
+{% extends "reports/base.html" %}
+
+{% block title %}
+  <title>{{head_title}}</title>  
+{% endblock title %}
+
+{% block navbaritems %}
+  {% include "_snippets/navbar_items.html"  %}
+{% endblock navbaritems %}
+
+{% block subbreadcrumbs %}
+  <li ><a href='#'>Pioneering</a></li>
+  <li class="is-active"><a href='#'>{{view_type}}</a></li>
+{% endblock subbreadcrumbs %}
