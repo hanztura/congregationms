@@ -7,11 +7,11 @@ def user_has_no_user_group_middleware(get_response):
 
     def middleware(request):
         user = request.user
-        groups = user.publisher_groups.none()
+        groups = None
         authorized_publisher_pks = []
 
-        # anonymous and superusers has no groups allowed
-        if not user.is_anonymous and not user.is_superuser:
+        # anonymous has no groups allowed
+        if not user.is_anonymous:
             if request.path not in ('/', '/dashboard'):
                 print(request.path)
                 try:
@@ -26,10 +26,11 @@ def user_has_no_user_group_middleware(get_response):
         request.authorized_groups = groups
         request.authorized_publisher_pks = authorized_publisher_pks
 
-        if not request.authorized_groups:
-            msg = 'You have no authorization to work on any groups. Please \
-                    inform your administrator.'
-            messages.warning(request, msg)
+        if (not request.authorized_groups) and (not user.is_anonymous):
+            if request.path not in ('/', '/dashboard'):
+                msg = 'You have no authorization to work on any groups. Please \
+                        inform your administrator.'
+                messages.warning(request, msg)
 
         response = get_response(request)
         return response
