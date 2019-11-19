@@ -33,6 +33,11 @@ class PioneerDetailView(LoginAndPermissionRequiredMixin, DetailView):
     slug_field = 'code'
     permission_required = ('pioneering.view_pioneer',)
 
+    def get_queryset(self):
+        q = super().get_queryset()
+        q = q.prefetch_related('details', 'publisher')
+        return q
+
 
 class PioneerCreateView(
         AddRequestToForm, LoginAndPermissionRequiredMixin, CreateView):
