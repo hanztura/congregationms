@@ -13,7 +13,7 @@ class PublisherModelForm(ModelForm):
         model = Publisher
         fields = ['last_name', 'first_name', 'middle_name',
                   'date_of_birth', 'date_of_baptism', 'contact_numbers',
-                  'slug', 'infirmed', 'elderly',
+                  'slug', 'infirmed', 'elderly', 'male',
                   'elder', 'ministerial_servant',
                   'assets']
 
@@ -23,6 +23,9 @@ class PublisherModelForm(ModelForm):
         self._low_case_fields = [
             'last_name', 'first_name', 'middle_name'
         ]
+
+        if self.instance:
+            self.fields['male'].required = True
 
     def clean_slug(self):
         slug = self.cleaned_data['slug']
