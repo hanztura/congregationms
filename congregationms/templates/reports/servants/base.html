@@ -1,7 +1,7 @@
 {% extends "reports/base.html" %}
 
 {% block title %}
-  <title>{{head_title}}</title>  
+  <title>{{head_title|default:'Servants'}}</title>  
 {% endblock title %}
 
 {% block navbaritems %}
@@ -9,10 +9,10 @@
 {% endblock navbaritems %}
 
 {% block subbreadcrumbs %}
-  <li ><a href='#'>Pioneering</a></li>
-  <li class="is-active"><a href='#'>{{view_type}}</a></li>
+  <li ><a href='#'>Servants</a></li>
+  <li class="is-active"><a href='#'>{{view_type|upper}}</a></li>
 {% endblock subbreadcrumbs %}
 
 {% block aside_menu %}
-  {% include "aside.html" with reports_pioneering_active='is-active' %}  
+  {% include "aside.html" with reports_servants_active='is-active' %}  
 {% endblock aside_menu %}

@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     InfirmedListView, MFSCreate, MFSDelete, MFSDetail, MFSList, MFSUpdate,
-    MFSHistoryList, PioneerListView, sample_mfs, ShareToRedirectView
+    MFSHistoryList, PioneerListView, sample_mfs, ServantListView,
+    ShareToRedirectView
 )
 
 app_name = 'reports'
@@ -36,4 +37,9 @@ urlpatterns = [
         'pioneering/<str:view_type>/',
         PioneerListView.as_view(),
         name='pioneering'),
+
+    path(
+        'servants/<str:view_type>/',
+        ServantListView.as_view(),
+        name='servants'),
 ]

@@ -9,3 +9,7 @@
 {% block navbaritems %}
   {% include "_snippets/navbar_items.html" with publishers_active='is-active' %}
 {% endblock navbaritems %}
+
+{% block aside_menu %}
+  {% include "aside.html" with publishers_active='is-active' %}  
+{% endblock aside_menu %}

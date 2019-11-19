@@ -97,7 +97,9 @@
 
     {% if user.is_authenticated %}
       <div class="column is-one-fifth">
-        {% include "aside.html" %}
+        {% block aside_menu %}
+          {% include "aside.html" %}
+        {% endblock aside_menu %}
       </div>
     {% endif %}
   </div><!--columns -->
