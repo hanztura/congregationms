@@ -29,30 +29,36 @@
 
     <form method="POST" id="form--publisher-form">
       {% csrf_token %}
-      <div class="field">
-        <label class="label">Last Name</label>
-        <div class="control">
-          <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" ref="lastName" @change="updateSlug" required>
-        {{form.last_name.errors}}
-        </div>
+      <div class="field is-normal">
+        <label class="label">Name</label>
       </div>
-      <div class="field">
-        <label class="label">First Name</label>
-        <div class="control">
-          <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" ref="firstName" @change="updateSlug" required>
-        {{form.first_name.errors}}
-        </div>
-      </div>
-
-      {% if publisher %}
-        <div class="field">
-          <label class="label">Middle Name</label>
-          <div class="control">
-          <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}">
-          {{form.middle_name.errors}}
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <input class="input" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" ref="lastName" @input="updateSlug" required placeholder="last name">
+            {{form.last_name.errors}}
+            </div>
           </div>
+
+          <div class="field">
+            <div class="control">
+              <input class="input" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" ref="firstName" @input="updateSlug" required placeholder="first name">
+            {{form.first_name.errors}}
+            </div>
+          </div>
+
+          {% if publisher %}
+            <div class="field">
+              <div class="control">
+              <input class="input" type="text" name="middle_name" value="{{ form.middle_name.value|default:'' }}" placeholder="middle name">
+              {{form.middle_name.errors}}
+              </div>
+            </div>
+          {% endif %}
+
         </div>
-      {% endif %}
+      </div>
       
       <div class="field">
         <label class="label">Slug</label>
@@ -63,38 +69,72 @@
       </div>
 
       {% if publisher %}
+      <div class="field is-normal">
+        <label class="label">Dates</label>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field is-expanded">
+            <div class="field has-addons">
+              <p class="control">
+                <a class="button is-static">
+                  Baptism
+                </a>
+              </p>
+              <p class="control is-expanded">
+                <input  class="input" type="date" name="date_of_baptism" value="{{ form.date_of_baptism.value|date:'Y-m-d' }}">
+              </p>
+            </div>
+          </div>
 
-      <div class="field">
-        <label class="label">Date of Birth</label>
-        <div class="control">
-        <input class="input" type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
+          <div class="field is-expanded">
+            <div class="field has-addons">
+              <p class="control">
+                <a class="button is-static">
+                  Birth
+                </a>
+              </p>
+              <p class="control is-expanded">
+                <input class="input" type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="field">
-        <label class="label">Date of Baptism</label>
-        <div class="control">
-        <input  class="input" type="date" name="date_of_baptism" value="{{ form.date_of_baptism.value|date:'Y-m-d' }}">
         </div>
-      </div>
+
       <div class="field">
         <label class="label">Contact Numbers</label>
         <div class="control">
-        <textarea class="textarea" name="contact_numbers" value="{{ form.contact_numbers.value }}" placeholder="0907123456, 09189876543"></textarea>
+        <textarea class="textarea" name="contact_numbers" placeholder="0907123456, 09189876543">{{ form.contact_numbers.value }}</textarea>
         </div>
       </div>
 
       <div class="field">
+        <label class="label">Assets</label>
+        <div class="control">
+          <div class="select is-multiple is-fullwidth">
+            {{form.assets}}
+          </div>
         </div>
-        <label class="checkbox" for="{{form.infirmed.id_for_label}}">
-          <input type="checkbox" name="infirmed" id="{{form.infirmed.id_for_label}}" {% if form.infirmed.value %}checked{% endif %}>
-          Infirmed
-        </label>
-      <div class="field">
-        <label class="checkbox" for="{{form.elderly.id_for_label}}">
-          <input type="checkbox" name="elderly" id="{{form.elderly.id_for_label}}" {% if form.elderly.value %}checked{% endif %}>
-          Elderly
-        </label>
       </div>
+
+      <div class="field">
+        <div class="control">
+          <label class="checkbox" for="{{form.infirmed.id_for_label}}">
+            <input type="checkbox" name="infirmed" id="{{form.infirmed.id_for_label}}" {% if form.infirmed.value %}checked{% endif %}>
+            Infirmed
+          </label>
+        </div>
+        </div>
+      <div class="field">
+        <div class="control">
+          <label class="checkbox" for="{{form.elderly.id_for_label}}">
+            <input type="checkbox" name="elderly" id="{{form.elderly.id_for_label}}" {% if form.elderly.value %}checked{% endif %}>
+            Elderly
+          </label>
+        </div>
+      </div>
+
       {% endif %}
 
       {% if publisher %}
