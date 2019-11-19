@@ -1,8 +1,10 @@
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 
 from .models import Group, Member, Publisher
-from system.utils import compute_age
+from .utils import get_groups_as_choices
+from system.utils import compute_age, get_congregation_as_choices
+from publishers.utils import get_publishers_as_choices
 
 
 class PublisherModelForm(ModelForm):
@@ -40,6 +42,17 @@ class PublisherModelForm(ModelForm):
         return cleaned_data
 
 
+class GroupModelForm(ModelForm):
+
+    class Meta:
+        model = Group
+        fields = ['name', 'congregation']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['congregation'].choices = get_congregation_as_choices()
+
+
 class GroupMemberForm(ModelForm):
 
     class Meta:
@@ -51,6 +64,10 @@ class GroupMemberForm(ModelForm):
             'date_from',
             'date_to'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['publisher'].choices = get_publishers_as_choices()
 
 
 GroupMemberFormSet = inlineformset_factory(

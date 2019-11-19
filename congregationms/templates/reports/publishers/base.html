@@ -1,7 +1,7 @@
 {% extends "reports/base.html" %}
 
 {% block title %}
-  <title>{{head_title}}</title>  
+  <title>{{head_title|default:'Publisher Reports'}}</title>  
 {% endblock title %}
 
 {% block navbaritems %}

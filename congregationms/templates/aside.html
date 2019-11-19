@@ -14,7 +14,7 @@
 
         <p class="menu-label">Servants</p>
         <ul class="menu-list">
-          <li><a href="{% url 'servants:index' %}" class="{{servants_active}}">List</a></li>
+          <li><a href="{% url 'servants:index' %}" class="{{servants_active}}">Servant List</a></li>
         </ul>
 
         <p class="menu-label">Reports</p>
@@ -26,6 +26,7 @@
             <ul>
               <li><a href="{% url 'reports:publishers' 'infirmed' %}">Infirmed Publishers</a></li>
               <li><a href="{% url 'reports:publishers' 'elderly' %}">Elderly Publishers</a></li>
+              <li><a href="{% url 'reports:publishers_inactive' %}">Inactive Publishers</a></li>
             </ul>
           </li>
 

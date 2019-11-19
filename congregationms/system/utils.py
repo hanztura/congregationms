@@ -3,6 +3,8 @@ import datetime
 from django.contrib.auth.mixins import (
     LoginRequiredMixin, PermissionRequiredMixin)
 
+from .models import Congregation
+
 
 class LoginAndPermissionRequiredMixin(
         LoginRequiredMixin, PermissionRequiredMixin):
@@ -32,3 +34,9 @@ def compute_age(birthdate, on_date=None):
     age = on_date - birthdate  # timedelta
     age = age.days // 365
     return age
+
+
+def get_congregation_as_choices():
+    q = Congregation.objects.all()
+    q = [(c.pk, c.name) for c in q]
+    return q

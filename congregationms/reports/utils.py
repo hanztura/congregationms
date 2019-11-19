@@ -4,13 +4,13 @@ import os
 import uuid
 
 from django.conf import settings
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 from .models import MonthlyFieldService
-from publishers.models import Group
+from publishers.models import Group, Publisher
 
 
 def compute_month_year(date):
@@ -267,3 +267,26 @@ def get_previous_month_end(now=None):
     # previous month end
     month = datetime.date(previous_year, previous_month, max(month[-1]))
     return month
+
+
+def get_publishers_sum_hours(df, dt):
+    """Return a Queryset of Publisher.
+
+    df -> date from.
+    dt -> date to
+    """
+    within_range = Q(
+        publisher_mfs__month_ending__gte=df,
+        publisher_mfs__month_ending__lte=dt
+    )
+    pubs = Publisher.objects.annotate(num_hours=Sum(
+        'publisher_mfs__hours', filter=within_range
+    ))
+
+    return pubs
+
+
+def get_inactive_pubs(date_from, date_to):
+    q = get_publishers_sum_hours(date_from, date_to)
+    q = q.filter(Q(num_hours=0) | Q(num_hours=None))
+    return q
