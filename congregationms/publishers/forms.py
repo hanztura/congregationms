@@ -13,12 +13,19 @@ class PublisherModelForm(ModelForm):
         model = Publisher
         fields = ['last_name', 'first_name', 'middle_name',
                   'date_of_birth', 'date_of_baptism', 'contact_numbers',
-                  'slug', 'infirmed', 'elderly',
-                  'elder', 'ministerial_servant']
+                  'slug', 'infirmed', 'elderly', 'male',
+                  'elder', 'ministerial_servant',
+                  'assets']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['slug'].required = True
+        self._low_case_fields = [
+            'last_name', 'first_name', 'middle_name'
+        ]
+
+        if self.instance:
+            self.fields['male'].required = True
 
     def clean_slug(self):
         slug = self.cleaned_data['slug']
@@ -29,6 +36,11 @@ class PublisherModelForm(ModelForm):
                 raise ValidationError(message)
         return slug
 
+    def process_low_case_fields(self, data):
+        fields = self._low_case_fields
+        for field in fields:
+            data[field] = data[field].lower()
+
     def clean(self):
         cleaned_data = super().clean()
         dob = cleaned_data.get('date_of_birth', None)
@@ -38,6 +50,9 @@ class PublisherModelForm(ModelForm):
             age = compute_age(dob)
             elderly = age >= 60
             cleaned_data['elderly'] = elderly
+
+        # low case necessary fields
+        self.process_low_case_fields(cleaned_data)
 
         return cleaned_data
 
@@ -68,6 +83,7 @@ class GroupMemberForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['publisher'].choices = get_publishers_as_choices()
+        self.fields['is_active'].initial = True
 
 
 GroupMemberFormSet = inlineformset_factory(
