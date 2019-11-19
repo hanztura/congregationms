@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'pioneering',
     'reports',
     'mailing',
+    'servants',
 
     'simple_history',
 ]
