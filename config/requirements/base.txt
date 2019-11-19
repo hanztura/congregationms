@@ -4,3 +4,4 @@ django-extensions==2.2.3
 python-docx==0.8.7
 python-dateutil==2.8.0
 rules==2.1
+django-simple-history==2.7.3
