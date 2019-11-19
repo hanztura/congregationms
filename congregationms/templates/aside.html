@@ -19,10 +19,10 @@
 
         <p class="menu-label">Reports</p>
         <ul class="menu-list">
-          <li><a href="{% url 'reports:mfs-index' %}">Monthly Field Service</a></li>
+          <li><a href="{% url 'reports:mfs-index' %}" class="{{mfs_active}}">Monthly Field Service</a></li>
 
           <li>
-            <a>Publishers</a>
+            <a class="{{publishers_active}}">Publishers</a>
             <ul>
               <li><a href="{% url 'reports:publishers' 'infirmed' %}">Infirmed Publishers</a></li>
               <li><a href="{% url 'reports:publishers' 'elderly' %}">Elderly Publishers</a></li>
@@ -30,11 +30,19 @@
           </li>
 
           <li>
-            <a>Pioneering</a>
+            <a class="{{pioneering_active}}">Pioneering</a>
             <ul>
               <li><a href="{% url 'reports:pioneering' 'rp' %}">Regular Pioneers</a></li>
               <li><a href="{% url 'reports:pioneering' 'au' %}">Auxillary Pioneers</a></li>
               <li><a href="{% url 'reports:pioneering' 'sp' %}">Special Pioneers</a></li>
+            </ul>
+          </li>
+
+          <li>
+            <a class="{{servants_active}}">Servants</a>
+            <ul>
+              <li><a href="{% url 'reports:servants' 'elders' %}">Elders</a></li>
+              <li><a href="{% url 'reports:servants' 'ms' %}">Ministerial Servants</a></li>
             </ul>
           </li>
         </ul>

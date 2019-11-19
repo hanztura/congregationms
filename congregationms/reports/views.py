@@ -18,7 +18,43 @@ from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years)
 from publishers.models import Publisher, Group
 from pioneering.models import Pioneer, PioneerDetail
+from servants.models import Servant
 from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
+
+
+class ServantListView(LoginAndPermissionRequiredMixin, ListView):
+    model = Servant
+    permission_required = 'servants.view_servant',
+    template_name = 'reports/servants/list.html'
+
+    def get_queryset(self):
+        q = super().get_queryset().select_related('publisher')
+
+        view_type = self.kwargs['view_type']
+        if view_type == 'elders':
+            q = q.filter(elder=True)
+        elif view_type == ('ms'):
+            q = q.filter(ms=True)
+        else:
+            q = self.model.objects.none()
+
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        view_types = {
+            'elders': 'Elders',
+            'ms': 'Ministerial Servants'
+        }
+
+        view_type = self.kwargs['view_type']
+
+        title = view_types[view_type]
+        context['view_type'] = view_type
+        context['h1'] = title
+        context['head_title'] = '{} - Report'.format(title)
+
+        return context
 
 
 class InfirmedListView(LoginAndPermissionRequiredMixin, ListView):
