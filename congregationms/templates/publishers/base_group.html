@@ -4,3 +4,7 @@
 	<li><a href="{% url 'publishers:group-index' %}">Groups</a></li>
 	{% block groupbreadcrumbs %}{% endblock groupbreadcrumbs %}
 {% endblock subbreadcrumbs %}
+
+{% block aside_menu %}
+  {% include "aside.html" with publishers_groups_active='is-active' %}  
+{% endblock aside_menu %}

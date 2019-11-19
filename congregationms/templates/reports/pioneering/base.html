@@ -12,3 +12,7 @@
   <li ><a href='#'>Pioneering</a></li>
   <li class="is-active"><a href='#'>{{view_type}}</a></li>
 {% endblock subbreadcrumbs %}
+
+{% block aside_menu %}
+  {% include "aside.html" with reports_pioneering_active='is-active' %}  
+{% endblock aside_menu %}
