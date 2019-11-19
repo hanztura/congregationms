@@ -1,0 +1,36 @@
+{% extends "servants/base.html" %}
+{% load static %}
+
+{% block title %}
+  <title>Servant Detail | {{object.publisher.name|title}}</title>
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+  <li class="is-active"><a href='#'>Detail</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  <h1 class="title">Servant Detail</h1>
+
+  <div class="field is-grouped is-pulled-right" id="delete-button-app">
+    <div class="control">
+      <form id="form--{{ object.pk }}" action='{% url "servants:delete" object.pk %}' method="POST" @submit.prevent="confirmDelete">
+        {% csrf_token %}
+        <button class="button is-outlined" type="submit" form="form--{{ object.pk }}" :disabled="disabled">{% include "_snippets/icon_trash.html" %}</button>
+      </form>
+    </div>
+
+    <div class="control">
+      <a href='{% url "servants:update" object.pk %}'><button class="button is-outlined">{% include "_snippets/icon_edit.html" %}</button></a>
+    </div>
+  </div>
+  
+  <p class="is-size-3">{{ object.publisher.name|upper }}</p>
+  <p><a href='{% url "reports:mfs-history" object.publisher.slug %}'>View MFS history</a></p>
+  <p>Elder: {% if object.elder %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" %}{% endif %}</p>
+  <p>Ministerial Servant: {% if object.ms %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html"  %}{% endif %}</p>
+{% endblock main %}
+
+{% block vueinstance %}
+    <script src="{% static "deleteButtonApp.js" %}"></script>
+{% endblock vueinstance %}

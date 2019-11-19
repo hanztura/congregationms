@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     'pioneering',
     'reports',
     'mailing',
+    'servants',
+
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -62,8 +65,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'system.middlewares.user_has_no_user_group_middleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

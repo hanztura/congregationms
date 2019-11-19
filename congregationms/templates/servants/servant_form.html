@@ -1,0 +1,102 @@
+{% extends "servants/base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>{{mode}} Servant</title>  
+{% endblock title %}
+
+{% block subbreadcrumbs %}
+    <li class="is-active"><a href='#'>{{mode}}</a></li>  
+{% endblock subbreadcrumbs %}
+
+{% block main %}
+  {% if object %}
+   <h1 class="title">Edit {{object}}</h1>  
+  {% else %}
+   <h1 class="title">Create new Servant</h1>  
+  {% endif %}
+
+    <form method="POST" id="form--servant-form">
+      {% csrf_token %}
+      <div class="field">
+        <label class="label">{{form.publisher.label}}</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            {{form.publisher}}
+          </div>
+        {{form.publisher.errors}}
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Type</label>
+        <div class="control">
+          <label class="radio">
+            <input type="radio" name="sType" id="elder" v-model="servantType" value="elder">
+            Elder
+          </label>
+          <label class="radio">
+            <input type="radio" name="sType" id="ms" v-model="servantType" value="ms">
+            MS
+          </label>
+          {{form.servant_type.errors}}
+        </div>
+      </div>
+      <input type="hidden" name="servant_type" v-model="servantType" ref="servantType">
+      <input type="hidden" name="elder" v-model="elder" ref="elder" data-default="{{form.elder.value}}">
+      <input type="hidden" name="ms" v-model="ms" ref="ms" data-default="{{form.ms.value}}">
+
+      {% if object %}
+        {% include "_snippets/button_save.html" %}
+      {% else %}
+        {% include "_snippets/button_create.html" %}
+      {% endif %}
+    </form>
+{% endblock main %}
+
+{% block vueinstance %}
+    <script>
+      servantFormApp = new Vue({
+        delimiters: ['[[', ']]'],
+
+        el: '#form--servant-form',
+
+        data: () => {
+          return {
+            servantType: '',
+            elder: '',
+            ms: '',
+          }
+        },
+
+        methods: {
+          setDefault: function () {
+            this.elder = this.$refs.elder.getAttribute('data-default') == "True";
+            this.ms = this.$refs.ms.getAttribute('data-default') == "True";
+            if (this.elder) {
+              this.servantType = 'elder'
+            } else {
+              if (this.ms) {
+                this.servantType = 'ms'
+              }
+            }
+          }
+        },
+
+        watch: {
+          servantType: function (val, oldVal) {
+            if (val == 'elder') {
+              this.elder = true;
+            } else {
+              this.elder = false;
+            }
+            this.ms = !this.elder;
+          }
+        },
+
+        mounted: function () {
+          this.setDefault();
+        }
+      });
+    </script>  
+{% endblock vueinstance %}

@@ -24,10 +24,14 @@ def get_user_groups_members(authorized_groups):
 
 
 def get_publishers_as_choices(request=None):
-    """"""
+    """Returns a list of publisher tuple (pk, name).
+
+    If request is given it will return only allowed publishers.
+    """
+    publishers = Publisher.objects.all()
     if request:
         members = request.authorized_publisher_pks
-        publishers = Publisher.objects.filter(id__in=members)
+        publishers = publishers.filter(id__in=members)
 
     # transform into (pk, value) Tuple
     publishers = [(p.pk, p.name) for p in publishers]
