@@ -50,7 +50,6 @@ Initial setup
   The account includes your own username and password for authentication. And you will also be given the corresponding role as a Master User.
 
   Here are the steps:
-    * Create the Groups in your congregation.
     * User Accounts.
 
       - Create user accounts for users who can access your congregation's system.
@@ -66,8 +65,6 @@ Initial setup
         + Go to ``Publishers > User Groups``.
         + Add a record for each group the user is allowed to access.
     * Create Publisher records.
-
-      - If the publisher is a user of the system, or someone who as a User Account, appropriately indicate the user account.
     * Assign created publisher records to their appropriate Groups.
     * Congratulations! You're system is now ready to use. Please refer :ref:`here<what-you-can-do>` to know what you can do with CongregationMS.
 
