@@ -31,7 +31,8 @@ def make_initial_data_for_auth_group(apps, schema_editor):
         },
     ]
     for d in data:
-        Group.objects.create(id=d['id'], name=d['name'])
+        if not Group.objects.filter(pk=d['id']).exists():
+            Group.objects.create(id=d['id'], name=d['name'])
 
 
 class Migration(migrations.Migration):
