@@ -3,8 +3,9 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .helpers import SingletonModel
 
-# Create your models here.
+
 class User(AbstractUser):
     pass
 
@@ -16,3 +17,7 @@ class Congregation(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Setting(SingletonModel):
+    initial_data_runned = models.BooleanField(default=False, blank=True)
