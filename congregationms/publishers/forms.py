@@ -14,7 +14,6 @@ class PublisherModelForm(ModelForm):
         fields = ['last_name', 'first_name', 'middle_name',
                   'date_of_birth', 'date_of_baptism', 'contact_numbers',
                   'slug', 'infirmed', 'elderly', 'male',
-                  'elder', 'ministerial_servant',
                   'assets']
 
     def __init__(self, *args, **kwargs):
