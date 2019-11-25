@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'django_extensions',
-    'debug_toolbar',
 
     'system',
     'publishers',

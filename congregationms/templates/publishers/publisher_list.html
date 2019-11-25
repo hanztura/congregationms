@@ -4,9 +4,9 @@
   <title>Publishers</title>  
 {% endblock title %}
 
-{% block main %}
+{% block content %}
   <h1>Publishers List</h1>
   <a href='{% url "publishers:create" %}'>{% include "_snippets/button_new.html" %}</a>
 
   {% include "publishers/snippets/publisher_table_list.html" %}
-{% endblock main %}
+{% endblock content %}

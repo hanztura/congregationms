@@ -13,3 +13,9 @@
 {% block aside_menu %}
   {% include "aside.html" with pioneering_active='is-active' %}  
 {% endblock aside_menu %}
+
+{% block main %}
+<div class="content">
+  {% block content %}{% endblock content %}  
+</div>
+{% endblock main %}

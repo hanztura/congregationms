@@ -27,7 +27,7 @@
   {% endif %}
 {% endblock subbreadcrumbs %}
 
-{% block main %}
+{% block content %}
   <h1>Create/Edit Monthly Field Service</h1>
 
   <form method="POST" id="new-edit-form" ref="form" action="{% url 'reports:mfs-create' %}">
@@ -109,7 +109,7 @@
       <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm(false)">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
     {% endif %}
   </form>  
-{% endblock main %}
+{% endblock content %}
 
 {% block vueinstance %}
   <script src='{% static "vendors/vuelidate/vuelidate.min.js" %}'></script>
