@@ -33,8 +33,6 @@ class Publisher(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name='publisher',
         null=True, blank=True)
-    elder = models.BooleanField(default=False, blank=True)
-    ministerial_servant = models.BooleanField(default=False, blank=True)
     assets = models.ManyToManyField(
         Asset, related_name='publishers', blank=True)
     history = HistoricalRecords()
