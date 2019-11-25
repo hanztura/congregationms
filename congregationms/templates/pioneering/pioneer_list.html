@@ -4,15 +4,17 @@
   <title>Pioneers</title>  
 {% endblock title %}
 
-{% block main %}
+{% block content %}
   <h1>Pioneers List</h1>
   <a href='{% url "pioneering:create" %}'>{% include "_snippets/button_new.html" %}</a>
+  <p>Create and maintin records of the pioneers in your congregation.</p>
+  <p>In this module, a "Pioneer" could be a Regular Pioneer (RP), Special Pioneer (SP), or Auxillary Pioneer.</p><br>
 
   <table class="table is-fullwidth">
     <thead>
       <tr>
         <th class="has-text-centered">Publisher</th>
-        <th class="has-text-centered" title="Auxi/RP/SP">Pioneer</th>
+        <th class="has-text-centered" title="Auxi/RP/SP">Active</th>
         <th class="has-text-centered">Actions</th>
       </tr>
     </thead>
@@ -40,5 +42,5 @@
         </tr>  
       {% endif %}
     </tbody>
-  </table>
-{% endblock main %}
+  </table><br>
+{% endblock content %}

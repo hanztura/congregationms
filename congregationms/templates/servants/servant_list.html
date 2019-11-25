@@ -1,0 +1,44 @@
+{% extends "servants/base.html" %}
+
+{% block title %}
+  <title>Servants</title>  
+{% endblock title %}
+
+{% block main %}
+  <h1 class="title">Servants List</h1>
+  <a href='{% url "servants:create" %}'>{% include "_snippets/button_new.html" %}</a>
+
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Type</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for servant in object_list %}
+        <tr>
+          <td>{{ servant|title }}</td>
+          <td>
+            {% if servant.servant_type %}
+              {{ servant.servant_type }}
+            {% else %}
+              {% include "_snippets/icon_times.html" %}
+            {% endif %}
+          </td>
+          <td>
+            <a href='{% url "servants:detail" servant.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "servants:update" servant.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="3" class="has-text-centered">No servants. Please <a href="{% url 'servants:create' %}"><u>add</u></a>.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}

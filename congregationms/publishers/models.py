@@ -4,10 +4,20 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+from simple_history.models import HistoricalRecords
+
 from system.models import Congregation as Cong, User
 
 
-# Create your models here.
+class Asset(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50)
+    comments = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Publisher(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=False)
@@ -17,9 +27,17 @@ class Publisher(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     date_of_baptism = models.DateField(blank=True, null=True)
     contact_numbers = models.CharField(max_length=200, blank=True)
+    male = models.BooleanField(null=True, blank=True)
+    infirmed = models.BooleanField(default=False, blank=True)
+    elderly = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField(
         User, on_delete=models.PROTECT, related_name='publisher',
         null=True, blank=True)
+    elder = models.BooleanField(default=False, blank=True)
+    ministerial_servant = models.BooleanField(default=False, blank=True)
+    assets = models.ManyToManyField(
+        Asset, related_name='publishers', blank=True)
+    history = HistoricalRecords()
 
     class Meta:
         ordering = 'last_name', 'first_name', 'middle_name'
@@ -30,6 +48,10 @@ class Publisher(models.Model):
 
     def get_absolute_url(self):
         return reverse('publishers:detail', args=[str(self.slug)])
+
+    @property
+    def ms(self):
+        return self.ministerial_servant
 
     @property
     def name(self):

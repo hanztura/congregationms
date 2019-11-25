@@ -28,6 +28,7 @@ urlpatterns = [
     path('pioneering/', include('pioneering.urls')),
     path('publishers/', include('publishers.urls')),
     path('reports/', include('reports.urls')),
+    path('servants/', include('servants.urls')),
     path('login/', login, name='system-login'),
     path('logout/', logout, name='system-logout'),
     path('', include('system.urls')),

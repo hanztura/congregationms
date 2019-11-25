@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block breadcrumbs %}
+  <li><a href='{% url "servants:index" %}'>Servants</a></li>
+  {% block subbreadcrumbs %}{% endblock subbreadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block navbaritems %}
+  {% include "_snippets/navbar_items.html" with servants_active='is-active' %}
+{% endblock navbaritems %}
+
+{% block aside_menu %}
+  {% include "aside.html" with servants_active='is-active' %}  
+{% endblock aside_menu %}

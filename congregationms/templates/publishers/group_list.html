@@ -8,7 +8,7 @@
 	<li class="is-active">List</li>	
 {% endblock groupbreadcrumbs %}
 
-{% block main %}
+{% block content %}
   <h1>Group List</h1>
 	<a href='{% url "publishers:group-create" %}'>{% include "_snippets/button_new.html" %}</a>
   <table class="table is-fullwidth">
@@ -31,6 +31,11 @@
           </td>
         </tr>
       {% endfor %}
+      {% if not object_list %}
+        <tr>
+          <td class="has-text-centered" colspan="3">No data available. Please <a href="{% url 'publishers:group-create' %}"><u>add</u></a></td>
+        </tr>
+      {% endif %}
     </tbody>
   </table>
-{% endblock main %}
+{% endblock content %}

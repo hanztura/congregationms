@@ -9,7 +9,7 @@
   <li class="is-active"><a href='#'>Detail</a></li>  
 {% endblock subbreadcrumbs %}
 
-{% block main %}
+{% block content %}
   <h1>Publisher Detail</h1>
 
   <div class="field is-grouped is-pulled-right" id="delete-button-app">
@@ -31,7 +31,9 @@
   <p>Date of Baptism: {{ publisher.date_of_baptism }}</p>
   <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
   <p>Group: {{ publisher.group|title }}</p>
-{% endblock main %}
+  <p>Infirmed: {% if publisher.infirmed %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" %}{% endif %}</p>
+  <p>Elderly: {% if publisher.elderly %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html"  %}{% endif %}</p>
+{% endblock content %}
 
 {% block vueinstance %}
     <script src="{% static "deleteButtonApp.js" %}"></script>

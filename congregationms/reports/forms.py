@@ -28,7 +28,15 @@ class MFSForm(ModelForm):
         if request:
             # get publishers as choices
             publishers = get_publishers_as_choices(request=request)
-        self.fields['publisher'].choices = publishers
+            self.fields['publisher'].choices = publishers
+
+            # set default publisher
+            default_publisher = request.GET.get('id', None)
+            if default_publisher:
+                self.fields['publisher'].initial = default_publisher
+
+        if self.instance.pk:
+            self.fields['publisher'].disabled = True
 
     def save(self, commit=True):
         mfs = super().save(commit=False)

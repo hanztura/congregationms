@@ -1,0 +1,32 @@
+{% extends "reports/publishers/base.html" %}
+
+{% block main %}
+  <h1 class="title">Inactive Publishers</h1>
+  
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for publisher in object_list %}
+        <tr>
+          <td>{{ publisher.name|title }}</td>
+          <td>
+            <a href='{% url "publishers:detail" publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "reports:mfs-create" %}?id={{publisher.pk}}' title="Add report"><span class="button is-outlined">{% include "_snippets/icon_new.html" %}</span></a>
+            <a href='{% url "reports:mfs-history" publisher.slug %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="5" class="has-text-centered">No {{view_type}} available.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}

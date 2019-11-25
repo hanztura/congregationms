@@ -10,6 +10,7 @@
 {% endblock title %}
 
 {% block subbreadcrumbs %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
 	{% if publisher %}
 		<li><a href="#">{{publisher.name|title}}</a></li>
 	{% endif %}
@@ -21,7 +22,7 @@
   <li class="is-active"><a href='#'>History</a></li>
 {% endblock subbreadcrumbs %}
 
-{% block main %}
+{% block content %}
 	<div id="app">
 		{% if  publisher %}
 			<h1>Monthly Field Service - Publisher History</h1>
@@ -148,7 +149,7 @@
 			
 		{% endif %}
 	</div>
-{% endblock main %}
+{% endblock content %}
 
 {% block vueinstance %}
   <script>

@@ -1,0 +1,32 @@
+{% extends "reports/servants/base.html" %}
+
+{% block main %}
+  <h1 class="title">{{h1}}</h1>
+  
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for servant in object_list %}
+        <tr>
+          <td>{{ servant.publisher.name|title }}</td>
+          <td>
+            <a href='{% url "publishers:detail" servant.publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
+            <a href='{% url "publishers:update" servant.publisher.slug %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
+            <a href='{% url "reports:mfs-history" servant.publisher.slug %}'><button class="button is-outlined">{% include "_snippets/icon_view.html" %}<span>&nbspMFS history</span></button></a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="5" class="has-text-centered">No {{view_type}} available.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}

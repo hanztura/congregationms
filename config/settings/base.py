@@ -25,7 +25,7 @@ APPS_DIR = ROOT_DIR.path('congregationms')
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.setdefault('SECRET_KEY', '')
+SECRET_KEY = os.environ.setdefault('CONGREGATIONMS_SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,13 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'django_extensions',
-    'debug_toolbar',
 
     'system',
     'publishers',
     'pioneering',
     'reports',
     'mailing',
+    'servants',
+
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -62,8 +64,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'system.middlewares.user_has_no_user_group_middleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -149,4 +153,3 @@ INTERNAL_IPS = ('127.0.0.1', 'localhost', '192.168.1.12')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-SECRET_KEY = os.environ.setdefault('SECRET_KEY_CONGREGATIONMS', '')

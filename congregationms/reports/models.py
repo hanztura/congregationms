@@ -8,9 +8,13 @@ from publishers.utils import OrderByPublisherMixin
 
 # Create your models here.
 class MonthlyFieldService(OrderByPublisherMixin, models.Model):
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.PROTECT, blank=True, null=True)
-    pioneering = models.ForeignKey(PioneerDetail, on_delete=models.PROTECT, blank=True, null=True, related_name='mfs')
+    publisher = models.ForeignKey(
+        Publisher, on_delete=models.CASCADE, related_name='publisher_mfs')
+    group = models.ForeignKey(
+        Group, on_delete=models.PROTECT, blank=True, null=True)
+    pioneering = models.ForeignKey(
+        PioneerDetail, on_delete=models.PROTECT,
+        blank=True, null=True, related_name='mfs')
     month_ending = models.DateField()
     placements = models.PositiveSmallIntegerField(default=0)
     video_showing = models.PositiveSmallIntegerField(default=0)
@@ -20,8 +24,8 @@ class MonthlyFieldService(OrderByPublisherMixin, models.Model):
     comments = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-      name = str(self.publisher)
-      return '{} for month ending {}'.format(name, self.month_ending)
+        name = str(self.publisher)
+        return '{} for month ending {}'.format(name, self.month_ending)
 
     def get_absolute_url(self):
         return reverse('reports:mfs-detail', args=[str(self.pk)])

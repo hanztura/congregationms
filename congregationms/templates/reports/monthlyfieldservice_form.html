@@ -6,6 +6,7 @@
 {% endblock headblock %}
 
 {% block title %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
   {% if report %}
     <title>Monthly Field Service Edit | {{report.publisher|title}} for {{report.month_ending|date:'M-Y'}}</title>
   {% else %}
@@ -14,6 +15,7 @@
 {% endblock title %}
 
 {% block subbreadcrumbs %}
+  <li><a href='{% url "reports:mfs-index" %}'>Monthly Field Service</a></li>
   {% if report %}
     <li><a href='{% url "reports:mfs-history" report.publisher.slug %}' title="View publisher history.">{{ report.publisher|title }}</a></li>  
     <li><a href='{% url "reports:mfs-detail" report.pk %}' title="View MFS Detail.">{{ report.month_ending|date:'M-Y' }}</a></li>
@@ -25,7 +27,7 @@
   {% endif %}
 {% endblock subbreadcrumbs %}
 
-{% block main %}
+{% block content %}
   <h1>Create/Edit Monthly Field Service</h1>
 
   <form method="POST" id="new-edit-form" ref="form" action="{% url 'reports:mfs-create' %}">
@@ -107,7 +109,7 @@
       <button :disabled="disableSubmit" class="button is-warning is-fullwidth" type="button" @click="submitForm(false)">{% include "_snippets/icon_save.html" %}<span>Create</span></button>
     {% endif %}
   </form>  
-{% endblock main %}
+{% endblock content %}
 
 {% block vueinstance %}
   <script src='{% static "vendors/vuelidate/vuelidate.min.js" %}'></script>

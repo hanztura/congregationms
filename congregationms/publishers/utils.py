@@ -1,4 +1,4 @@
-from .models import Publisher
+from .models import Publisher, Group
 
 
 class OrderByPublisherMixin():
@@ -23,17 +23,26 @@ def get_user_groups_members(authorized_groups):
     return members
 
 
-def get_publishers_as_choices(request=None):
-    """"""
+def get_publishers_as_choices(request=None, as_queryset=False):
+    """Returns a list of publisher tuple (pk, name).
+
+    If request is given it will return only allowed publishers.
+    """
+    publishers = Publisher.objects.all()
     if request:
         members = request.authorized_publisher_pks
-        publishers = Publisher.objects.filter(id__in=members)
+        publishers = publishers.filter(id__in=members)
 
-    # transform into (pk, value) Tuple
-    publishers = [(p.pk, p.name) for p in publishers]
-    publishers.insert(0, ('', '[Select a publisher]'))
+    if not as_queryset:
+        # transform into (pk, value) Tuple
+        publishers = [(p.pk, p.name) for p in publishers]
+        publishers.insert(0, ('', '[Select a publisher]'))
+
     return publishers
 
 
-def get_authorized_publishers():
-    pass
+def get_groups_as_choices():
+    q = Group.objects.all().select_related('congregation')
+    q = [(g.pk, str(g)) for g in q]
+
+    return q

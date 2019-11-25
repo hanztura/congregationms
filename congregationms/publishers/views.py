@@ -5,8 +5,9 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .forms import GroupMemberForm, GroupMemberFormSet, PublisherModelForm
-from .models import Group, Publisher
+from .forms import GroupModelForm, GroupMemberFormSet, PublisherModelForm
+from .models import Group, Publisher, Member
+from .utils import get_publishers_as_choices
 from system.utils import LoginAndPermissionRequiredMixin
 
 
@@ -27,10 +28,16 @@ class PublisherList(LoginAndPermissionRequiredMixin, ListView):
 
 class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Publisher
-    fields = ['last_name', 'first_name', 'middle_name',
-              'date_of_birth', 'date_of_baptism', 'contact_numbers', 'slug']
+    form_class = PublisherModelForm
     context_object_name = 'publisher'
     permission_required = 'publishers.change_publisher',
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            'Successfully updated.'
+        )
+        return super().form_valid(form)
 
 
 class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
@@ -73,12 +80,20 @@ class GroupList(LoginAndPermissionRequiredMixin, ListView):
     permission_required = 'publishers.view_group',
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = self.model.objects.none()
 
-        user = self.request.user
-        group = user.publisher.group
-        if group:
-            queryset = queryset.filter(id=group.pk)
+        # user = self.request.user
+        # publisher = user.publisher
+        # group = publisher.group_members.filter(is_active=True)
+        # group = group.first()  # publishers.Member object
+        # if group:
+        #     queryset = super().get_queryset()
+        #     queryset = queryset.filter(id=group.group_id)
+        groups = self.request.authorized_groups  # publisher.UserGroup objects
+        if groups:
+            groups = [g.group_id for g in groups]  # Group pks
+            queryset = super().get_queryset().filter(id__in=groups)
+            queryset = queryset.select_related('congregation')
 
         return queryset
 
@@ -91,19 +106,18 @@ class GroupDetail(LoginAndPermissionRequiredMixin, DetailView):
 
 class GroupUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     model = Group
-    fields = [
-        'name', 'congregation'
-    ]
+    form_class = GroupModelForm
     context_object_name = 'group'
     permission_required = 'publishers.change_group',
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['members'] = GroupMemberFormSet(self.request.POST, instance=self.object)
+            formset = GroupMemberFormSet(self.request.POST, instance=self.object)
         else:
-            data['members'] = GroupMemberFormSet(instance=self.object)
+            formset = GroupMemberFormSet(instance=self.object)
 
+        data['members'] = formset
         return data
 
     def form_valid(self, form):
@@ -138,15 +152,17 @@ class GroupDelete(LoginAndPermissionRequiredMixin, DeleteView):
 
 class GroupCreate(LoginAndPermissionRequiredMixin, CreateView):
     model = Group
-    fields = ['name', 'congregation']
+    form_class = GroupModelForm
     permission_required = 'publishers.add_group',
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['members'] = GroupMemberFormSet(self.request.POST)
+            formset = GroupMemberFormSet(self.request.POST)
         else:
-            data['members'] = GroupMemberFormSet()
+            formset = GroupMemberFormSet()
+
+        data['members'] = formset
 
         return data
 

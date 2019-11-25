@@ -10,7 +10,7 @@
   <li class="is-active"><a href='#'>Detail</a></li>
 {% endblock subbreadcrumbs %}
 
-{% block main %}
+{% block content %}
   <h1>Pioneer's Detail</h1>
 
   <div class="field is-grouped is-pulled-right" id="delete-button-app">
@@ -29,7 +29,6 @@
   <p class="is-size-3">{{ pioneer.publisher.name|upper }}</p>
   <p>Code: {{ pioneer.code }}</p>
   <p>Status: {% if pioneer.is_active %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" with color='has-text-danger' %}{% endif %}</p>
-  <p>RP: {% if pioneer.is_active_rp %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" with color='has-text-danger' %}{% endif %}</p>
 
   <section class="section">
     <h2>Pioneering Details</h2>
@@ -58,7 +57,7 @@
       </tbody>
     </table>
   </section>
-{% endblock main %}
+{% endblock content %}
 
 {% block vueinstance %}
     <script src="{% static "deleteButtonApp.js" %}"></script>
