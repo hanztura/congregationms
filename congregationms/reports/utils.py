@@ -2,6 +2,7 @@ import calendar
 import datetime
 import os
 import uuid
+from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
 from django.db.models import Q, Sum, Count
@@ -252,7 +253,7 @@ def mfs_stats(month, year):
 
 def get_previous_month_end(now=None):
     if now is None:
-        now = datetime.datetime.now().date()
+        now = datetime.date.today()
 
     # get previous month
     previous_month = now.month - 1
@@ -286,7 +287,16 @@ def get_publishers_sum_hours(df, dt):
     return pubs
 
 
-def get_inactive_pubs(date_from, date_to):
-    q = get_publishers_sum_hours(date_from, date_to)
+def get_inactive_pubs(date_from):
+    weekday, month_end = calendar.monthrange(date_from.year, date_from.month)
+    base_date = datetime.date(date_from.year, date_from.month, month_end)
+
+    # six month before date from
+    # use 5 since it is inclusive
+    smbdf = base_date + relativedelta(months=-5)
+    smbdf = datetime.date(smbdf.year, smbdf.month, 1)
+    print(smbdf)
+
+    q = get_publishers_sum_hours(smbdf, base_date)
     q = q.filter(Q(num_hours=0) | Q(num_hours=None))
     return q

@@ -1,7 +1,26 @@
 {% extends "reports/publishers/base.html" %}
 
+{% block title %}
+  <title>Inactive Publishers - Publishers' Reports</title>  
+{% endblock title %}
+
 {% block main %}
   <h1 class="title">Inactive Publishers</h1>
+
+  <form>
+    <div class="field">
+    <label class="label">6 months from:</label>
+      <div class="control">
+        <input class="input" type="month" name="from" value="{{from}}">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <input type="submit" class="button is-outlined is-info" value="Search">
+      </div>
+    </div>
+  </form>
   
   <table class="table is-fullwidth">
     <thead>
