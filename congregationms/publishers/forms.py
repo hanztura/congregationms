@@ -53,6 +53,11 @@ class PublisherModelForm(ModelForm):
         # low case necessary fields
         self.process_low_case_fields(cleaned_data)
 
+        city = self.cleaned_data.get('city', None)
+        address_line_1 = self.cleaned_data.get('address_line_1', None)
+        if city and (not address_line_1):
+            self.add_error('address_line_1', 'Please put address line.')
+
         return cleaned_data
 
 

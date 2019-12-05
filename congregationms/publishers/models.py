@@ -53,6 +53,14 @@ class Publisher(models.Model):
         return reverse('publishers:detail', args=[str(self.slug)])
 
     @property
+    def address(self):
+        address = '{}, {}'.format(
+            self.address_line_1,
+            self.city.name
+        )
+        return address.upper()
+
+    @property
     def ms(self):
         return self.ministerial_servant
 

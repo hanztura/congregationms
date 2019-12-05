@@ -135,6 +135,63 @@
         </div>
         </div>
 
+        <div class="field">
+          <label class="label">Address</label>
+          <div class="field">
+            <div class="control">
+              <input class="input" type="text" name="address_line_1" value="{{ form.address_line_1.value|default:'' }}" placeholder="House or Bldg Number/Street/Town/">
+            </div>
+            {% if form.address_line_1.errors %}
+              <div class="help is-danger">{{form.address_line_1.errors}}</div>
+            {% endif %}
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="country" ref="country" data-default="{{object.city.state.country_id}}">
+                      <option disabled value=''>Select a Country</option>
+                      <option
+                        v-for="country, i in countries"
+                        :value="country.id"
+                        :key="i">[[ country.name ]]</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="state" :disabled="country==''" ref="state" data-default="{{object.city.state_id}}">
+                      <option disabled value=''>Select a State</option>
+                      <option
+                        v-for="state, i in states"
+                        :value="state.id"
+                        :key="i">[[ state.name ]]</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select name='city' v-model="city" :disabled="state==''" ref="city"  data-default="{{form.city.value}}">
+                      <option disabled value=''>Select a City</option>
+                      <option
+                        v-for="city, i in cities"
+                        :value="city.id"
+                        :key="i">[[ city.name ]]</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       <div class="field">
         <label class="label">Email</label>
         <div class="control has-icons-left has-icons-right">
@@ -179,8 +236,10 @@
 {% block endscript %}
   {% if debug %}
       <script src="{% static 'vendors/lodash/lodash.min.js' %}"></script>
+      <script src="{% static 'vendors/axios/axios.min.js' %}"></script>
   {% else %}
       <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/kebabCase.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   {% endif %}
 
   <script>
@@ -191,11 +250,56 @@
 
       data: () => {
         return {
-          contactNumbers: []
+          contactNumbers: [],
+          country: '',
+          state: '',
+          city: '',
+          countries: [],
+          states: [],
+          cities: []
         }
       },
 
       methods: {
+        getCountries(){
+          let url = '/api/countries/';
+          axios
+            .get(url)
+            .then(response => (this.countries = response.data))
+        },
+        getStates(){
+          let url = '/api/states/';
+          let country = this.country;
+          if (country) { url = url + '?country=' + country}
+          axios
+            .get(url)
+            .then(response => (this.states = response.data))
+        },
+        getCities(){
+          let url = '/api/cities/';
+          let state = this.state;
+          if (state) { url = url + '?state=' + state}
+
+          axios
+            .get(url)
+            .then(response => (this.cities = response.data))
+        },
+        setDefaults() {
+          let defaultCountry = this.$refs.country.getAttribute('data-default');
+          if (defaultCountry) {
+            this.country = defaultCountry;
+          }
+
+          let defaultState = this.$refs.state.getAttribute('data-default');
+          if (defaultState) {
+            this.state = defaultState;
+          }
+
+          let defaultCity = this.$refs.city.getAttribute('data-default');
+          if (defaultCity) {
+            this.city = defaultCity;
+          }
+        },
         updateSlug() {
           let lastName = this.$refs.lastName.value;
           let firstName = this.$refs.firstName.value;
@@ -214,6 +318,15 @@
         }
       },
 
+      watch: {
+        country: function(newValue, oldValue){
+          this.getStates();
+        },
+        state: function(newValue, oldValue){
+          this.getCities();
+        }
+      },
+
       computed: {
         contactNumber: function() {
           let contactNumbers = _.without(this.contactNumbers, '');
@@ -224,6 +337,8 @@
 
       mounted: function() {
         this.populate();
+        this.getCountries();
+        this.setDefaults();
       }
     });
   </script>  
