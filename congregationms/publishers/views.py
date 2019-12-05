@@ -45,6 +45,16 @@ class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
     context_object_name = 'publisher'
     permission_required = 'publishers.view_publisher',
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        contact_numbers = self.object.contact_numbers
+        contact_numbers = contact_numbers.split(',')
+        contact_numbers = ', '.join(contact_numbers)
+
+        context['contact_numbers'] = contact_numbers
+        return context
+
 
 class PublisherCreate(LoginAndPermissionRequiredMixin, CreateView):
     model = Publisher
