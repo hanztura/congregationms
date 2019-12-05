@@ -29,6 +29,7 @@
   <p><a href='{% url "reports:mfs-history" publisher.slug %}'>View MFS history</a></p>
   <p>Date of Birth: {{ publisher.date_of_birth }}</p>
   <p>Date of Baptism: {{ publisher.date_of_baptism }}</p>
+  <p>Email Address: {{ publisher.email_address }}</p>
   <p>Contact Numbers: {{ publisher.contact_numbers }}</p>
   <p>Group: {{ publisher.group|title }}</p>
   <p>Infirmed: {% if publisher.infirmed %}{% include "_snippets/icon_check.html" %}{% else %}{% include "_snippets/icon_times.html" %}{% endif %}</p>

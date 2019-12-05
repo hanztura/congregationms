@@ -39,6 +39,7 @@ class Publisher(models.Model):
     city = models.ForeignKey(
         City, on_delete=models.CASCADE, null=True, blank=True)
     address_line_1 = models.TextField(blank=True)
+    email_address = models.EmailField(blank=True)
     history = HistoricalRecords()
 
     class Meta:
