@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from simple_history.models import HistoricalRecords
 
+from cities.models import City
 from system.models import Congregation as Cong, User
 
 
@@ -35,6 +36,10 @@ class Publisher(models.Model):
         null=True, blank=True)
     assets = models.ManyToManyField(
         Asset, related_name='publishers', blank=True)
+    city = models.ForeignKey(
+        City, on_delete=models.CASCADE, null=True, blank=True)
+    address_line_1 = models.TextField(blank=True)
+    email_address = models.EmailField(blank=True)
     history = HistoricalRecords()
 
     class Meta:
@@ -46,6 +51,14 @@ class Publisher(models.Model):
 
     def get_absolute_url(self):
         return reverse('publishers:detail', args=[str(self.slug)])
+
+    @property
+    def address(self):
+        address = '{}, {}'.format(
+            self.address_line_1,
+            self.city.name
+        )
+        return address.upper()
 
     @property
     def ms(self):
