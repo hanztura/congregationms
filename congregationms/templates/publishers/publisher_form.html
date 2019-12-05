@@ -136,7 +136,7 @@
         </div>
 
       <div class="field">
-        <label class="label">Contact Numbers</label>
+        <label class="label" data-default="{{form.contact_numbers.value}}" ref="contactNumbers">Contact Numbers</label>
         <div
           v-for="(contact, i) in contactNumbers"
           :key="i"
@@ -176,6 +176,7 @@
   <script>
     publisherFormApp = new Vue({
       el: '#form--publisher-form',
+      name: 'Publisher Form',
       delimiters: ['[[', ']]'],
 
       data: () => {
@@ -193,6 +194,11 @@
           slug = _.kebabCase(slug);
           this.$refs.slug.value = slug;
         },
+        populate(){
+          let contactNumbers = this.$refs.contactNumbers.getAttribute('data-default');
+          contactNumbers = _.split(contactNumbers, ',');
+          this.contactNumbers = contactNumbers;
+        },
         newNumber() {
           this.contactNumbers.push('');
         }
@@ -200,20 +206,14 @@
 
       computed: {
         contactNumber: function() {
-          let num = '';
-          for (i in this.contactNumbers) {
-            let number = this.contactNumbers[i];
-            if (number) {
-              num += number;
-              num += ', ';
-            }
-          }
+          let contactNumbers = _.without(this.contactNumbers, '');
+          let num = _.join(contactNumbers, ',');
           return num;
         }
       },
 
       mounted: function() {
-        this.newNumber();
+        this.populate();
       }
     });
   </script>  
