@@ -16,7 +16,7 @@ from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
                     get_mfs_data, get_months_and_years, get_inactive_pubs,
                     get_previous_month_end)
-from publishers.models import Publisher, Group
+from publishers.models import Asset, Publisher, Group
 from pioneering.models import PioneerDetail
 from servants.models import Servant
 from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
@@ -381,3 +381,15 @@ class InactivePublisherListView(LoginAndPermissionRequiredMixin, ListView):
         context['from'] = str(date_from)
 
         return context
+
+
+class AssetListView(LoginAndPermissionRequiredMixin, ListView):
+    model = Asset
+    permission_required = 'publishers.view_publisher',
+    template_name = 'reports/publishers/assets.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related('publishers')
+
+        return queryset

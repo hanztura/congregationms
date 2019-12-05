@@ -1,0 +1,38 @@
+{% extends "reports/publishers/base.html" %}
+
+{% block title %}
+  <title>Assets - Publishers' Reports</title>  
+{% endblock title %}
+
+{% block main %}
+  <h1 class="title">Publishers' Assets</h1>
+  
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="has-text-centered">Asset</th>
+        <th class="has-text-centered">Publishers</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in object_list %}
+        <tr>
+          <td>{{ asset.name }}</td>
+          <td>
+            <ul>
+              {% for publisher in asset.publishers.all %}
+                <li>{{ publisher|upper }}</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not object_list %}
+        <tr>
+          <td colspan="5" class="has-text-centered">No {{view_type}} available.</td>
+        </tr>  
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock main %}
