@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from simple_history.models import HistoricalRecords
 
+from cities.models import City
 from system.models import Congregation as Cong, User
 
 
@@ -35,6 +36,9 @@ class Publisher(models.Model):
         null=True, blank=True)
     assets = models.ManyToManyField(
         Asset, related_name='publishers', blank=True)
+    city = models.ForeignKey(
+        City, on_delete=models.CASCADE, null=True, blank=True)
+    address_line_1 = models.TextField(blank=True)
     history = HistoricalRecords()
 
     class Meta:
