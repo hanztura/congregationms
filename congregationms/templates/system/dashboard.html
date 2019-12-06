@@ -1,5 +1,5 @@
 {% extends "system/base.html" %}
-{% load humanize %}
+{% load humanize static %}
 
 {% block title %}
   <title>Dashboard</title>  
@@ -31,8 +31,58 @@
     </div>
   </nav>
   </section>
+
+  <section class="section">
+    <div id="chart1"></div>
+  </section>
 {% endblock main %}
 
 {% block aside_menu %}
   {% include "aside.html" with dashboard_active='is-active' %}  
 {% endblock aside_menu %}
+
+
+{% block endscript %}
+  <script src="{% static "vendors/chartjs/Chart.js" %}"></script>
+  <script src="{% static "vendors/vue-chartjs/vue-chartjs.js" %}"></script>
+
+  <script>
+    var Bar = window.VueChartJs.Bar;
+    var Line = window.VueChartJs.Line;
+
+    var dashboardApp = new Vue({
+      extends: Line,
+      data: () => {
+        return {
+          type: 'line',
+          data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [
+              {
+                label: 'Group 1',
+                backgroundColor: '#9c27b0',
+                borderColor: '#9c27b0',
+                data: [0, 10, 5, 2, 20, 30, 45],
+                fill: false,
+              },
+              {
+                label: 'Group 2',
+                backgroundColor: '#2196f3',
+                borderColor: '#2196f3',
+                data: [5, 15, 3, 5, 18, 40, 50],
+                fill: false,
+              },
+            ]
+          }
+        }
+      },
+
+      mounted(){
+        this.renderChart(this.data, {});
+      },
+
+      name: 'Chart 1',
+      el: '#chart1'
+    });
+  </script>
+{% endblock endscript %}
