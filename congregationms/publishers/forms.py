@@ -65,11 +65,12 @@ class GroupModelForm(ModelForm):
 
     class Meta:
         model = Group
-        fields = ['name', 'congregation']
+        fields = ['name', 'congregation', 'color']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['congregation'].choices = get_congregation_as_choices()
+        self.fields['color'].required = True
 
 
 class GroupMemberForm(ModelForm):

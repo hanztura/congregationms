@@ -14,16 +14,18 @@
   <table class="table is-fullwidth">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Congregation</th>
-        <th>Actions</th>
+        <th class="has-text-centered">Name</th>
+        <th class="has-text-centered">Color</th>
+        <th class="has-text-centered">Congregation</th>
+        <th class="has-text-centered">Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for group in object_list %}
         <tr>
-          <td>{{ group.name|title }}</td>
-          <td>{{ group.congregation|title }}</td>
+          <td class="has-text-centered">{{ group.name|title }}</td>
+          <td class="has-text-centered"><span class="tag" style="background-color:{{ group.color }} !important">{{ group.color }}</span></td>
+          <td class="has-text-centered">{{ group.congregation|title }}</td>
           <td>
             <a href='{% url "publishers:group-detail" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_view.html" %}</span></a>
             <a href='{% url "publishers:group-update" group.pk %}'><span class="button is-outlined">{% include "_snippets/icon_edit.html" %}</span></a>
