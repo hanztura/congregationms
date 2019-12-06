@@ -22,6 +22,7 @@
   <p class="is-size-3">{{ group|upper }}</p>
   <p><a href='{% url "reports:mfs-history-group" group.pk %}'>View MFS history</a></p>
   <p>Congregation: {{ group.congregation }}</p>
+  <p><span class="tag" style="background-color:{{ group.color }} !important">Group color</span></p>
 
   <section>
     <h2 class="is-size-5">Members:</h2>
