@@ -29,6 +29,7 @@
 
     <form method="POST" id="form--publisher-form">
       {% csrf_token %}
+      <p>{{form.errors}}</p>
       <div class="field is-normal">
         <label class="label">Name</label>
       </div>

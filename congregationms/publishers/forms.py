@@ -23,9 +23,6 @@ class PublisherModelForm(ModelForm):
             'last_name', 'first_name', 'middle_name'
         ]
 
-        if self.instance:
-            self.fields['male'].required = True
-
     def clean_slug(self):
         slug = self.cleaned_data['slug']
         publisher = Publisher.objects.filter(slug=slug).first()
