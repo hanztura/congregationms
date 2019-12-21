@@ -39,3 +39,8 @@ For local/development setting:
 For production setting:
 -------------------------------
     * TODO
+
+
+Management Commands for data setup:
+    ``python manage.py initial_data``
+    ``python manage.py cities_philippines``

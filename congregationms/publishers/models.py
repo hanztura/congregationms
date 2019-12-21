@@ -57,9 +57,19 @@ class Publisher(models.Model):
 
     @property
     def address(self):
+        address_line_1 = self.address_line_1
+
+        try:
+            city = self.city.name
+        except Exception as e:
+            city = ""
+
+        if address_line_1 == '' and city == '':
+            return ''
+
         address = '{}, {}'.format(
             self.address_line_1,
-            self.city.name
+            city
         )
         return address.upper()
 

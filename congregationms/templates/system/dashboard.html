@@ -32,9 +32,10 @@
   </nav>
   </section>
 
+  <!--
   <section class="section">
     <div id="chart1"></div>
-  </section>
+  </section> -->
 {% endblock main %}
 
 {% block aside_menu %}
@@ -45,6 +46,9 @@
 {% block endscript %}
   <script src="{% static "vendors/chartjs/Chart.js" %}"></script>
   <script src="{% static "vendors/vue-chartjs/vue-chartjs.js" %}"></script>
+  <script src="{% static "vendors/moment.min.js" %}"></script>
+  <script src="{% static 'vendors/lodash/lodash.min.js' %}"></script>
+  <script src="{% static 'vendors/axios/axios.min.js' %}"></script>
 
   <script>
     var Bar = window.VueChartJs.Bar;
@@ -73,12 +77,63 @@
                 fill: false,
               },
             ]
+          },
+          dateFormat: 'YYYY-MM-DD',
+          groups: [],
+          mfs: [],
+        }
+      },
+
+      computed: {
+        lastMonth: function() {
+          let lastMonth = moment().subtract(1, 'months');
+          lastMonth = lastMonth.endOf('month').format(this.dateFormat);
+          return lastMonth;
+        },
+        fromDate: function() {
+            let fromDate = moment(this.lastMonth).subtract(5, 'months');
+            fromDate = fromDate.startOf('month').format(this.dateFormat);
+            return fromDate;
+        },
+        previous6Months: function() {
+          months = [];
+          for (i = 5; i >= 0; i--) {
+            let fromDate = moment(this.lastMonth).subtract(i, 'months');
+            fromDate = fromDate.startOf('month').format('MMMM YYYY');
+            months.push(fromDate);
           }
+          return months;
+        },
+      },
+
+      methods: {
+        getGroups: function() {
+          let url = '/api/groups/';
+          axios
+            .get(url)
+            .then(response => {
+              this.groups = response.data;
+              this.getMFS();
+            });
+        },
+        getMFS: function() {
+          let baseUrl = '/api/mfs/';
+          let groups = this.groups;
+          let thisComponent = this;
+          _.forEach(groups, function(group) {
+            // get mfs
+            let id = group.id;
+            let url = baseUrl + '?group=' + id;
+            axios
+              .get(url)
+              .then(response => (thisComponent.mfs.push(response.data)));
+          });
         }
       },
 
       mounted(){
-        this.renderChart(this.data, {});
+        this.getGroups();
+        // this.renderChart(this.data, {});
       },
 
       name: 'Chart 1',

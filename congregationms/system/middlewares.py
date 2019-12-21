@@ -23,7 +23,7 @@ def user_has_no_user_group_middleware(get_response):
                 members= Member.objects.filter(group__in=_groups, is_active=True).select_related('publisher')
                 authorized_publisher_pks = [m.publisher_id for m in members]
 
-        request.authorized_groups = groups
+        request.authorized_groups = groups  # publishers.models.UserGroup
         request.authorized_publisher_pks = authorized_publisher_pks
 
         if (not request.authorized_groups) and (not user.is_anonymous):
