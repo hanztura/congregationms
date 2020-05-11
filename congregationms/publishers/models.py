@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from simple_history.models import HistoricalRecords
 
+from cities.models import City
 from system.models import Congregation as Cong, User
 
 
@@ -13,6 +14,9 @@ class Asset(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
     comments = models.TextField(blank=True)
+
+    class Meta:
+        ordering = 'name',
 
     def __str__(self):
         return self.name
@@ -27,7 +31,7 @@ class Publisher(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     date_of_baptism = models.DateField(blank=True, null=True)
     contact_numbers = models.CharField(max_length=200, blank=True)
-    male = models.BooleanField(null=True, blank=True)
+    male = models.BooleanField(default=False, blank=True)
     infirmed = models.BooleanField(default=False, blank=True)
     elderly = models.BooleanField(default=False, blank=True)
     user = models.OneToOneField(
@@ -35,6 +39,10 @@ class Publisher(models.Model):
         null=True, blank=True)
     assets = models.ManyToManyField(
         Asset, related_name='publishers', blank=True)
+    city = models.ForeignKey(
+        City, on_delete=models.CASCADE, null=True, blank=True)
+    address_line_1 = models.TextField(blank=True)
+    email_address = models.EmailField(blank=True)
     history = HistoricalRecords()
 
     class Meta:
@@ -46,6 +54,24 @@ class Publisher(models.Model):
 
     def get_absolute_url(self):
         return reverse('publishers:detail', args=[str(self.slug)])
+
+    @property
+    def address(self):
+        address_line_1 = self.address_line_1
+
+        try:
+            city = self.city.name
+        except Exception as e:
+            city = ""
+
+        if address_line_1 == '' and city == '':
+            return ''
+
+        address = '{}, {}'.format(
+            self.address_line_1,
+            city
+        )
+        return address.upper()
 
     @property
     def ms(self):
@@ -101,6 +127,7 @@ class Group(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     congregation = models.ForeignKey(Cong, on_delete=models.CASCADE)
+    color = models.CharField(max_length=10, blank=True)
 
     def __str__(self):
         return '{} at {}'.format(self.name, self.congregation)

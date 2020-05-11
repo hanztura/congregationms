@@ -32,6 +32,12 @@ class PublisherUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     context_object_name = 'publisher'
     permission_required = 'publishers.change_publisher',
 
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs)
+        queryset = queryset.select_related('city', 'city__state')
+
+        return queryset
+
     def form_valid(self, form):
         messages.success(
             self.request,
@@ -44,6 +50,23 @@ class PublisherDetail(LoginAndPermissionRequiredMixin, DetailView):
     model = Publisher
     context_object_name = 'publisher'
     permission_required = 'publishers.view_publisher',
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        contact_numbers = self.object.contact_numbers
+        contact_numbers = contact_numbers.split(',')
+        contact_numbers = ', '.join(contact_numbers)
+
+        context['contact_numbers'] = contact_numbers
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs)
+        queryset = queryset.select_related(
+            'city', 'city__state', 'city__state__country')
+
+        return queryset
 
 
 class PublisherCreate(LoginAndPermissionRequiredMixin, CreateView):
@@ -113,7 +136,8 @@ class GroupUpdate(LoginAndPermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            formset = GroupMemberFormSet(self.request.POST, instance=self.object)
+            formset = GroupMemberFormSet(
+                self.request.POST, instance=self.object)
         else:
             formset = GroupMemberFormSet(instance=self.object)
 

@@ -19,10 +19,23 @@ from django.contrib import admin
 from django.urls import include, path
 
 from debug_toolbar import urls as debug_toolbar_urls
+from rest_framework import routers
 
+from cities.api.viewsets import CityViewSet, CountryViewSet, StateViewSet
+from publishers.api.viewsets import GroupViewSet
+from reports.api.viewsets import MFSViewSet
 from system.views import home, login, logout
 
+router = routers.DefaultRouter()
+router.register(r'countries', CountryViewSet)
+router.register(r'states', StateViewSet)
+router.register(r'cities', CityViewSet)
+router.register(r'groups', GroupViewSet)
+router.register(r'mfs', MFSViewSet)
+
 urlpatterns = [
+    path('api/', include(router.urls)),
+
     path('accounts/', include('django.contrib.auth.urls')),
     path('mailing/', include('mailing.urls')),
     path('pioneering/', include('pioneering.urls')),

@@ -39,3 +39,22 @@ For local/development setting:
 For production setting:
 -------------------------------
     * TODO
+
+
+Management Commands for data setup:
+    ``python manage.py initial_data``
+    ``python manage.py cities_philippines``
+
+
+Initial Setup:
+```
+python manage.py migrate
+python manage.py initial_data
+python manage.py cities_philippines
+python manage.py createsuperuser
+```
+Create a Congregation
+Create Groups within the Congregation
+Create User(s)
+    Give the user(s) the appropriate Authorization Group
+Create Congregation Group(s) that the user is allowed to access

@@ -14,7 +14,7 @@ class PublisherModelForm(ModelForm):
         fields = ['last_name', 'first_name', 'middle_name',
                   'date_of_birth', 'date_of_baptism', 'contact_numbers',
                   'slug', 'infirmed', 'elderly', 'male',
-                  'assets']
+                  'assets', 'city', 'address_line_1', 'email_address']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,9 +22,6 @@ class PublisherModelForm(ModelForm):
         self._low_case_fields = [
             'last_name', 'first_name', 'middle_name'
         ]
-
-        if self.instance:
-            self.fields['male'].required = True
 
     def clean_slug(self):
         slug = self.cleaned_data['slug']
@@ -53,6 +50,11 @@ class PublisherModelForm(ModelForm):
         # low case necessary fields
         self.process_low_case_fields(cleaned_data)
 
+        city = self.cleaned_data.get('city', None)
+        address_line_1 = self.cleaned_data.get('address_line_1', None)
+        if city and (not address_line_1):
+            self.add_error('address_line_1', 'Please put address line.')
+
         return cleaned_data
 
 
@@ -60,11 +62,12 @@ class GroupModelForm(ModelForm):
 
     class Meta:
         model = Group
-        fields = ['name', 'congregation']
+        fields = ['name', 'congregation', 'color']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['congregation'].choices = get_congregation_as_choices()
+        self.fields['color'].required = True
 
 
 class GroupMemberForm(ModelForm):

@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import datetime, date as dt_date
 from urllib.parse import urlencode
 
@@ -13,8 +14,9 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .forms import MFSForm
 from .models import MonthlyFieldService
 from .utils import (compute_month_year, generate_mfs, aggregate_mfs_queryset,
-                    get_mfs_data, get_months_and_years, get_inactive_pubs)
-from publishers.models import Publisher, Group
+                    get_mfs_data, get_months_and_years, get_inactive_pubs,
+                    get_previous_month_end)
+from publishers.models import Asset, Publisher, Group
 from pioneering.models import PioneerDetail
 from servants.models import Servant
 from system.utils import LoginAndPermissionRequiredMixin, AddRequestToForm
@@ -360,8 +362,34 @@ class InactivePublisherListView(LoginAndPermissionRequiredMixin, ListView):
     template_name = 'reports/publishers/inactive_publishers.html'
 
     def get_queryset(self):
-        df = dt_date(2019, 5, 31)
-        dt = dt_date(2019, 10, 31)
-        q = get_inactive_pubs(df, dt)
+        previous_month_end = get_previous_month_end()
+        previous_month_end = previous_month_end.strftime('%Y-%m')
+        date_from = self.request.GET.get('from', previous_month_end)
+
+        df = datetime.strptime(date_from, '%Y-%m').date()
+        q = get_inactive_pubs(df)
 
         return q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        previous_month_end = get_previous_month_end()
+        previous_month_end = previous_month_end.strftime('%Y-%m')
+        date_from = self.request.GET.get('from', previous_month_end)
+
+        context['from'] = str(date_from)
+
+        return context
+
+
+class AssetListView(LoginAndPermissionRequiredMixin, ListView):
+    model = Asset
+    permission_required = 'publishers.view_publisher',
+    template_name = 'reports/publishers/assets.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related('publishers')
+
+        return queryset

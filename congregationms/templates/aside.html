@@ -24,6 +24,7 @@
           <li>
             <a class="{{reports_publishers_active}} menu-label">Publishers</a>
             <ul>
+              <li><a href="{% url 'reports:publishers_assets' %}">Assets List</a></li>
               <li><a href="{% url 'reports:publishers' 'elderly' %}">Elderly Publishers</a></li>
               <li><a href="{% url 'reports:publishers_inactive' %}">Inactive Publishers</a></li>
               <li><a href="{% url 'reports:publishers' 'infirmed' %}">Infirmed Publishers</a></li>

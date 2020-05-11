@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'django_extensions',
+    'rest_framework',
+    'django_filters',
 
     'system',
     'publishers',
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'reports',
     'mailing',
     'servants',
+    'cities',
 
     'simple_history',
 ]
@@ -65,7 +68,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'system.middlewares.user_has_no_user_group_middleware',
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
@@ -153,3 +155,11 @@ INTERNAL_IPS = ('127.0.0.1', 'localhost', '192.168.1.12')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}

@@ -1,4 +1,5 @@
 {% extends "publishers/base_group.html" %}
+{% load static %}
 
 {% block title %}
   {% if group %}
@@ -41,6 +42,17 @@
         	<div class="select is-fullwidth">
         		{{form.congregation}}
         	</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Group Color</label>
+        <div id="colorPickerApp">
+          <input type="hidden" name="color" v-model="color" ref="color" data-default="{{ form.color.value|default:'' }}">
+          <swatches v-model="color" />
+          {% if form.color.errors %}
+          <div class="help is-danger">{{ form.color.errors }}</div>
+          {% endif %}
         </div>
       </div>
 
@@ -102,3 +114,37 @@
       {% endif %}
     </form>
 {% endblock content %}
+
+{% block headblock %}
+  <link rel="stylesheet" href="{% static 'vendors/vue-swatches/vue-swatches.min.css' %}">  
+{% endblock headblock %}
+{% block endscript %}
+  <script src="{% static 'vendors/vue-swatches/vue-swatches.min.js' %}"></script>
+
+  <script>
+    const Swatches = window.VueSwatches.default;
+
+    var colorPickerApp = new Vue({
+      data: () => {
+        return {
+          color: '',
+        }
+      },
+
+      methods: {
+        setDefault() {
+          let color = this.$refs.color.getAttribute('data-default', '');
+          this.color = color;
+        }
+      },
+
+      mounted(){
+        this.setDefault();
+      },
+
+      components: { Swatches },
+      name: 'ColorPicker',
+      el: '#colorPickerApp'
+    });
+  </script>  
+{% endblock endscript %}

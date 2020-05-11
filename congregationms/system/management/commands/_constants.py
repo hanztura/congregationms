@@ -154,6 +154,14 @@ PERMISSIONS_DATA = [
                 ]
             },
             {
+                'model': PublisherGroup,
+                'allows': [
+                    'change',
+                    'delete',
+                    'view',
+                ]
+            },
+            {
                 'model': Member,
                 'allows': [
                     'add',

@@ -1,5 +1,5 @@
 {% extends "system/base.html" %}
-{% load humanize %}
+{% load humanize static %}
 
 {% block title %}
   <title>Dashboard</title>  
@@ -31,8 +31,113 @@
     </div>
   </nav>
   </section>
+
+  <!--
+  <section class="section">
+    <div id="chart1"></div>
+  </section> -->
 {% endblock main %}
 
 {% block aside_menu %}
   {% include "aside.html" with dashboard_active='is-active' %}  
 {% endblock aside_menu %}
+
+
+{% block endscript %}
+  <script src="{% static "vendors/chartjs/Chart.js" %}"></script>
+  <script src="{% static "vendors/vue-chartjs/vue-chartjs.js" %}"></script>
+  <script src="{% static "vendors/moment.min.js" %}"></script>
+  <script src="{% static 'vendors/lodash/lodash.min.js' %}"></script>
+  <script src="{% static 'vendors/axios/axios.min.js' %}"></script>
+
+  <script>
+    var Bar = window.VueChartJs.Bar;
+    var Line = window.VueChartJs.Line;
+
+    var dashboardApp = new Vue({
+      extends: Line,
+      data: () => {
+        return {
+          type: 'line',
+          data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [
+              {
+                label: 'Group 1',
+                backgroundColor: '#9c27b0',
+                borderColor: '#9c27b0',
+                data: [0, 10, 5, 2, 20, 30, 45],
+                fill: false,
+              },
+              {
+                label: 'Group 2',
+                backgroundColor: '#2196f3',
+                borderColor: '#2196f3',
+                data: [5, 15, 3, 5, 18, 40, 50],
+                fill: false,
+              },
+            ]
+          },
+          dateFormat: 'YYYY-MM-DD',
+          groups: [],
+          mfs: [],
+        }
+      },
+
+      computed: {
+        lastMonth: function() {
+          let lastMonth = moment().subtract(1, 'months');
+          lastMonth = lastMonth.endOf('month').format(this.dateFormat);
+          return lastMonth;
+        },
+        fromDate: function() {
+            let fromDate = moment(this.lastMonth).subtract(5, 'months');
+            fromDate = fromDate.startOf('month').format(this.dateFormat);
+            return fromDate;
+        },
+        previous6Months: function() {
+          months = [];
+          for (i = 5; i >= 0; i--) {
+            let fromDate = moment(this.lastMonth).subtract(i, 'months');
+            fromDate = fromDate.startOf('month').format('MMMM YYYY');
+            months.push(fromDate);
+          }
+          return months;
+        },
+      },
+
+      methods: {
+        getGroups: function() {
+          let url = '/api/groups/';
+          axios
+            .get(url)
+            .then(response => {
+              this.groups = response.data;
+              this.getMFS();
+            });
+        },
+        getMFS: function() {
+          let baseUrl = '/api/mfs/';
+          let groups = this.groups;
+          let thisComponent = this;
+          _.forEach(groups, function(group) {
+            // get mfs
+            let id = group.id;
+            let url = baseUrl + '?group=' + id;
+            axios
+              .get(url)
+              .then(response => (thisComponent.mfs.push(response.data)));
+          });
+        }
+      },
+
+      mounted(){
+        this.getGroups();
+        // this.renderChart(this.data, {});
+      },
+
+      name: 'Chart 1',
+      el: '#chart1'
+    });
+  </script>
+{% endblock endscript %}
